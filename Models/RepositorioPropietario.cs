@@ -26,7 +26,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                     cmd.Parameters.AddWithValue("@t", p.Telefono);
                     cmd.Parameters.AddWithValue("@d", p.Dni);
                     cmd.Parameters.AddWithValue("@e", p.Email);
-                    cmd.Parameters.AddWithValue("@es",true);
+                    cmd.Parameters.AddWithValue("@es", true);
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     p.IdPropietario = Convert.ToInt32(cmd.LastInsertedId);
@@ -35,24 +35,33 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             }
         }
 
-        public int Baja(int id)
+        public int Baja(Propietario i)
         {
             int res = -1;
+            var estado = true;
             using (var conn = new MySqlConnection(connectionString))
             {
-                string sql = "UPDATE  propietario SET estado=false  WHERE id=@id ";
+                string sql = "UPDATE propietario SET estado = @es WHERE IdPropietario = @id";
+                if (i.Estado == true)
+                {
+                    estado = false;
+                }
+                estado = true;
+
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
-                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.Parameters.AddWithValue("@id", i.IdPropietario);
+                    cmd.Parameters.AddWithValue("@es", estado);
                     conn.Open();
                     res = cmd.ExecuteNonQuery();
                 }
             }
+
             return res;
         }
 
         public int Modificar(Propietario p)
-        {    
+        {
             int res = -1;
             using (var conn = new MySqlConnection(connectionString))
             {
@@ -74,7 +83,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                     cmd.Parameters.AddWithValue("@e", p.Email);
 
                     conn.Open();
-                    res= cmd.ExecuteNonQuery();
+                    res = cmd.ExecuteNonQuery();
                 }
             }
             return res;
@@ -141,7 +150,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                                 IdPropietario = Convert.ToInt32(reader[nameof(Propietario.IdPropietario)]),
                                 Nombre = reader[nameof(Propietario.Nombre)]?.ToString() ?? "",
                                 Apellido = reader[nameof(Propietario.Apellido)]?.ToString() ?? "",
-                                Dni = reader.GetString(nameof(Propietario.Dni)), 
+                                Dni = reader.GetString(nameof(Propietario.Dni)),
                                 Telefono = reader[nameof(Propietario.Telefono)]?.ToString() ?? "",
                                 Email = reader[nameof(Propietario.Email)]?.ToString() ?? ""
                             };
@@ -166,37 +175,37 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         public int ObtenerCantidad => throw new NotImplementedException();
 
         virtual public Propietario ObtenerPorId(int id)
-    {
-        Propietario? p = null;
-        using (var connection = new MySqlConnection(connectionString))
         {
-            string sql = @"SELECT 
-					idPropietario, nombre, apellido, dni, telefono, email,estado
-					FROM Propietario
-					WHERE idPropietario=@id";
-            using (var command = new MySqlCommand(sql, connection))
+            Propietario? p = null;
+            using (var connection = new MySqlConnection(connectionString))
             {
-                command.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
-                command.CommandType = CommandType.Text;
-                connection.Open();
-                var reader = command.ExecuteReader();
-                if (reader.Read())
+                string sql = @"SELECT 
+					idPropietario, nombre, apellido, dni, telefono, email,estado
+					FROM propietario
+					WHERE idPropietario=@id";
+                using (var command = new MySqlCommand(sql, connection))
                 {
-                    p = new Propietario
+                    command.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+                    command.CommandType = CommandType.Text;
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+                    if (reader.Read())
                     {
-                        IdPropietario = reader.GetInt32("IdPropietario"),
-                        Nombre = reader.GetString("nombre"),
-                        Apellido = reader.GetString("apellido"),
-                        Dni = reader.GetString("dni"),
-                        Telefono = reader.GetString("telefono"),
-                        Email = reader.GetString("email"),
-                        estado= reader.GetBoolean("estado")
-                    };
+                        p = new Propietario
+                        {
+                            IdPropietario = reader.GetInt32("IdPropietario"),
+                            Nombre = reader.GetString("nombre"),
+                            Apellido = reader.GetString("apellido"),
+                            Dni = reader.GetString("dni"),
+                            Telefono = reader.GetString("telefono"),
+                            Email = reader.GetString("email"),
+                            Estado = reader.GetBoolean("estado")
+                        };
+                    }
+                    connection.Close();
                 }
-                connection.Close();
             }
+            return p;
         }
-        return p;
-    }
     }
 }

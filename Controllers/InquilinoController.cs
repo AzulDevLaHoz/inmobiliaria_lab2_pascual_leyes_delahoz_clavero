@@ -50,15 +50,16 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             i.Dni = entidad.Dni;
             i.Email = entidad.Email;
             i.Telefono = entidad.Telefono;
-            repositorio.Modificacion(i);
+            repositorio.Modificar(i);
             return RedirectToAction(nameof(Index));
 
         }
 
         [HttpPost]
-        public ActionResult Eliminar(int id, Inquilino entidad)
+        public ActionResult Eliminar(int id)
         {
-            repositorio.Baja(id);
+            var entidad = repositorio.ObtenerPorId(id);
+            repositorio.Baja(entidad);
             return RedirectToAction(nameof(Index));
         }
 

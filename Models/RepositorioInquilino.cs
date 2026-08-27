@@ -19,7 +19,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             using (var conn = new MySqlConnection(connectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand("SELECT * FROM Inquilino", conn);
+                var cmd = new MySqlCommand("SELECT * FROM inquilino", conn);
                 var reader = cmd.ExecuteReader();
 
                 while (reader.Read())
@@ -37,17 +37,23 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             }
             return lista;
         }
-        public int Baja(int id)
+        public int Baja(Inquilino i)
         {
             int res = -1;
-
+            var estado = true;
             using (var conn = new MySqlConnection(connectionString))
             {
-                string sql = "DELETE FROM Inquilino WHERE IdInquilino = @id";
+                string sql = "UPDATE inquilino SET estado = @es WHERE IdInquilino = @id";
+                if (i.Estado == true)
+                {
+                    estado = false;
+                }
+                estado = true;
 
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
-                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.Parameters.AddWithValue("@id", i.IdInquilino);
+                    cmd.Parameters.AddWithValue("@es", estado);
                     conn.Open();
                     res = cmd.ExecuteNonQuery();
                 }
@@ -60,7 +66,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         {
             using (var conn = new MySqlConnection(connectionString))
             {
-                string sql = "INSERT INTO Inquilino (nombre, apellido, dni, telefono, email) VALUES (@n, @a, @d, @t, @e)";
+                string sql = "INSERT INTO inquilino (nombre, apellido, dni, telefono, email) VALUES (@n, @a, @d, @t, @e)";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
 
@@ -83,7 +89,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             int res = -1;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @$"UPDATE Inquilino 
+                string sql = @$"UPDATE inquilino 
 					SET Nombre=@nombre, Apellido=@apellido, Dni=@dni, Telefono=@telefono, Email=@email
 					WHERE idInquilino = @id";
                 using (var command = new MySqlCommand(sql, connection))
@@ -110,7 +116,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             {
                 string sql = @"SELECT 
 					idInquilino, nombre, apellido, dni, telefono, email
-					FROM Inquilino
+					FROM inquilino
 					WHERE idInquilino=@id";
                 using (var command = new MySqlCommand(sql, connection))
                 {
@@ -136,9 +142,45 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             return i;
         }
 
-        public IList<Inquilino> ObtenerLista(int paginaNro = 1, int tamPagina = 10)
+        public IList<Inquilino> ObtenerLista(int pagNro = 1, int tamPagina = 10)
         {
-            throw new NotImplementedException();
+            IList<Inquilino> res = new List<Inquilino>();
+            int offset = (pagNro - 1) * tamPagina;
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                string sql = @"
+                SELECT IdInquilino, Nombre, Apellido, Telefono, Dni, Email, Estado
+                FROM inquilino
+                ORDER BY IdInquilino
+                LIMIT @tamPagina OFFSET @offset;";
+
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@tamPagina", tamPagina);
+                    cmd.Parameters.AddWithValue("@offset", offset);
+
+                    conn.Open();
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Inquilino p = new Inquilino
+                            {
+                                IdInquilino = Convert.ToInt32(reader[nameof(Inquilino.IdInquilino)]),
+                                Nombre = reader[nameof(Inquilino.Nombre)]?.ToString() ?? "",
+                                Apellido = reader[nameof(Inquilino.Apellido)]?.ToString() ?? "",
+                                Dni = reader.GetString(nameof(Inquilino.Dni)),
+                                Telefono = reader[nameof(Inquilino.Telefono)]?.ToString() ?? "",
+                                Email = reader[nameof(Inquilino.Email)]?.ToString() ?? "",
+                                Estado = Convert.ToBoolean(reader[nameof(Inquilino.Estado)]),
+                            };
+                            res.Add(p);
+                        }
+                    }
+                }
+            }
+            return res;
         }
 
         public int ObtenerCantidad => throw new NotImplementedException();
