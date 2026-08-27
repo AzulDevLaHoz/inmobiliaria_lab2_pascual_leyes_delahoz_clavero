@@ -18,7 +18,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         {
             using (var conn = new MySqlConnection(connectionString))
             {
-                string sql = "INSERT INTO propietario (Nombre, Apellido, Telefono, Dni, Email) VALUES (@n, @a, @t, @d, @e)";
+                string sql = "INSERT INTO propietario (Nombre, Apellido, Telefono, Dni, Email,Estado) VALUES (@n, @a, @t, @d, @e,@es)";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@n", p.Nombre);
@@ -26,6 +26,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                     cmd.Parameters.AddWithValue("@t", p.Telefono);
                     cmd.Parameters.AddWithValue("@d", p.Dni);
                     cmd.Parameters.AddWithValue("@e", p.Email);
+                    cmd.Parameters.AddWithValue("@es",true);
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     p.IdPropietario = Convert.ToInt32(cmd.LastInsertedId);
@@ -39,7 +40,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             int res = -1;
             using (var conn = new MySqlConnection(connectionString))
             {
-                string sql = "DELETE FROM propietario WHERE IdPropietario = @id";
+                string sql = "UPDATE  propietario SET estado=false  WHERE id=@id ";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@id", id);
@@ -170,7 +171,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         using (var connection = new MySqlConnection(connectionString))
         {
             string sql = @"SELECT 
-					idPropietario, nombre, apellido, dni, telefono, email
+					idPropietario, nombre, apellido, dni, telefono, email,estado
 					FROM Propietario
 					WHERE idPropietario=@id";
             using (var command = new MySqlCommand(sql, connection))
@@ -189,6 +190,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                         Dni = reader.GetString("dni"),
                         Telefono = reader.GetString("telefono"),
                         Email = reader.GetString("email"),
+                        estado= reader.GetBoolean("estado")
                     };
                 }
                 connection.Close();

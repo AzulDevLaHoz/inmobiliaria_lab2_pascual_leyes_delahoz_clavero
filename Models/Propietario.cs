@@ -24,7 +24,9 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
 
         [Required, EmailAddress]
         public String Email { get; set; } = "";
-
+        [Required]
+        public bool estado {get;set;}
+        
         public override string ToString()
         {
             var res = $"{Nombre} {Apellido}";
