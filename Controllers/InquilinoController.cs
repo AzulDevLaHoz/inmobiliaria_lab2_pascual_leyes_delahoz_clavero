@@ -5,16 +5,20 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
 {
     public class InquilinoController : Controller
     {
-        private readonly RepositorioInquilino repositorio;
+        private readonly IRepositorioInquilino repositorio;
+        private readonly IConfiguration config;
+        private readonly ILogger<InquilinoController> logger;
 
-        public InquilinoController(RepositorioInquilino repositorio)
+        public InquilinoController(IRepositorioInquilino repositorio, IConfiguration config, ILogger<InquilinoController> logger)
         {
             this.repositorio = repositorio;
+            this.config = config;
+            this.logger = logger;
         }
 
         public IActionResult Index()
         {
-            var lista = repositorio.ObtenerTodos();
+            var lista = repositorio.ObtenerLista();
             return View(lista);
         }
         public IActionResult Alta()
@@ -44,22 +48,25 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         {
             var i = repositorio.ObtenerPorId(id);
             if (i == null) return NotFound();
-
-            i.Nombre = entidad.Nombre;
-            i.Apellido = entidad.Apellido;
-            i.Dni = entidad.Dni;
-            i.Email = entidad.Email;
-            i.Telefono = entidad.Telefono;
-            repositorio.Modificar(i);
-            return RedirectToAction(nameof(Index));
-
+            if (ModelState.IsValid)
+            {
+                i.Nombre = entidad.Nombre;
+                i.Apellido = entidad.Apellido;
+                i.Dni = entidad.Dni;
+                i.Email = entidad.Email;
+                i.Telefono = entidad.Telefono;
+                repositorio.Modificar(i);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(entidad);
         }
 
         [HttpPost]
         public ActionResult Eliminar(int id)
         {
-            var entidad = repositorio.ObtenerPorId(id);
-            repositorio.Baja(entidad);
+            var i = repositorio.ObtenerPorId(id);
+            if (i == null) return NotFound();
+            repositorio.Baja(i);
             return RedirectToAction(nameof(Index));
         }
 
