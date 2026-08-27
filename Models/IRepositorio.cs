@@ -13,7 +13,6 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
 
         IList<T> ObtenerLista(int paginaNro = 1, int tamPagina = 10);
         int ObtenerCantidad { get; }
-
         T? ObtenerPorId(int id);
 
     }
