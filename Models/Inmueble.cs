@@ -18,8 +18,6 @@ public class Inmueble
         [Required]
         public int Capacidad {get; set;}
 
-        [Required]
-        public Decimal Precio {get; set;}
         public Decimal Longitud {get; set;}
         public Decimal Latitud {get; set;}
         public IFormFile? ImagenPortada {get; set;}
@@ -28,7 +26,12 @@ public class Inmueble
 
         [ForeignKey(nameof(Propietario.IdPropietario))]
         public Propietario? Duenio {get; set;}
+        
+        [Required]
+        public decimal montoDia {get;set;} 
 
+        [Required]
+        public decimal porcentajeReserva {get;set;}
         public int TipoInmuebleId {get; set;}
         [ForeignKey(nameof(TipoInmueble.Id))]
         public TipoInmueble? NombreTipo {get; set;} 
