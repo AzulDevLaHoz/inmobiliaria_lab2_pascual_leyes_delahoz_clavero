@@ -142,7 +142,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             return i;
         }
 
-        public IList<Inquilino> ObtenerLista(int pagNro = 1, int tamPagina = 10)
+        public IList<Inquilino> ObtenerListaActivos(int pagNro = 1, int tamPagina = 10)
         {
             IList<Inquilino> res = new List<Inquilino>();
             int offset = (pagNro - 1) * tamPagina;
