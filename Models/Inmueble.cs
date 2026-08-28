@@ -20,6 +20,8 @@ public class Inmueble
 
         public Decimal Longitud {get; set;}
         public Decimal Latitud {get; set;}
+        public String? StringPortada{get;set;}
+        [NotMapped]
         public IFormFile? ImagenPortada {get; set;}
         public bool Estado {get; set;} 
         public int PropietarioId {get; set;}

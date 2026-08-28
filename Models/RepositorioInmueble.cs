@@ -85,7 +85,7 @@ public class RepositorioInmueble :RepositorioBase
                     cmd.Parameters.AddWithValue("@lat", inmueble.Latitud);
                     cmd.Parameters.AddWithValue("@lon", inmueble.Longitud);
                     cmd.Parameters.AddWithValue("@porcentaje", inmueble.porcentajeReserva);
-                    cmd.Parameters.AddWithValue("@imagen", inmueble.ImagenPortada);
+                    cmd.Parameters.AddWithValue("@imagen", inmueble.StringPortada);
                     cmd.Parameters.AddWithValue("@monto", inmueble.montoDia);
                     cmd.Parameters.AddWithValue("@estado", inmueble.Estado);
                     cmd.Parameters.AddWithValue("@idprop", inmueble.PropietarioId);
@@ -98,6 +98,68 @@ public class RepositorioInmueble :RepositorioBase
 
                 }
             } 
+            return res;
+        }
+
+
+         public IList<Inmueble> ObtenerLista(int pagNro = 1, int tamPagina = 10)
+        {
+            IList<Inmueble> res = new List<Inmueble>();
+
+
+            int offset = (pagNro - 1) * tamPagina;
+
+            using (var conn = new MySqlConnection(connectionString))
+            {
+
+                string sql = @"
+            SELECT 
+                i.IdInmueble, i.Direccion, i.capacidad, i.latitud, i.longitud,
+                i.porcentajeReserva, i.ImagenPortada, i.montoDia, i.estado,
+                i.idPropietario, i.idTipoInmueble,
+                p.Nombre AS PropietarioNombre, p.Apellido AS PropietarioApellido
+            FROM Inmueble i
+            INNER JOIN propietarios p ON i.idPropietario = p.IdPropietario
+            ORDER BY i.IdInmueble
+            LIMIT @tamPagina OFFSET @offset;";
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@tamPagina", tamPagina);
+                    cmd.Parameters.AddWithValue("@offset", offset);
+
+                    conn.Open();
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Inmueble p = new Inmueble
+                            {
+                                Id = Convert.ToInt32(reader[nameof(Inmueble.Id)]),
+                                Direccion = reader[nameof(Inmueble.Direccion)]?.ToString() ?? "",
+                                Capacidad = reader.GetInt32(nameof(Inmueble.Capacidad)),
+                                Latitud = reader.GetDecimal(nameof(Inmueble.Latitud)),
+                                Longitud = reader.GetDecimal(nameof(Inmueble.Longitud)),
+                                porcentajeReserva = reader.GetDecimal(nameof(Inmueble.porcentajeReserva)),
+                                StringPortada=reader[nameof(Inmueble.ImagenPortada)]?.ToString() ?? "",
+                                montoDia=reader.GetDecimal(nameof(Inmueble.montoDia)),
+                                Estado=reader.GetBoolean(nameof(Inmueble.Estado)),
+                                PropietarioId=reader.GetInt32(nameof(Inmueble.PropietarioId)),
+                                TipoInmuebleId=reader.GetInt32(nameof(Inmueble.TipoInmuebleId)),
+                                Duenio= new Propietario
+                                {
+                                    IdPropietario = reader.GetInt32(nameof(Inmueble.PropietarioId)),
+								    Nombre = reader.GetString(nameof(Propietario.Nombre)),
+								    Apellido = reader.GetString(nameof(Propietario.Apellido)),
+                                }
+
+                              
+                            };
+                            res.Add(p);
+                        }
+                    }
+                }
+            }
             return res;
         }
 }
