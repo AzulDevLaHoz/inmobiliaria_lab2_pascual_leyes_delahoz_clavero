@@ -6,15 +6,15 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
     public class InmuebleController : Controller
     {
         private readonly RepositorioInmueble repositorio;
-		private readonly IRepositorioPropietario repoPropietario;
+        private readonly IRepositorioPropietario repoPropietario;
 
-		public InmuebleController(RepositorioInmueble repositorio, IRepositorioPropietario repoPropietrio)
+        public InmuebleController(RepositorioInmueble repositorio, IRepositorioPropietario repoPropietrio)
         {
             this.repositorio = repositorio;
-			this.repoPropietario = repoPropietrio;
+            this.repoPropietario = repoPropietrio;
         }
 
-          public IActionResult Index()
+        public IActionResult Index()
         {
             var lista = repositorio.ObtenerLista();
             return View(lista);
@@ -25,29 +25,30 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             ViewBag.Propietarios = repoPropietario.ObtenerLista();
             return View();
         }
-       
-       [HttpPost]
-       public IActionResult Alta(Inmueble inmueble)
+
+        [HttpPost]
+        public IActionResult Alta(Inmueble inmueble)
         {
             try
             {
-                if(ModelState.IsValid)
+                if (ModelState.IsValid)
                 {
                     repositorio.Alta(inmueble);
-                    TempData["Id"]=inmueble.Id;
+                    TempData["Id"] = inmueble.Id;
                     return RedirectToAction(nameof(Index));
                 }
                 else
                 {
-                    ViewBag.Propietarios= repoPropietario.ObtenerLista();
+                    ViewBag.Propietarios = repoPropietario.ObtenerLista();
                     return View(inmueble);
                 }
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
-                ViewBag.Propietarios= repoPropietario.ObtenerLista();
+                ViewBag.Propietarios = repoPropietario.ObtenerLista();
                 ViewBag.Error = e.Message;
-				ViewBag.StackTrate = e.StackTrace;
-				return View(inmueble);
+                ViewBag.StackTrate = e.StackTrace;
+                return View(inmueble);
             }
         }
     }
