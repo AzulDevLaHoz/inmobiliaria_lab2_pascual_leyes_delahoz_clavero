@@ -46,7 +46,6 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                 {
                     estado = false;
                 }
-                estado = true;
 
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
@@ -118,7 +117,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             }
         }
 
-        public IList<Propietario> ObtenerListaActivos(int pagNro = 1, int tamPagina = 10)
+        public IList<Propietario> ObtenerLista(int pagNro = 1, int tamPagina = 10)
         {
             IList<Propietario> res = new List<Propietario>();
 

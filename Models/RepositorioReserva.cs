@@ -34,6 +34,11 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             throw new NotImplementedException();
         }
 
+        public IList<Reserva> ObtenerListaActivos(int paginaNro = 1, int tamPagina = 10)
+        {
+            throw new NotImplementedException();
+        }
+
         public Reserva? ObtenerPorId(int id)
         {
             throw new NotImplementedException();

@@ -90,11 +90,11 @@ public class RepositorioInmueble :RepositorioBase
                     cmd.Parameters.AddWithValue("@estado", inmueble.Estado);
                     cmd.Parameters.AddWithValue("@idprop", inmueble.PropietarioId);
                     cmd.Parameters.AddWithValue("@idtipo", inmueble.TipoInmuebleId);
-                     cmd.Parameters.AddWithValue("@id", inmueble.Id);
-                     cmd.CommandType= CommandType.Text; 
-                     conn.Open();
-                     res= cmd.ExecuteNonQuery();
-                     conn.Close();
+                    cmd.Parameters.AddWithValue("@id", inmueble.Id);
+                    cmd.CommandType= CommandType.Text; 
+                    conn.Open();
+                    res= cmd.ExecuteNonQuery();
+                    conn.Close();
 
                 }
             } 
@@ -102,7 +102,7 @@ public class RepositorioInmueble :RepositorioBase
         }
 
 
-         public IList<Inmueble> ObtenerLista(int pagNro = 1, int tamPagina = 10)
+        public IList<Inmueble> ObtenerLista(int pagNro = 1, int tamPagina = 10)
         {
             IList<Inmueble> res = new List<Inmueble>();
 
