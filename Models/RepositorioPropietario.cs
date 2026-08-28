@@ -118,7 +118,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             }
         }
 
-        public IList<Propietario> ObtenerLista(int pagNro = 1, int tamPagina = 10)
+        public IList<Propietario> ObtenerListaActivos(int pagNro = 1, int tamPagina = 10)
         {
             IList<Propietario> res = new List<Propietario>();
 
@@ -131,6 +131,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                 string sql = @"
             SELECT IdPropietario, Nombre, Apellido, Telefono,Dni, Email
             FROM propietario
+            WHERE estado = 1
             ORDER BY IdPropietario
             LIMIT @tamPagina OFFSET @offset;";
 
@@ -150,7 +151,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                                 IdPropietario = Convert.ToInt32(reader[nameof(Propietario.IdPropietario)]),
                                 Nombre = reader[nameof(Propietario.Nombre)]?.ToString() ?? "",
                                 Apellido = reader[nameof(Propietario.Apellido)]?.ToString() ?? "",
-                                Dni = reader.GetString(nameof(Propietario.Dni)),
+                                Dni = reader[nameof(Propietario.Dni)]?.ToString() ?? "",
                                 Telefono = reader[nameof(Propietario.Telefono)]?.ToString() ?? "",
                                 Email = reader[nameof(Propietario.Email)]?.ToString() ?? ""
                             };

@@ -6,13 +6,13 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
     public class PropietarioController : Controller
     {
         private readonly IRepositorioPropietario repositorio;
-        private readonly IConfiguration config;
+        private readonly IConfiguration configuration;
         private readonly ILogger<PropietarioController> logger;
 
-        public PropietarioController(IRepositorioPropietario repo, IConfiguration config, ILogger<PropietarioController> logger)
+        public PropietarioController(IRepositorioPropietario repo, IConfiguration configuration, ILogger<PropietarioController> logger)
         {
             this.repositorio = repo;
-            this.config = config;
+            this.configuration = configuration;
             this.logger = logger;
         }
         public IActionResult Index()
