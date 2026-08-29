@@ -54,6 +54,34 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
                 return View(inmueble);
             }
         }
+
+        public IActionResult Modificar(int id)
+        {
+            ViewBag.Propietarios = repoPropietario.ObtenerLista();
+            ViewBag.TipoInmuebles = repoTipoInmueble.ObtenerTodos();
+            var entidad = repositorio.ObtenerPorId(id);
+            return View(entidad);
+        }
+
+        [HttpPost]
+        public IActionResult Modificar(int id, Inmueble entidad)
+        {
+            try
+            {
+                entidad.Id = id;
+                repositorio.Modificar(entidad);
+                TempData["Mensaje"] = "Datos guardados correctamente";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Propietarios = repoPropietario.ObtenerLista(1, 50);
+                ViewBag.Error = ex.Message;
+                ViewBag.StackTrate = ex.StackTrace;
+                return View(entidad);
+            }
+        }
+
     }
 
 }

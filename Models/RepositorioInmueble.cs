@@ -67,7 +67,8 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             int res = -1;
             using (var conn = new MySqlConnection(connectionString))
             {
-                string sql = @$"UPDATE inmueble  SET Direccion=@direc,
+                string sql = @$"UPDATE inmueble  SET 
+                Direccion=@direc,
                 capacidad=@capacidad,
                 latitud=@lat,
                 longitud=@lon,
@@ -95,7 +96,6 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                     conn.Open();
                     res = cmd.ExecuteNonQuery();
                     conn.Close();
-
                 }
             }
             return res;
@@ -112,7 +112,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             using (var conn = new MySqlConnection(connectionString))
             {
 
-               string sql = @"
+                string sql = @"
             SELECT 
                 i.idInmueble AS Id, 
                 i.Direccion, 
@@ -171,6 +171,55 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             }
             return res;
         }
+
+        virtual public Inmueble ObtenerPorId(int id)
+        {
+            Inmueble? i = null;
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = @"SELECT 
+					direccion=@direc,
+                    capacidad=@capacidad,
+                    latitud=@lat,
+                    longitud=@lon,
+                    porcentajeReserva=@porcentaje,
+                    imagenPortada=@imagen,
+                    montoDia=@monto,
+                    estado=@estado,
+                    idPropietario=@idprop,
+                    idTipoInmueble=@idtipo
+					FROM inmueble
+					WHERE id=@id";
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+                    command.CommandType = CommandType.Text;
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        i = new Inmueble
+                        {
+                            Id = reader.GetInt32("id"),
+                            Direccion = reader.GetString("direccion"),
+                            Capacidad = reader.GetInt32("capacidad"),
+                            Latitud = reader.GetInt32("latitud"),
+                            Longitud = reader.GetInt32("longitud"),
+                            porcentajeReserva = reader.GetDecimal("porcentajeReserva"),
+                            //StringPortada = reader.GetString("")
+                            montoDia = reader.GetDecimal("montoDia"),
+                            Estado = reader.GetBoolean("estado"),
+                            PropietarioId = reader.GetInt32("idPropietario"),
+                            TipoInmuebleId = reader.GetInt32("idTipoInmueble"),
+                        };
+                    }
+                    connection.Close();
+                }
+            }
+            //if(i == null) return => deberiamos transformar estos metodos en int para validarlos en el controller por los posibles nulos.
+            return i;
+        }
+
     }
 
 }
