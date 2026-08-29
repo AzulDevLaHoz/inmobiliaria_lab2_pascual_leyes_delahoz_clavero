@@ -112,15 +112,24 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             using (var conn = new MySqlConnection(connectionString))
             {
 
-                string sql = @"
+               string sql = @"
             SELECT 
-                i.IdInmueble, i.Direccion, i.capacidad, i.latitud, i.longitud,
-                i.porcentajeReserva, i.ImagenPortada, i.montoDia, i.estado,
-                i.idPropietario, i.idTipoInmueble,
-                p.Nombre AS PropietarioNombre, p.Apellido AS PropietarioApellido
+                i.idInmueble AS Id, 
+                i.Direccion, 
+                i.capacidad AS Capacidad, 
+                i.latitud AS Latitud, 
+                i.longitud AS Longitud,
+                i.porcentajeReserva, 
+                i.ImagenPortada, 
+                i.montoDia, 
+                i.estado AS Estado,
+                i.idPropietario AS PropietarioId, 
+                i.idTipoInmueble AS TipoInmuebleId,
+                p.Nombre, 
+                p.Apellido
             FROM inmueble i
             INNER JOIN propietario p ON i.idPropietario = p.IdPropietario
-            ORDER BY i.IdInmueble
+            ORDER BY i.idInmueble
             LIMIT @tamPagina OFFSET @offset;";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
