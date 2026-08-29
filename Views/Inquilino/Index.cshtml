@@ -58,11 +58,12 @@
                 </td>
                 <td>
                     <div class="btn-group" role="group">
-                        <a asp-action="Modificar" asp-route-id="@item.IdInquilino" class="btn btn-primary btn-sm">
+                        <a asp-action="Modificar" asp-route-id="@item.IdInquilino" class="btn btn-primary btn-sm"
+                           title="Editar">
                             <i class="bi bi-pencil-square"></i>
                         </a>
-                        <button asp-action="Eliminar" type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#modalEliminar-@item.IdInquilino">
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#modalEliminar-@item.IdInquilino" title="Eliminar">
                             <i class="bi bi-trash3"></i>
                         </button>
                     </div>
