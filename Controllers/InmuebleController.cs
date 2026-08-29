@@ -7,11 +7,13 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
     {
         private readonly RepositorioInmueble repositorio;
         private readonly IRepositorioPropietario repoPropietario;
+        private readonly RepositorioTipoInmueble repoTipoInmueble;
 
-        public InmuebleController(RepositorioInmueble repositorio, IRepositorioPropietario repoPropietrio)
+        public InmuebleController(RepositorioInmueble repositorio, IRepositorioPropietario repoPropietrio, RepositorioTipoInmueble repoTipoInmueble)
         {
             this.repositorio = repositorio;
             this.repoPropietario = repoPropietrio;
+            this.repoTipoInmueble = repoTipoInmueble;
         }
 
         public IActionResult Index()
@@ -23,6 +25,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         public IActionResult Alta()
         {
             ViewBag.Propietarios = repoPropietario.ObtenerLista();
+            ViewBag.TipoInmuebles = repoTipoInmueble.ObtenerTodos();
             return View();
         }
 

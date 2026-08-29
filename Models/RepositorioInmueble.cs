@@ -17,7 +17,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             int res = -1;
             using (var conn = new MySqlConnection(connectionString))
             {
-                string sql = @"INSERT INTO Inmueble
+                string sql = @"INSERT INTO inmueble
                  (Direccion,capacidad,latitud,longitud,
                 porcentajeReserva,imagenPortada,montoDia,estado,idPropietario,idTipoInmueble) 
                  VALUES (@direc,@capacidad,@lat,@lon,@porcentaje,@imagen,@montoDia,@est,@idProp,@idTipo)";
@@ -49,7 +49,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             int res = -1;
             using (var conn = new MySqlConnection(connectionString))
             {
-                string sql = @$"UPDATE Inmuebles  SET estado=false  WHERE Id = @id";
+                string sql = @$"UPDATE inmueble  SET estado=false  WHERE Id = @id";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
                     cmd.CommandType = CommandType.Text;
@@ -67,7 +67,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             int res = -1;
             using (var conn = new MySqlConnection(connectionString))
             {
-                string sql = @$"UPDATE INMUEBLE  SET Direccion=@direc,
+                string sql = @$"UPDATE inmueble  SET Direccion=@direc,
                 capacidad=@capacidad,
                 latitud=@lat,
                 longitud=@lon,
@@ -118,8 +118,8 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                 i.porcentajeReserva, i.ImagenPortada, i.montoDia, i.estado,
                 i.idPropietario, i.idTipoInmueble,
                 p.Nombre AS PropietarioNombre, p.Apellido AS PropietarioApellido
-            FROM Inmueble i
-            INNER JOIN propietarios p ON i.idPropietario = p.IdPropietario
+            FROM inmueble i
+            INNER JOIN propietario p ON i.idPropietario = p.IdPropietario
             ORDER BY i.IdInmueble
             LIMIT @tamPagina OFFSET @offset;";
                 using (var cmd = new MySqlCommand(sql, conn))
