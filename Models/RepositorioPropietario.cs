@@ -35,22 +35,17 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             }
         }
 
-        public int Baja(Propietario i)
+        public int Baja(int id)
         {
             int res = -1;
-            var estado = true;
             using (var conn = new MySqlConnection(connectionString))
             {
                 string sql = "UPDATE propietario SET estado = @es WHERE IdPropietario = @id";
-                if (i.Estado == true)
-                {
-                    estado = false;
-                }
-
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
-                    cmd.Parameters.AddWithValue("@id", i.IdPropietario);
-                    cmd.Parameters.AddWithValue("@es", estado);
+                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.Parameters.AddWithValue("@es", false);
+
                     conn.Open();
                     res = cmd.ExecuteNonQuery();
                 }

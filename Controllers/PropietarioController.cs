@@ -62,9 +62,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         [HttpPost]
         public ActionResult Eliminar(int id)
         {
-            var p = repositorio.ObtenerPorId(id);
-            if (p == null) return NotFound();
-            repositorio.Baja(p);
+            repositorio.Baja(id);
             return RedirectToAction(nameof(Index));
         }
     }

@@ -8,7 +8,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
     public interface IRepositorio<T>
     {
         int Alta(T p);
-        int Baja(T p);
+        int Baja(int i);
         int Modificar(T p);
 
         IList<T> ObtenerLista(int paginaNro = 1, int tamPagina = 10);

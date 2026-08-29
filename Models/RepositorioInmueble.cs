@@ -18,9 +18,17 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             using (var conn = new MySqlConnection(connectionString))
             {
                 string sql = @"INSERT INTO inmueble
-                 (Direccion,capacidad,latitud,longitud,
-                porcentajeReserva,imagenPortada,montoDia,estado,idPropietario,idTipoInmueble) 
-                 VALUES (@direc,@capacidad,@lat,@lon,@porcentaje,@imagen,@montoDia,@est,@idProp,@idTipo)";
+                (direccion,
+                capacidad,
+                latitud,
+                longitud,
+                porcentajeReserva,
+                imagenPortada,
+                montoDia,
+                estado,
+                idPropietario,
+                idTipoInmueble)
+                VALUES (@direc, @capacidad, @lat, @lon, @porcentaje, @imagen, @montoDia, @est, @idProp, @idTipo)";
 
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
@@ -49,7 +57,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             int res = -1;
             using (var conn = new MySqlConnection(connectionString))
             {
-                string sql = @$"UPDATE inmueble  SET estado=false  WHERE Id = @id";
+                string sql = @$"UPDATE inmueble  SET estado=false  WHERE idInmueble = @id";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
                     cmd.CommandType = CommandType.Text;
@@ -68,7 +76,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             using (var conn = new MySqlConnection(connectionString))
             {
                 string sql = @$"UPDATE inmueble  SET 
-                Direccion=@direc,
+                direccion=@direc,
                 capacidad=@capacidad,
                 latitud=@lat,
                 longitud=@lon,
@@ -78,7 +86,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                 estado=@estado,
                 idPropietario=@idprop,
                 idTipoInmueble=@idtipo
-                WHERE id=@id";
+                WHERE idInmueble=@id";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@direc", inmueble.Direccion);
@@ -113,24 +121,25 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             {
 
                 string sql = @"
-            SELECT 
-                i.idInmueble AS Id, 
-                i.Direccion, 
-                i.capacidad AS Capacidad, 
-                i.latitud AS Latitud, 
-                i.longitud AS Longitud,
-                i.porcentajeReserva, 
-                i.ImagenPortada, 
-                i.montoDia, 
-                i.estado AS Estado,
-                i.idPropietario AS PropietarioId, 
-                i.idTipoInmueble AS TipoInmuebleId,
-                p.Nombre, 
-                p.Apellido
-            FROM inmueble i
-            INNER JOIN propietario p ON i.idPropietario = p.IdPropietario
-            ORDER BY i.idInmueble
-            LIMIT @tamPagina OFFSET @offset;";
+                    SELECT 
+                        i.idInmueble AS Id, 
+                        i.Direccion, 
+                        i.capacidad AS Capacidad, 
+                        i.latitud AS Latitud, 
+                        i.longitud AS Longitud,
+                        i.porcentajeReserva, 
+                        i.ImagenPortada, 
+                        i.montoDia, 
+                        i.estado AS Estado,
+                        i.idPropietario AS PropietarioId, 
+                        i.idTipoInmueble AS TipoInmuebleId,
+                        p.Nombre, 
+                        p.Apellido
+                    FROM inmueble i
+                    INNER JOIN propietario p ON i.idPropietario = p.IdPropietario
+                    WHERE i.estado = 1
+                    ORDER BY i.idInmueble
+                    LIMIT @tamPagina OFFSET @offset;";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@tamPagina", tamPagina);
@@ -178,18 +187,19 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"SELECT 
-					direccion=@direc,
-                    capacidad=@capacidad,
-                    latitud=@lat,
-                    longitud=@lon,
-                    porcentajeReserva=@porcentaje,
-                    imagenPortada=@imagen,
-                    montoDia=@monto,
-                    estado=@estado,
-                    idPropietario=@idprop,
-                    idTipoInmueble=@idtipo
+                    idInmueble,
+					direccion,
+                    capacidad,
+                    latitud,
+                    longitud,
+                    porcentajeReserva,
+                    imagenPortada,
+                    montoDia,
+                    estado,
+                    idPropietario,
+                    idTipoInmueble
 					FROM inmueble
-					WHERE id=@id";
+					WHERE idInmueble=@id";
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     command.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
@@ -200,7 +210,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                     {
                         i = new Inmueble
                         {
-                            Id = reader.GetInt32("id"),
+                            Id = reader.GetInt32("idInmueble"),
                             Direccion = reader.GetString("direccion"),
                             Capacidad = reader.GetInt32("capacidad"),
                             Latitud = reader.GetInt32("latitud"),

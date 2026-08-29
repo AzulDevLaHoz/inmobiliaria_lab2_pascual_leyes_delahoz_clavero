@@ -57,14 +57,40 @@
                     @Html.DisplayFor(modelItem => item.Email)
                 </td>
                 <td>
-                    <a asp-action="Modificar" asp-route-id="@item.IdPropietario" class="btn btn-primary btn-sm">Editar</a>
-                    <form asp-action="Eliminar" asp-route-id="@item.IdPropietario" method="post" class="d-inline">
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar este propietario?');">Eliminar</button>
-                    </form>
-                    <a asp-action="PorPropietario" asp-controller="Inmuebles" asp-route-id="@item.IdPropietario"
-                    class="btn btn-success btn-sm">Mis Propiedades</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                    <div class="btn-group" role="group">
+                        <a asp-action="Modificar" asp-route-id="@item.IdPropietario" class="btn btn-primary btn-sm"><i
+                            class="bi bi-pencil-square"></i></a>
+                            <button asp-action="Eliminar" type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#modalEliminar-@item.IdPropietario">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                            <a asp-action="PorPropietario" asp-controller="Inmuebles" asp-route-id="@item.IdPropietario"
+                               class="btn btn-success btn-sm"><i class="bi bi-buildings"></i></a>
+                        </div>
+                    </td>
+                </tr>
+
+                <div class="modal fade" id="modalEliminar-@item.IdPropietario" tabindex="-1"
+                     aria-labelledby="modalLabel-@item.IdPropietario" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalLabel-@item.IdPropietario">Confirmar Baja</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                ¿Estás seguro que deseás dar de baja al propietario <strong>@item.Nombre
+                                @item.Apellido</strong>?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <form asp-action="Eliminar" asp-route-id="@item.IdPropietario" method="post">
+                                    <button type="submit" class="btn btn-danger">Sí, Eliminar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </tbody>
+    </table>

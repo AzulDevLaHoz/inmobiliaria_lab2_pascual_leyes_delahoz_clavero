@@ -37,23 +37,17 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             }
             return lista;
         }
-        public int Baja(Inquilino i)
+        public int Baja(int id)
         {
             int res = -1;
-            var estado = true;
             using (var conn = new MySqlConnection(connectionString))
             {
                 string sql = "UPDATE inquilino SET estado = @es WHERE IdInquilino = @id";
-                if (i.Estado == true)
-                {
-                    estado = false;
-                }
-                estado = true;
-
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
-                    cmd.Parameters.AddWithValue("@id", i.IdInquilino);
-                    cmd.Parameters.AddWithValue("@es", estado);
+                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.Parameters.AddWithValue("@es", false);
+
                     conn.Open();
                     res = cmd.ExecuteNonQuery();
                 }
@@ -61,6 +55,8 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
 
             return res;
         }
+
+
 
         public int Alta(Inquilino i)
         {
@@ -151,6 +147,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                 string sql = @"
                 SELECT IdInquilino, Nombre, Apellido, Telefono, Dni, Email, Estado
                 FROM inquilino
+                WHERE estado = 1
                 ORDER BY IdInquilino
                 LIMIT @tamPagina OFFSET @offset;";
 

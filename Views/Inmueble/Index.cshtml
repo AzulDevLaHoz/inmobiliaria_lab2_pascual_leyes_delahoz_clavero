@@ -68,21 +68,43 @@
 				</td>
 				<td>
 					<div class="btn-group" role="group">
-						<a class="btn btn-primary" asp-action="Edit" asp-route-id="@item.Id" title="Editar">
-							<i class="fa-solid fa-pen"></i>
+						<a class="btn btn-primary" asp-action="Modificar" asp-route-id="@item.Id" title="Editar">
+							<i class="bi bi-pencil-square"></i>
 						</a>
-						<a class="btn btn-danger" asp-action="Eliminar" asp-route-id="@item.Id" title="Eliminar">
-							<i class="fa-solid fa-trash-can"></i>
-						</a>
-						<a class="btn btn-secondary" asp-action="Ver" asp-route-id="@item.Id" title="Ver">
+						<button asp-action="Eliminar" type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+								data-bs-target="#modalEliminar-@item.Id">
+							<i class="bi bi-trash3"></i>
+						</button>
+						@*<a class="btn btn-secondary" asp-action="Ver" asp-route-id="@item.Id" title="Ver">
 							<i class="fa-solid fa-eye"></i>
 						</a>
 						<a class="btn btn-secondary" asp-action="Imagenes" asp-route-id="@item.Id" title="Ver imágenes">
 							<i class="fa-solid fa-images"></i>
-						</a>
+						</a>*@
 					</div>
 				</td>
 			</tr>
+
+			<div class="modal fade" id="modalEliminar-@item.Id" tabindex="-1" aria-labelledby="modalLabel-@item.Id"
+				 aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="modalLabel-@item.Id">Confirmar Baja</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							¿Estás seguro que deseás dar de baja el Inmueble?
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+							<form asp-action="Eliminar" asp-route-id="@item.Id" method="post">
+								<button type="submit" class="btn btn-danger">Sí, Eliminar</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
 		}
 	</tbody>
 </table>
