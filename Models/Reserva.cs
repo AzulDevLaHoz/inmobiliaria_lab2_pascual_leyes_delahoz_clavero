@@ -11,19 +11,19 @@ public class Reserva{
     public int IdReserva { get; set; }
 
     [Required]
-    public decimal MontoDia { get; set; }
-
-    [Required]
-    [DataType(DataType.Date)]
-    public DateTime FechaOriginalMulta { get; set; }
-
-    [Required]
     [DataType(DataType.Date)]
     public DateTime FechaEntrada { get; set; } // la pactada al crear la reserva
 
-    // Nullable (el "?") porque solo se completa SI la reserva terminó antes de tiempo
+    [Required]
     [DataType(DataType.Date)]
-    public DateTime? FechaSalida { get; set; }
+    public DateTime FechaSalida { get; set; } // la pactada al crear la reserva
+
+    // Nullable porque solo se completa SI la reserva terminó antes de tiempo
+    [DataType(DataType.Date)]
+    public DateTime? FechaTerminacionAnticipada { get; set; }
+
+    // Nullable, default 0.00 en la base de datos
+    public decimal? Multa { get; set; }
 
     [Required]
     public Boolean Estado { get; set; } = false;
