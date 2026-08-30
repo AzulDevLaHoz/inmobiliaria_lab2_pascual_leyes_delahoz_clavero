@@ -79,7 +79,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                 fechaEntrada = @fe,
                 fechaSalida = @fs,
                 estado = @estado,
-                fechaTerminacionAnticipada = @fta,
+                fechaMulta = @fta,
                 multa = @multa,
                 idInquilino = @idInq,
                 idInmueble = @idInm
@@ -109,7 +109,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             using (var conn = new MySqlConnection(connectionString))
             {
                 string sql = @"
-                SELECT idReserva, fechaEntrada, fechaSalida, estado, fechaTerminacionAnticipada, multa, idInquilino, idInmueble
+                SELECT idReserva, fechaEntrada, fechaSalida, estado, fechaMulta, multa, idInquilino, idInmueble
                 FROM reserva
                 ORDER BY idReserva
                 LIMIT @tamPagina OFFSET @offset;";
@@ -129,9 +129,9 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                                 FechaEntrada = reader.GetDateTime(nameof(Reserva.FechaEntrada)),
                                 FechaSalida = reader.GetDateTime(nameof(Reserva.FechaSalida)),
                                 Estado = reader.GetBoolean(nameof(Reserva.Estado)),
-                                FechaTerminacionAnticipada = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.FechaTerminacionAnticipada)))
+                                FechaMulta = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.FechaMulta)))
                                     ? null
-                                    : reader.GetDateTime(nameof(Reserva.FechaTerminacionAnticipada)),
+                                    : reader.GetDateTime(nameof(Reserva.FechaMulta)),
                                 Multa = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.Multa)))
                                     ? null
                                     : reader.GetDecimal(nameof(Reserva.Multa)),
@@ -154,7 +154,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             using (var conn = new MySqlConnection(connectionString))
             {
                 string sql = @"
-                SELECT idReserva, fechaEntrada, fechaSalida, estado, fechaTerminacionAnticipada, multa, idInquilino, idInmueble
+                SELECT idReserva, fechaEntrada, fechaSalida, estado, fechaMulta, multa, idInquilino, idInmueble
                 FROM reserva
                 WHERE estado = 1
                 ORDER BY idReserva
@@ -175,9 +175,9 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                                 FechaEntrada = reader.GetDateTime(nameof(Reserva.FechaEntrada)),
                                 FechaSalida = reader.GetDateTime(nameof(Reserva.FechaSalida)),
                                 Estado = reader.GetBoolean(nameof(Reserva.Estado)),
-                                FechaTerminacionAnticipada = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.FechaTerminacionAnticipada)))
+                                FechaMulta = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.FechaMulta)))
                                     ? null
-                                    : reader.GetDateTime(nameof(Reserva.FechaTerminacionAnticipada)),
+                                    : reader.GetDateTime(nameof(Reserva.FechaMulta)),
                                 Multa = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.Multa)))
                                     ? null
                                     : reader.GetDecimal(nameof(Reserva.Multa)),
@@ -197,7 +197,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             Reserva? p = null;
             using (var conn = new MySqlConnection(connectionString))
             {
-                string sql = @"SELECT idReserva, fechaEntrada, fechaSalida, estado, fechaTerminacionAnticipada, multa, idInquilino, idInmueble
+                string sql = @"SELECT idReserva, fechaEntrada, fechaSalida, estado, fechaMulta, multa, idInquilino, idInmueble
                 FROM reserva
                 WHERE idReserva = @id";
                 using (var cmd = new MySqlCommand(sql, conn))
@@ -214,9 +214,9 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                                 FechaEntrada = reader.GetDateTime(nameof(Reserva.FechaEntrada)),
                                 FechaSalida = reader.GetDateTime(nameof(Reserva.FechaSalida)),
                                 Estado = reader.GetBoolean(nameof(Reserva.Estado)),
-                                FechaTerminacionAnticipada = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.FechaTerminacionAnticipada)))
+                                FechaMulta = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.FechaMulta)))
                                     ? null
-                                    : reader.GetDateTime(nameof(Reserva.FechaTerminacionAnticipada)),
+                                    : reader.GetDateTime(nameof(Reserva.FechaMulta)),
                                 Multa = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.Multa)))
                                     ? null
                                     : reader.GetDecimal(nameof(Reserva.Multa)),
