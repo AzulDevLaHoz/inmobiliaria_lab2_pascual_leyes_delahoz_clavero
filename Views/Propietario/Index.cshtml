@@ -59,13 +59,13 @@
                 <td>
                     <div class="btn-group" role="group">
                         <a asp-action="Modificar" title="Editar" asp-route-id="@item.IdPropietario"
-                           class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
+                            class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
                         <button title="Eliminar" type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
                                 data-bs-target="#modalEliminar-@item.IdPropietario">
                             <i class="bi bi-trash3"></i>
                         </button>
                         <a asp-action="PorPropietario" asp-controller="Inmuebles" asp-route-id="@item.IdPropietario"
-                           class="btn btn-success btn-sm" title="Mis Propiedades"><i class="bi bi-buildings"></i></a>
+                            class="btn btn-success btn-sm" title="Mis Propiedades"><i class="bi bi-buildings"></i></a>
                     </div>
                 </td>
             </tr>

@@ -1,0 +1,63 @@
+@model IEnumerable<inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models.Reserva>
+
+@{
+    ViewData["Title"] = "Reservas";
+}
+
+<h1>Reservas</h1>
+
+<div class="text-end mt-3">
+    <a asp-action="Alta" class="btn btn-primary">Crear Nueva Reserva</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.IdReserva)</th>
+            <th>@Html.DisplayNameFor(model => model.FechaEntrada)</th>
+            <th>@Html.DisplayNameFor(model => model.FechaSalida)</th>
+            <th>@Html.DisplayNameFor(model => model.Estado)</th>
+            <th>Inquilino</th>
+            <th>Inmueble</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.IdReserva)</td>
+                <td>@item.FechaEntrada.ToShortDateString()</td>
+                <td>@item.FechaSalida.ToShortDateString()</td>
+                <td>@(item.Estado ? "Activa" : "Inactiva")</td>
+                <td>@item.IdInquilino</td>
+                <td>@item.IdInmueble</td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a asp-action="Modificar" asp-route-id="@item.IdReserva" class="btn btn-primary btn-sm">Editar</a>
+                        <form action="Eliminar" method="post" class="d-inline">
+                            <input type="submit" value="Eliminar" asp-action="Eliminar" asp-route-id="@item.IdReserva"
+                                class="btn btn-danger btn-sm" />
+                        </form>
+
+                        @if (item.Estado)
+                        {
+                            if (DateTime.Today <= item.FechaSalida)
+                            {
+                                <a asp-action="SalidaAnticipada" asp-route-id="@item.IdReserva" class="btn btn-warning btn-sm">
+                                    Salida Anticipada
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-action="GenerarMulta" asp-route-id="@item.IdReserva" class="btn btn-danger btn-sm">
+                                    Generar Multa
+                                </a>
+                            }
+                        }
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

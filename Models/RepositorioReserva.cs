@@ -32,14 +32,14 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             using (var conn = new MySqlConnection(connectionString))
             {
                 string sql = @"INSERT INTO reserva
-                (fechaEntrada, fechaSalida, estado, fechaTerminacionAnticipada, multa, idInquilino, idInmueble)
+                (fechaEntrada, fechaSalida, estado, fechaMulta, multa, idInquilino, idInmueble)
                 VALUES (@fe, @fs, @es, @fta, @multa, @idInq, @idInm)";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@fe", p.FechaEntrada);
                     cmd.Parameters.AddWithValue("@fs", p.FechaSalida);
                     cmd.Parameters.AddWithValue("@es", true);
-                    cmd.Parameters.AddWithValue("@fta", (object?)p.FechaTerminacionAnticipada ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@fta", (object?)p.FechaMulta ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@multa", (object?)p.Multa ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@idInq", p.IdInquilino);
                     cmd.Parameters.AddWithValue("@idInm", p.IdInmueble);
@@ -89,7 +89,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                     cmd.Parameters.AddWithValue("@fe", p.FechaEntrada);
                     cmd.Parameters.AddWithValue("@fs", p.FechaSalida);
                     cmd.Parameters.AddWithValue("@estado", p.Estado);
-                    cmd.Parameters.AddWithValue("@fta", (object?)p.FechaTerminacionAnticipada ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@fta", (object?)p.FechaMulta ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@multa", (object?)p.Multa ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@idInq", p.IdInquilino);
                     cmd.Parameters.AddWithValue("@idInm", p.IdInmueble);

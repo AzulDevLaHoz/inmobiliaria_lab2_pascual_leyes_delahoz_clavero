@@ -31,7 +31,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         public string Email { get; set; } = "";
 
         [Display(Name = "Estado Activo")]
-        public bool Estado { get; set; } = true;
+        public bool Estado { get; set; }
 
         public override string ToString()
         {
