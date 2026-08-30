@@ -26,7 +26,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         public decimal? Multa { get; set; }//monto de la multa. En el pago se coloca el concepto si es por irse antes o despues.
 
         [Required]
-        public Boolean Estado { get; set; }
+        public bool Estado { get; set; } = false;
 
         // --- Relación con Inquilino ---
         [Required]
