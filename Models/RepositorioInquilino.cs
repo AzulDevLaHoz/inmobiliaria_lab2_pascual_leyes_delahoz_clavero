@@ -62,7 +62,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         {
             using (var conn = new MySqlConnection(connectionString))
             {
-                string sql = "INSERT INTO inquilino (nombre, apellido, dni, telefono, email) VALUES (@n, @a, @d, @t, @e)";
+                string sql = "INSERT INTO inquilino (nombre, apellido, dni, telefono, email, estado) VALUES (@n, @a, @d, @t, @e, @es)";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
 
@@ -71,6 +71,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                     cmd.Parameters.AddWithValue("@d", i.Dni);
                     cmd.Parameters.AddWithValue("@t", i.Telefono);
                     cmd.Parameters.AddWithValue("@e", i.Email);
+                    cmd.Parameters.AddWithValue("@es", true);
 
                     conn.Open();
                     cmd.ExecuteNonQuery();

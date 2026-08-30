@@ -8,10 +8,15 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         private readonly IRepositorioReserva repositorio;
         private readonly IConfiguration configuration;
         private readonly ILogger<ReservaController> logger;
-        public ReservaController(IRepositorioReserva repositorio, IConfiguration configuration, ILogger<ReservaController> logger)
+        private readonly IRepositorioInquilino repoInquilino;
+        private readonly RepositorioInmueble repoInmueble;
+
+        public ReservaController(IRepositorioReserva repositorio, IConfiguration configuration, ILogger<ReservaController> logger, IRepositorioInquilino repoInquilino, RepositorioInmueble repoInmueble)
         {
             this.repositorio = repositorio;
             this.configuration = configuration;
+            this.repoInquilino = repoInquilino;
+            this.repoInmueble = repoInmueble;
             this.logger = logger;
         }
 
@@ -22,9 +27,10 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         }
         public IActionResult Alta()
         {
+            ViewBag.Inquilinos = repoInquilino.ObtenerLista();
+            ViewBag.Inmuebles = repoInmueble.ObtenerLista();
             return View();
         }
-
         [HttpPost]
         public IActionResult Alta(Reserva reserva)
         {
@@ -33,6 +39,8 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
                 repositorio.Alta(reserva);
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Inquilinos = repoInquilino.ObtenerLista();
+            ViewBag.Inmuebles = repoInmueble.ObtenerLista();
             return View(reserva);
         }
 
