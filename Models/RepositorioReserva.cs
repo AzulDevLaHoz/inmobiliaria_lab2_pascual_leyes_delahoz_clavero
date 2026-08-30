@@ -123,7 +123,22 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                     {
                         while (reader.Read())
                         {
-                            //crear objeto reserva para traer objeto a la lista
+                            Reserva r = new Reserva
+                            {
+                                IdReserva = reader.GetInt32(nameof(Reserva.IdReserva)),
+                                FechaEntrada = reader.GetDateTime(nameof(Reserva.FechaEntrada)),
+                                FechaSalida = reader.GetDateTime(nameof(Reserva.FechaSalida)),
+                                Estado = reader.GetBoolean(nameof(Reserva.Estado)),
+                                FechaTerminacionAnticipada = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.FechaTerminacionAnticipada)))
+                                    ? null
+                                    : reader.GetDateTime(nameof(Reserva.FechaTerminacionAnticipada)),
+                                Multa = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.Multa)))
+                                    ? null
+                                    : reader.GetDecimal(nameof(Reserva.Multa)),
+                                IdInquilino = reader.GetInt32(nameof(Reserva.IdInquilino)),
+                                IdInmueble = reader.GetInt32(nameof(Reserva.IdInmueble)),
+                            };
+                            res.Add(r);
                         }
                     }
                 }
@@ -154,7 +169,22 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                     {
                         while (reader.Read())
                         {
-                            //crear objeto reserva para traer objeto a la lista
+                            Reserva r = new Reserva
+                            {
+                                IdReserva = reader.GetInt32(nameof(Reserva.IdReserva)),
+                                FechaEntrada = reader.GetDateTime(nameof(Reserva.FechaEntrada)),
+                                FechaSalida = reader.GetDateTime(nameof(Reserva.FechaSalida)),
+                                Estado = reader.GetBoolean(nameof(Reserva.Estado)),
+                                FechaTerminacionAnticipada = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.FechaTerminacionAnticipada)))
+                                    ? null
+                                    : reader.GetDateTime(nameof(Reserva.FechaTerminacionAnticipada)),
+                                Multa = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.Multa)))
+                                    ? null
+                                    : reader.GetDecimal(nameof(Reserva.Multa)),
+                                IdInquilino = reader.GetInt32(nameof(Reserva.IdInquilino)),
+                                IdInmueble = reader.GetInt32(nameof(Reserva.IdInmueble)),
+                            };
+                            res.Add(r);
                         }
                     }
                 }
@@ -178,7 +208,21 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                     {
                         if (reader.Read())
                         {
-                            //traer objeto reserva 
+                            p = new Reserva
+                            {
+                                IdReserva = reader.GetInt32(nameof(Reserva.IdReserva)),
+                                FechaEntrada = reader.GetDateTime(nameof(Reserva.FechaEntrada)),
+                                FechaSalida = reader.GetDateTime(nameof(Reserva.FechaSalida)),
+                                Estado = reader.GetBoolean(nameof(Reserva.Estado)),
+                                FechaTerminacionAnticipada = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.FechaTerminacionAnticipada)))
+                                    ? null
+                                    : reader.GetDateTime(nameof(Reserva.FechaTerminacionAnticipada)),
+                                Multa = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.Multa)))
+                                    ? null
+                                    : reader.GetDecimal(nameof(Reserva.Multa)),
+                                IdInquilino = reader.GetInt32(nameof(Reserva.IdInquilino)),
+                                IdInmueble = reader.GetInt32(nameof(Reserva.IdInmueble)),
+                            };
                         }
                     }
                 }
