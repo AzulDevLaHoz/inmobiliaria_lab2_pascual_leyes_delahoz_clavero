@@ -32,7 +32,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             using (var conn = new MySqlConnection(connectionString))
             {
                 string sql = @"INSERT INTO reserva
-                (fechaEntrada, fechaSalida, estado, fechaTerminacionAnticipada, multa, idInquilino, idInmueble)
+                (fechaEntrada, fechaSalida, estado, fechaMulta, multa, idInquilino, idInmueble)
                 VALUES (@fe, @fs, @es, @fta, @multa, @idInq, @idInm)";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
