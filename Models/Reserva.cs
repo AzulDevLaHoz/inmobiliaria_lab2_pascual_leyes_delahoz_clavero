@@ -6,36 +6,36 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
 
 {
-public class Reserva{
-    [Key]
-    public int IdReserva { get; set; }
+    public class Reserva
+    {
+        [Key]
+        [Display(Name = "Codigo Int.")]
+        public int IdReserva { get; set; }
 
-    [Required]
-    [DataType(DataType.Date)]
-    public DateTime FechaEntrada { get; set; } // la pactada al crear la reserva
+        [Required]
+        [DataType(DataType.Date)]
+        public DateTime FechaEntrada { get; set; }
 
-    [Required]
-    [DataType(DataType.Date)]
-    public DateTime FechaSalida { get; set; } // la pactada al crear la reserva
+        [Required]
+        [DataType(DataType.Date)]
+        public DateTime FechaSalida { get; set; } 
 
-    // Nullable porque solo se completa SI la reserva terminó antes de tiempo
-    [DataType(DataType.Date)]
-    public DateTime? FechaTerminacionAnticipada { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? FechaMulta { get; set; }//Puede ser por terminacion anticipada o por exceso de dias
 
-    // Nullable, default 0.00 en la base de datos
-    public decimal? Multa { get; set; }
+        public decimal? Multa { get; set; }//monto de la multa. En el pago se coloca el concepto si es por irse antes o despues.
 
-    [Required]
-    public Boolean Estado { get; set; } = false;
+        [Required]
+        public Boolean Estado { get; set; }
 
-    // --- Relación con Inquilino ---
-    [Required]
-    [ForeignKey(nameof(Inquilino))]
-    public int IdInquilino { get; set; }
+        // --- Relación con Inquilino ---
+        [Required]
+        [ForeignKey(nameof(Inquilino))]
+        public int IdInquilino { get; set; }
 
-    // --- Relación con Inmueble ---
-    [Required]
-    [ForeignKey(nameof(Inmueble))]
-    public int IdInmueble { get; set; }
-}
+        // --- Relación con Inmueble ---
+        [Required]
+        [ForeignKey(nameof(Inmueble))]
+        public int IdInmueble { get; set; }
+    }
 }

@@ -15,7 +15,14 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             this.logger = logger;
         }
         
-
-
+public IActionResult Index()
+        {
+            var lista = repositorio.ObtenerLista();
+            return View(lista);
+        }
+                public IActionResult Alta()
+        {
+            return View();
+        }
     }
 }
