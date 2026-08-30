@@ -36,7 +36,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         public IFormFile? ImagenPortada { get; set; }
 
         [Display(Name = "Estado Activo")]
-        public bool Estado { get; set; } = true;
+        public bool Estado { get; set; } = false;
 
         [Required(ErrorMessage = "Debe seleccionar un propietario.")]
         [Display(Name = "Propietario")]

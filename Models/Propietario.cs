@@ -34,7 +34,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "El formato del correo no es válido.")]
         public String Email { get; set; } = "";
         [Required]
-        public bool Estado { get; set; }
+        public bool Estado { get; set; } = false;
         public override string ToString()
         {
             var res = $"{Nombre} {Apellido}";
