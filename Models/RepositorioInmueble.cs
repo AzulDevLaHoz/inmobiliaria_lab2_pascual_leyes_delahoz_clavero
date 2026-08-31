@@ -83,7 +83,6 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                 porcentajeReserva=@porcentaje,
                 imagenPortada=@imagen,
                 montoDia=@monto,
-                estado=@estado,
                 idPropietario=@idprop,
                 idTipoInmueble=@idtipo
                 WHERE idInmueble=@id";
@@ -96,7 +95,6 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                     cmd.Parameters.AddWithValue("@porcentaje", inmueble.porcentajeReserva);
                     cmd.Parameters.AddWithValue("@imagen", inmueble.StringPortada);
                     cmd.Parameters.AddWithValue("@monto", inmueble.montoDia);
-                    cmd.Parameters.AddWithValue("@estado", inmueble.Estado);
                     cmd.Parameters.AddWithValue("@idprop", inmueble.PropietarioId);
                     cmd.Parameters.AddWithValue("@idtipo", inmueble.TipoInmuebleId);
                     cmd.Parameters.AddWithValue("@id", inmueble.Id);
