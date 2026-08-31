@@ -45,6 +45,48 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             return View(reserva);
         }
 
+     
+      public ActionResult Modificar(int id)
+        {
+            var entidad = repositorio.ObtenerPorId(id);
+
+            if(entidad== null)
+            {
+                return NotFound();
+            }
+            ViewBag.Inquilinos = repoInquilino.ObtenerLista();
+            ViewBag.Inmuebles = repoInmueble.ObtenerLista();
+            return View(entidad);
+        }
+
+      [HttpPost]
+      public ActionResult Modificar(int id, Reserva entidad)
+        {
+            var r = repositorio.ObtenerPorId(id);
+            if (r == null) return NotFound();
+            if (ModelState.IsValid)
+            {
+                r.FechaEntrada = entidad.FechaEntrada;
+                r.FechaSalida = entidad.FechaSalida;
+                r.IdInmueble = entidad.IdInmueble;
+                r.IdInquilino = entidad.IdInquilino;
+                r.FechaMulta = entidad.FechaMulta;
+                repositorio.Modificar(r);
+                return RedirectToAction(nameof(Index));
+            }
+            ViewBag.Inquilinos = repoInquilino.ObtenerLista();
+            ViewBag.Inmuebles = repoInmueble.ObtenerLista();
+
+           return View(entidad);
+            
+        }
+
+         [HttpPost]
+        public ActionResult Eliminar(int id)
+        {
+            repositorio.Baja(id);
+            return RedirectToAction(nameof(Index));
+        }
 
     }
 }

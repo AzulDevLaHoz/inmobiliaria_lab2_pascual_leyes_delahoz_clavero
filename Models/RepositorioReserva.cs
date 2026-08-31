@@ -54,7 +54,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         public int Baja(int id)
         {
             int res = -1;
-            var estado = true;
+            
 
             using (var conn = new MySqlConnection(connectionString))
             {
@@ -62,7 +62,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@id", id);
-                    cmd.Parameters.AddWithValue("@es", estado);
+                    cmd.Parameters.AddWithValue("@es", 0);
                     conn.Open();
                     res = cmd.ExecuteNonQuery();
                 }
@@ -111,6 +111,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                 string sql = @"
                 SELECT idReserva, fechaEntrada, fechaSalida, estado, fechaMulta, multa, idInquilino, idInmueble
                 FROM reserva
+                WHERE estado=1
                 ORDER BY idReserva
                 LIMIT @tamPagina OFFSET @offset;";
                 using (var cmd = new MySqlCommand(sql, conn))
