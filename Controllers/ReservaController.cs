@@ -38,29 +38,29 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             if (ModelState.IsValid)
             {
                 repositorio.Alta(reserva);
-                return RedirectToAction(nameof(Index));  
+                return RedirectToAction(nameof(Index));
             }
             ViewBag.Inquilinos = repoInquilino.ObtenerLista();
             ViewBag.Inmuebles = repoInmueble.ObtenerLista();
             return View(reserva);
         }
 
-     
-      public ActionResult Modificar(int id)
+
+        public ActionResult Modificar(int id)
         {
             var entidad = repositorio.ObtenerPorId(id);
 
-            if(entidad== null)
+            if (entidad == null)
             {
                 return NotFound();
             }
-            ViewBag.Inquilinos = repoInquilino.ObtenerLista();
+            ViewBag.Inquilino = repoInquilino.ObtenerPorId(entidad.IdInquilino);
             ViewBag.Inmuebles = repoInmueble.ObtenerLista();
             return View(entidad);
         }
 
-      [HttpPost]
-      public ActionResult Modificar(int id, Reserva entidad)
+        [HttpPost]
+        public ActionResult Modificar(int id, Reserva entidad)
         {
             var r = repositorio.ObtenerPorId(id);
             if (r == null) return NotFound();
@@ -77,11 +77,11 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             ViewBag.Inquilinos = repoInquilino.ObtenerLista();
             ViewBag.Inmuebles = repoInmueble.ObtenerLista();
 
-           return View(entidad);
-            
+            return View(entidad);
+
         }
 
-         [HttpPost]
+        [HttpPost]
         public ActionResult Eliminar(int id)
         {
             repositorio.Baja(id);

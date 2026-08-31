@@ -65,6 +65,24 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             repositorio.Baja(id);
             return RedirectToAction(nameof(Index));
         }
+
+        public IActionResult Buscar(string q)
+        {
+            if (string.IsNullOrWhiteSpace(q))
+            {
+                return Json(new List<object>());
+            }
+
+            var propietarios = repositorio.BuscarPorTexto(q)
+                .Select(p => new
+                {
+                    id = p.IdPropietario,
+                    texto = $"{p.Nombre} {p.Apellido} (DNI: {p.Dni})"
+                });
+
+            return Json(propietarios);
+        }
+
     }
 
 

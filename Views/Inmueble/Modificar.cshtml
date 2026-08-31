@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Modificar Inmueble";
 
-    var ltaPropietarios = (IList<Propietario>)ViewBag.Propietarios;
+    var p = ViewBag.Propietario;
     var ltaTipoInmuebles = (IList<TipoInmueble>)ViewBag.TipoInmuebles;
 }
 
@@ -53,12 +53,6 @@
             </div>
 
             <div class="mb-3">
-                <label asp-for="StringPortada" class="control-label"></label>
-                <input asp-for="StringPortada" class="form-control" />
-                <span asp-validation-for="StringPortada" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
                 <label asp-for="ImagenPortada" class="control-label"></label>
                 <input asp-for="ImagenPortada" class="form-control" type="file" />
                 <span asp-validation-for="ImagenPortada" class="text-danger"></span>
@@ -81,15 +75,12 @@
 
             <div class="mb-3">
                 <label asp-for="PropietarioId" class="control-label">Propietario</label>
-                <select asp-for="PropietarioId" class="form-select">
-                    <option value="">Seleccionar Propietario</option>
-                    @if (ltaPropietarios != null)
+                <select asp-for="PropietarioId" id="selectPropietario" class="form-select select2-ajax"
+                        data-url="/Propietario/Buscar"
+                        data-placeholder="Escriba para buscar propietario... (Nombre, Apellido o DNI)">
+                    @if (Model != null && Model.PropietarioId > 0)
                     {
-                        foreach (var item in ltaPropietarios)
-                        {
-                            <option value="@item.IdPropietario">@item.ToString()</option>
-                        }
-                    }
+                        <option value="@Model.PropietarioId" selected>@p.ToString()</option>
                     }
                 </select>
                 <span asp-validation-for="PropietarioId" class="text-danger"></span>
@@ -104,7 +95,5 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script src="~/js/buscarTexto.js" asp-append-version="true"></script>
 }

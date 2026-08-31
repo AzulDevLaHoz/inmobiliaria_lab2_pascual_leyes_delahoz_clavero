@@ -28,16 +28,10 @@
             </div>
 
             <div class="mb-3">
-                <label asp-for="IdInquilino" class="form-label">Inquilino</label>
-                <select asp-for="IdInquilino" class="form-select">
-                    <option value="">Seleccionar Inquilino</option>
-                    @if (listaInquilinos != null)
-                    {
-                        foreach (var item in listaInquilinos)
-                        {
-                            <option value="@item.IdInquilino">@item.ToString()</option>
-                        }
-                    }
+                <label asp-for="IdInquilino" class="control-label"></label>
+                <select asp-for="IdInquilino" id="selectInquilino" class="form-select select2-ajax"
+                        data-url="/Inquilino/Buscar"
+                        data-placeholder="Escriba para buscar inquilino... (Nombre, Apellido o DNI)">
                 </select>
                 <span asp-validation-for="IdInquilino" class="text-danger"></span>
             </div>
@@ -64,3 +58,7 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/buscarTexto.js" asp-append-version="true"></script>
+}

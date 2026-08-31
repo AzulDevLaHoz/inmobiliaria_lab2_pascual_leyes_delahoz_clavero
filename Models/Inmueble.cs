@@ -21,11 +21,11 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         public int Capacidad { get; set; }
 
         [Display(Name = "Longitud")]
-        [RegularExpression(@"^-?([1-8]?\d(\.\d+)?|90(\.0+)?)$", ErrorMessage = "La longitud debe ser una coordenada válida (-180 a 180).")]
+        [RegularExpression(@"^-?((1[0-7]\d|[1-9]?\d)([.,]\d+)?|180([.,]0+)?)$", ErrorMessage = "La longitud debe ser una coordenada válida (-180 a 180).")]
         public decimal Longitud { get; set; }
 
         [Display(Name = "Latitud")]
-        [RegularExpression(@"^-?([1-8]?\d(\.\d+)?|90(\.0+)?)$", ErrorMessage = "La latitud debe ser una coordenada válida (-90 a 90).")]
+        [RegularExpression(@"^-?([1-8]?\d([.,]\d+)?|90([.,]0+)?)$", ErrorMessage = "La latitud debe ser una coordenada válida (-90 a 90).")]
         public decimal Latitud { get; set; }
 
         [Display(Name = "Portada")]

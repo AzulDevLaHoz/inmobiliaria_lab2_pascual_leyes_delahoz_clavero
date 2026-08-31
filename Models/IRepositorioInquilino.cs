@@ -7,5 +7,8 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
 {
     public interface IRepositorioInquilino : IRepositorio<Inquilino>
     {
+        IList<Inquilino> BuscarPorTexto(string nombre);
+
+
     }
 }

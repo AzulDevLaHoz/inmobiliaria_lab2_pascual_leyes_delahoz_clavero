@@ -9,10 +9,10 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         private readonly IRepositorioPropietario repoPropietario;
         private readonly RepositorioTipoInmueble repoTipoInmueble;
 
-        public InmuebleController(RepositorioInmueble repositorio, IRepositorioPropietario repoPropietrio, RepositorioTipoInmueble repoTipoInmueble)
+        public InmuebleController(RepositorioInmueble repositorio, IRepositorioPropietario repoPropietario, RepositorioTipoInmueble repoTipoInmueble)
         {
             this.repositorio = repositorio;
-            this.repoPropietario = repoPropietrio;
+            this.repoPropietario = repoPropietario;
             this.repoTipoInmueble = repoTipoInmueble;
         }
 
@@ -57,9 +57,10 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
 
         public IActionResult Modificar(int id)
         {
-            ViewBag.Propietarios = repoPropietario.ObtenerLista();
             ViewBag.TipoInmuebles = repoTipoInmueble.ObtenerTodos();
             var entidad = repositorio.ObtenerPorId(id);
+            ViewBag.Propietario = repoPropietario.ObtenerPorId(entidad.PropietarioId);
+
             return View(entidad);
         }
 
@@ -87,6 +88,24 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         {
             repositorio.Baja(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public IActionResult Buscar(string q)
+        {
+            if (string.IsNullOrWhiteSpace(q))
+            {
+                return Json(new List<object>());
+            }
+
+            var propietarios = repoPropietario.BuscarPorTexto(q)
+                .Select(p => new
+                {
+                    id = p.IdPropietario,
+                    texto = $"{p.Nombre} {p.Apellido} DNI: {p.Dni}"
+                });
+
+            return Json(propietarios);
         }
 
     }

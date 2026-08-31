@@ -202,5 +202,39 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             }
             return p;
         }
+
+        public IList<Propietario> BuscarPorTexto(string q)
+        {
+            IList<Propietario> res = new List<Propietario>();
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                string sql = @"
+            SELECT IdPropietario, Nombre, Apellido, Dni 
+            FROM propietario 
+            WHERE Nombre LIKE @q OR Apellido LIKE @q OR Dni LIKE @q
+            LIMIT 10;";
+
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@q", $"%{q}%");
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            res.Add(new Propietario
+                            {
+                                IdPropietario = reader.GetInt32("IdPropietario"),
+                                Nombre = reader.GetString("Nombre"),
+                                Apellido = reader.GetString("Apellido"),
+                                Dni = reader.GetString("Dni")
+                            });
+                        }
+                    }
+                }
+            }
+            return res;
+        }
+
     }
 }

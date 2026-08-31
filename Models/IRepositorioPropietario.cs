@@ -8,6 +8,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
     public interface IRepositorioPropietario : IRepositorio<Propietario>
     {
         Propietario? ObtenerPorEmail(string email);
-        IList<Propietario> BuscarPorNombre (string nombre);
+        IList<Propietario> BuscarPorNombre(string nombre);
+        IList<Propietario> BuscarPorTexto(string nombre);
     }
 }
