@@ -211,7 +211,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                 string sql = @"
             SELECT IdPropietario, Nombre, Apellido, Dni 
             FROM propietario 
-            WHERE Nombre LIKE @q OR Apellido LIKE @q OR Dni LIKE @q
+            WHERE estado=1 AND (Nombre LIKE @q OR Apellido LIKE @q OR Dni LIKE @q)
             LIMIT 10;";
 
                 using (var cmd = new MySqlCommand(sql, conn))
