@@ -35,6 +35,15 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         [HttpPost]
         public IActionResult Alta(Reserva reserva)
         {
+            if(reserva.FechaEntrada.Date<DateTime.Today)
+            {
+                ModelState.AddModelError("FechaEntrada", "La fecha de entrada no puede ser anterior a hoy.");
+            }
+           if(reserva.FechaSalida.Date<reserva.FechaEntrada.Date)
+            {
+                ModelState.AddModelError("FechaSalida","La fecha de Salida no puede ser anterior a la de Ingreso");
+            }
+
             if (ModelState.IsValid)
             {
                 repositorio.Alta(reserva);
