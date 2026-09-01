@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Modificar Inmueble";
 
-    var p = ViewBag.Propietario;
+    var p = (Propietario)ViewBag.Propietario;
     var ltaTipoInmuebles = (IList<TipoInmueble>)ViewBag.TipoInmuebles;
 }
 
