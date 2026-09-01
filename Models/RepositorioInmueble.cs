@@ -38,7 +38,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                     cmd.Parameters.AddWithValue("@lat", inmueble.Latitud);
                     cmd.Parameters.AddWithValue("@lon", inmueble.Longitud);
                     cmd.Parameters.AddWithValue("@porcentaje", inmueble.porcentajeReserva);
-                    cmd.Parameters.AddWithValue("@imagen", inmueble.ImagenPortada);
+                    cmd.Parameters.AddWithValue("@imagen", (object)inmueble.StringPortada ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@montoDia", inmueble.montoDia);
                     cmd.Parameters.AddWithValue("@est", true);
                     cmd.Parameters.AddWithValue("@idProp", inmueble.PropietarioId);

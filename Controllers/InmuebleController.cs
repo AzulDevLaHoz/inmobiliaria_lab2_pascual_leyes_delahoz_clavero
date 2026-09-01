@@ -29,32 +29,52 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             return View();
         }
 
-        [HttpPost]
-        public IActionResult Alta(Inmueble inmueble)
+     [HttpPost]
+     
+public async Task<IActionResult> Alta(Inmueble inmueble, [FromServices] IWebHostEnvironment environment)
+{
+    try
+    {
+        if (inmueble.ImagenPortada != null && inmueble.ImagenPortada.Length > 0)
         {
-            try
+            string wwwPath = environment.WebRootPath;
+            string path = Path.Combine(wwwPath, "Uploads", "Portadas");
+
+            if (!Directory.Exists(path))
             {
-                if (ModelState.IsValid)
-                {
-                    repositorio.Alta(inmueble);
-                    TempData["Id"] = inmueble.Id;
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    ViewBag.Propietarios = repoPropietario.ObtenerLista();
-                    return View(inmueble);
-                }
+                Directory.CreateDirectory(path);
             }
-            catch (Exception e)
+
+            string extension = Path.GetExtension(inmueble.ImagenPortada.FileName);
+            string nombreArchivo = $"{Guid.NewGuid()}{extension}";
+            string rutaArchivo = Path.Combine(path, nombreArchivo);
+
+            using (var stream = new FileStream(rutaArchivo, FileMode.Create))
             {
-                ViewBag.Propietarios = repoPropietario.ObtenerLista();
-                ViewBag.Error = e.Message;
-                ViewBag.StackTrate = e.StackTrace;
-                return View(inmueble);
+                await inmueble.ImagenPortada.CopyToAsync(stream);
             }
+
+            inmueble.StringPortada = $"/Uploads/Portadas/{nombreArchivo}";
         }
 
+        if (ModelState.IsValid)
+        {
+            repositorio.Alta(inmueble);
+            TempData["Id"] = inmueble.Id;
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewBag.TipoInmuebles = repoTipoInmueble.ObtenerTodos();
+        return View(inmueble);
+    }
+    catch (Exception e)
+    {
+        ViewBag.TipoInmuebles = repoTipoInmueble.ObtenerTodos();
+        ViewBag.Error = e.Message;
+        ViewBag.StackTrate = e.StackTrace;
+        return View(inmueble);
+    }
+}
         public IActionResult Modificar(int id)
         {
             ViewBag.TipoInmuebles = repoTipoInmueble.ObtenerTodos();
