@@ -57,8 +57,8 @@
 				<td>
 					@if (!String.IsNullOrEmpty(item?.StringPortada))
 					{
-						var x = item.ImagenPortada + "?" + rnd.Next();
-						<img width="32" src="@x" />
+						var x = item.StringPortada + "?" + rnd.Next();
+						<img width="50" class="img-thumbnail" src="@x"  alt="portada"/>
 					}
 					else
 					{
