@@ -1,4 +1,4 @@
-namespace Laboratorio_II.Models;
+namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models;
 
 public class ErrorViewModel
 {
