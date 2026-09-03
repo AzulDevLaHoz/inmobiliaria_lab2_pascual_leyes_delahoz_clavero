@@ -9,6 +9,7 @@
 
 <div class="text-end mt-3">
 	<a asp-action="Alta" class="btn btn-primary">Crear Nuevo Inmueble</a>
+	<a asp-action="Index" asp-controller="TipoInmueble" class="btn btn-secondary">Tipos de Inmueble</a>
 </div>
 <table class="table table-striped">
 	<thead>
@@ -58,7 +59,7 @@
 					@if (!String.IsNullOrEmpty(item?.StringPortada))
 					{
 						var x = item.StringPortada + "?" + rnd.Next();
-						<img width="50" class="img-thumbnail" src="@x"  alt="portada"/>
+						<img width="50" class="img-thumbnail" src="@x" alt="portada" />
 					}
 					else
 					{

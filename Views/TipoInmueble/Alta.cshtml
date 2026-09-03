@@ -1,0 +1,27 @@
+@model inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models.TipoInmueble
+
+@{
+    ViewData["Title"] = "Alta de Tipo Inmueble";
+}
+
+<h1>Alta de Tipo Inmueble</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Alta" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="Nombre" class="form-label"></label>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+
+            <div class="mt-4">
+                <input type="submit" value="Guardar" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary ms-2">Volver a la lista</a>
+            </div>
+        </form>
+    </div>
+</div>
