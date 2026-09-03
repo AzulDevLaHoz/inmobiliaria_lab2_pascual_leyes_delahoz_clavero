@@ -56,6 +56,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
                 i.Email = entidad.Email;
                 i.Telefono = entidad.Telefono;
                 repositorio.Modificar(i);
+                TempData["Mensaje"] = "Datos guardados correctamente"; 
                 return RedirectToAction(nameof(Index));
             }
             return View(entidad);
@@ -65,6 +66,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         public ActionResult Eliminar(int id)
         {
             repositorio.Baja(id);
+            TempData["Mensaje"] = "Se dio de baja correctamente.";
             return RedirectToAction(nameof(Index));
         }
 
