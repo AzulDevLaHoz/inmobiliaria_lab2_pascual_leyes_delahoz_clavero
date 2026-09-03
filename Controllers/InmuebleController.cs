@@ -91,7 +91,7 @@ public async Task<IActionResult> Alta(Inmueble inmueble, [FromServices] IWebHost
             {
                 entidad.Id = id;
                 repositorio.Modificar(entidad);
-                TempData["Mensaje"] = "Datos guardados correctamente";
+                TempData["Mensaje"] = "Datos guardados correctamente";             
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -107,6 +107,7 @@ public async Task<IActionResult> Alta(Inmueble inmueble, [FromServices] IWebHost
         public ActionResult Eliminar(int id)
         {
             repositorio.Baja(id);
+            TempData["Mensaje"] = "Se dio de baja correctamente.";
             return RedirectToAction(nameof(Index));
         }
 
