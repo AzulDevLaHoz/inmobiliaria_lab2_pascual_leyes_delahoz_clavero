@@ -1,3 +1,4 @@
+Razor CSHTML
 @model inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models.Propietario
 @{
     ViewData["Title"] = "Detalles del Propietario";
@@ -6,27 +7,91 @@
 <h1>Detalles del Propietario</h1>
 <hr />
 
-<div class="row">
-    <div class="col-md-5">
-        <dl class="row">
-            <dt class="col-sm-4">Nombre</dt>
-            <dd class="col-sm-8">@Model.Nombre</dd>
 
-            <dt class="col-sm-4">Apellido</dt>
-            <dd class="col-sm-8">@Model.Apellido</dd>
+<div id="app" class="row">
 
-            <dt class="col-sm-4">DNI</dt>
-            <dd class="col-sm-8">@Model.Dni</dd>
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Información Personal</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Nombre:</dt>
+                    <dd class="col-sm-7">@Model.Nombre</dd>
 
-            <dt class="col-sm-4">Teléfono</dt>
-            <dd class="col-sm-8">@Model.Telefono</dd>
+                    <dt class="col-sm-5">Apellido:</dt>
+                    <dd class="col-sm-7">@Model.Apellido</dd>
 
-            <dt class="col-sm-4">Email</dt>
-            <dd class="col-sm-8">@Model.Email</dd>
+                    <dt class="col-sm-5">DNI:</dt>
+                    <dd class="col-sm-7">@Model.Dni</dd>
 
-            <dt class="col-sm-4">Estado</dt>
-            <dd class="col-sm-8">@(Model.Estado ? "Activo" : "Inactivo")</dd>
-        </dl>
-        <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+                    <dt class="col-sm-5">Teléfono:</dt>
+                    <dd class="col-sm-7">@Model.Telefono</dd>
+
+                    <dt class="col-sm-5">Email:</dt>
+                    <dd class="col-sm-7">@Model.Email</dd>
+
+                    <dt class="col-sm-5">Estado:</dt>
+                    <dd class="col-sm-7">
+                        <span class="badge @(Model.Estado ? "bg-success" : "bg-danger")">
+                            @(Model.Estado ? "Activo" : "Inactivo")
+                        </span>
+                    </dd>
+                </dl>
+            </div>
+            <div class="card-footer">
+                <a asp-action="Index" class="btn btn-secondary btn-sm">Volver a la lista</a>
+            </div>
+        </div>
+    </div>
+
+   
+    <div class="col-md-8">
+        <h3 class="mb-3">Inmuebles Asociados ({{ inmuebles.length }})</h3>
+
+       
+        <div v-if="inmuebles.length === 0" class="alert alert-info">
+            No se encontraron inmuebles registrados para este propietario.
+        </div>
+
+     
+        <div v-else class="row row-cols-1 row-cols-md-2 g-3">
+            <div class="col" v-for="item in inmuebles" :key="item.Id">
+                <div class="card h-100 shadow-sm">
+                    <img :src="item.StringPortada || '/Uploads/sinImagen.png'" class="card-img-top" style="height: 150px; object-fit: cover;" alt="Portada">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ item.Direccion }}</h5>
+                        <p class="card-text mb-1"><strong>Capacidad:</strong> {{ item.Capacidad }} personas</p>
+                        <p class="card-text"><strong>Monto por día:</strong> ${{ item.montoDia }}</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0 text-end">
+                        <a :href="'/Inmueble/Modificar/' + item.Id" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <script>
+        const { createApp, ref } = Vue;
+
+        createApp({
+            setup() {
+               
+                const inmuebles = ref(@Html.Raw(ViewBag.InmueblesJson ?? "[]"));
+
+                return {
+                    inmuebles
+                };
+            }
+        }).mount('#app');
+    </script>
+}

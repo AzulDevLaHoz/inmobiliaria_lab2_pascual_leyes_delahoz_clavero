@@ -6,12 +6,14 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
     public class PropietarioController : Controller
     {
         private readonly IRepositorioPropietario repositorio;
+        private readonly RepositorioInmueble repoInmueble;
         private readonly IConfiguration configuration;
         private readonly ILogger<PropietarioController> logger;
 
-        public PropietarioController(IRepositorioPropietario repo, IConfiguration configuration, ILogger<PropietarioController> logger)
+        public PropietarioController(IRepositorioPropietario repo,RepositorioInmueble repoInmueble, IConfiguration configuration, ILogger<PropietarioController> logger)
         {
             this.repositorio = repo;
+            this.repoInmueble = repoInmueble;
             this.configuration = configuration;
             this.logger = logger;
         }
@@ -46,6 +48,9 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         {
             var entidad = repositorio.ObtenerPorId(id);
             if (entidad == null) return NotFound();
+
+            var inmuebles = repoInmueble.ObtenerPorPropietario(id);
+        ViewBag.InmueblesJson = System.Text.Json.JsonSerializer.Serialize(inmuebles);
             return View(entidad);
         }
 

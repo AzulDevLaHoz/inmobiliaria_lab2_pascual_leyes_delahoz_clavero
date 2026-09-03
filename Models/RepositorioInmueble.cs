@@ -228,6 +228,39 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             return i;
         }
 
+        public IList<Inmueble> ObtenerPorPropietario(int idPropietario)
+{
+    IList<Inmueble> lista = new List<Inmueble>();
+    using (var conn = new MySqlConnection(connectionString))
+    {
+        string sql = @"SELECT idInmueble, direccion, capacidad, montoDia, porcentajeReserva, imagenPortada, estado 
+                       FROM inmueble 
+                       WHERE idPropietario = @idProp AND estado = 1;";
+
+        using (var cmd = new MySqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@idProp", idPropietario);
+            conn.Open();
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    lista.Add(new Inmueble
+                    {
+                        Id = reader.GetInt32("idInmueble"),
+                        Direccion = reader.GetString("direccion"),
+                        Capacidad = reader.GetInt32("capacidad"),
+                        montoDia = reader.GetDecimal("montoDia"),
+                        porcentajeReserva = reader.GetDecimal("porcentajeReserva"),
+                        StringPortada = reader.IsDBNull(reader.GetOrdinal("imagenPortada")) ? "" : reader.GetString("imagenPortada")
+                    });
+                }
+            }
+        }
+    }
+    return lista;
+}
+
     }
 
 }
