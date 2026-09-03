@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Laboratorio_II.Models;
+using inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models;
 
-namespace Laboratorio_II.Controllers;
+namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers;
 
 public class HomeController : Controller
 {
