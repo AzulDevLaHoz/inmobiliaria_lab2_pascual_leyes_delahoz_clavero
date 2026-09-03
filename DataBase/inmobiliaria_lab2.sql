@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 20-08-2026 a las 23:25:48
+-- Tiempo de generación: 03-09-2026 a las 20:34:19
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -47,14 +47,23 @@ CREATE TABLE `inmueble` (
   `capacidad` int(11) NOT NULL,
   `latitud` decimal(10,0) DEFAULT NULL,
   `longitud` decimal(10,0) DEFAULT NULL,
-  `precio` decimal(10,2) NOT NULL,
   `porcentajeReserva` decimal(5,2) NOT NULL,
   `imagenPortada` varchar(255) DEFAULT NULL,
   `montoDia` decimal(10,0) NOT NULL,
-  `estado` varchar(20) DEFAULT 'Disponible',
+  `estado` tinyint(4) NOT NULL,
   `idPropietario` int(11) NOT NULL,
   `idTipoInmueble` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `inmueble`
+--
+
+INSERT INTO `inmueble` (`idInmueble`, `direccion`, `capacidad`, `latitud`, `longitud`, `porcentajeReserva`, `imagenPortada`, `montoDia`, `estado`, `idPropietario`, `idTipoInmueble`) VALUES
+(1, 'siempreViva 123', 5, 45, 33, 50.00, 'Microsoft.AspNetCore.Http.FormFile', 45000, 1, 9, 1),
+(3, 'los Almendros 649', 4, 33, 45, 30.00, 'Microsoft.AspNetCore.Http.FormFile', 50000, 1, 9, 1),
+(4, 'Lavalle 3122', 2, 22, 12, 20.00, NULL, 43000, 1, 9, 2),
+(8, 'prueba 123', 2, 23, 23, 30.00, '/Uploads/Portadas/b8b03ce0-0faa-4d68-a376-3c6b0d176636.webp', 30000, 1, 9, 1);
 
 -- --------------------------------------------------------
 
@@ -68,15 +77,19 @@ CREATE TABLE `inquilino` (
   `nombre` varchar(50) NOT NULL,
   `apellido` varchar(50) NOT NULL,
   `telefono` varchar(20) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL
+  `email` varchar(100) DEFAULT NULL,
+  `estado` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `inquilino`
 --
 
-INSERT INTO `inquilino` (`idInquilino`, `dni`, `nombre`, `apellido`, `telefono`, `email`) VALUES
-(1, '123345345', 'juan jose ', 'casteli', '2664565656', 'juan@his.com');
+INSERT INTO `inquilino` (`idInquilino`, `dni`, `nombre`, `apellido`, `telefono`, `email`, `estado`) VALUES
+(2, '123132312', 'Homero', 'Simpson', '25533231', 'homero@simpson.com', 0),
+(3, '123123', 'Lautaro', 'Martinez', '76866666', 'torito22@gmail.com', 0),
+(4, '12312332', 'Lautaro', 'Martinez', '76866666', 'torito22@gmail.com', 1),
+(5, '11222333', 'Homero', 'Simpson', '2665252525', 'homero@simpson.com', 1);
 
 -- --------------------------------------------------------
 
@@ -108,16 +121,19 @@ CREATE TABLE `propietario` (
   `apellido` varchar(75) NOT NULL,
   `telefono` varchar(20) DEFAULT NULL,
   `dni` varchar(25) NOT NULL,
-  `email` varchar(100) DEFAULT NULL
+  `email` varchar(100) DEFAULT NULL,
+  `estado` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `propietario`
 --
 
-INSERT INTO `propietario` (`idPropietario`, `nombre`, `apellido`, `telefono`, `dni`, `email`) VALUES
-(1, 'juan', 'clavero', '222222222', '', 'juan@his.com'),
-(2, 'leo ', 'messi', '222222222223', '', 'leomessi@his.com');
+INSERT INTO `propietario` (`idPropietario`, `nombre`, `apellido`, `telefono`, `dni`, `email`, `estado`) VALUES
+(2, 'Leo ', 'Messi', '222222222223', '70077777', 'leomessi@his.com', 0),
+(8, ' Patricio Oscar', 'pascual', '02665100116', '33333333', 'patriciopascual2@gmail.com', 0),
+(9, 'Patricio Oscar', 'Pascual', '2664302211', '33333333', 'patriciopascual2@gmail.com', 1),
+(15, 'Adrian', 'Martinez', '1152535433', '34444333', 'adrian@maravilla.com', 1);
 
 -- --------------------------------------------------------
 
@@ -130,13 +146,21 @@ CREATE TABLE `reserva` (
   `fechaEntrada` date NOT NULL,
   `fechaSalida` date NOT NULL,
   `estado` varchar(20) DEFAULT 'Vigente',
-  `fechaTerminacionAnticipada` date DEFAULT NULL,
+  `fechaMulta` date DEFAULT NULL,
   `multa` decimal(10,2) DEFAULT 0.00,
   `idInquilino` int(11) NOT NULL,
-  `idInmueble` int(11) NOT NULL,
-  `idUsuarioCreador` int(11) NOT NULL,
-  `idUsuarioTerminador` int(11) DEFAULT NULL
+  `idInmueble` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `reserva`
+--
+
+INSERT INTO `reserva` (`idReserva`, `fechaEntrada`, `fechaSalida`, `estado`, `fechaMulta`, `multa`, `idInquilino`, `idInmueble`) VALUES
+(2, '2026-09-20', '2026-09-22', '0', NULL, NULL, 4, 3),
+(3, '2026-09-02', '2026-09-04', '0', NULL, NULL, 4, 4),
+(4, '2026-09-06', '2026-09-08', '1', NULL, NULL, 3, 1),
+(5, '2026-09-09', '2026-09-04', '1', NULL, NULL, 4, 4);
 
 -- --------------------------------------------------------
 
@@ -159,6 +183,15 @@ CREATE TABLE `tipoinmueble` (
   `idTipoInmueble` int(11) NOT NULL,
   `nombre` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `tipoinmueble`
+--
+
+INSERT INTO `tipoinmueble` (`idTipoInmueble`, `nombre`) VALUES
+(1, 'casa'),
+(2, 'departamento'),
+(3, 'quinta');
 
 -- --------------------------------------------------------
 
@@ -222,9 +255,7 @@ ALTER TABLE `propietario`
 ALTER TABLE `reserva`
   ADD PRIMARY KEY (`idReserva`),
   ADD KEY `FK_Reserva_Inquilino` (`idInquilino`),
-  ADD KEY `FK_Reserva_Inmueble` (`idInmueble`),
-  ADD KEY `FK_Reserva_UsuCreador` (`idUsuarioCreador`),
-  ADD KEY `FK_Reserva_UsuTerminador` (`idUsuarioTerminador`);
+  ADD KEY `FK_Reserva_Inmueble` (`idInmueble`);
 
 --
 -- Indices de la tabla `rol`
@@ -260,13 +291,13 @@ ALTER TABLE `imagen`
 -- AUTO_INCREMENT de la tabla `inmueble`
 --
 ALTER TABLE `inmueble`
-  MODIFY `idInmueble` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idInmueble` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `inquilino`
 --
 ALTER TABLE `inquilino`
-  MODIFY `idInquilino` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idInquilino` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `pago`
@@ -278,13 +309,13 @@ ALTER TABLE `pago`
 -- AUTO_INCREMENT de la tabla `propietario`
 --
 ALTER TABLE `propietario`
-  MODIFY `idPropietario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idPropietario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `reserva`
 --
 ALTER TABLE `reserva`
-  MODIFY `idReserva` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idReserva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `rol`
@@ -296,7 +327,7 @@ ALTER TABLE `rol`
 -- AUTO_INCREMENT de la tabla `tipoinmueble`
 --
 ALTER TABLE `tipoinmueble`
-  MODIFY `idTipoInmueble` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idTipoInmueble` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `usuario`
@@ -334,9 +365,7 @@ ALTER TABLE `pago`
 --
 ALTER TABLE `reserva`
   ADD CONSTRAINT `FK_Reserva_Inmueble` FOREIGN KEY (`idInmueble`) REFERENCES `inmueble` (`idInmueble`),
-  ADD CONSTRAINT `FK_Reserva_Inquilino` FOREIGN KEY (`idInquilino`) REFERENCES `inquilino` (`idInquilino`),
-  ADD CONSTRAINT `FK_Reserva_UsuCreador` FOREIGN KEY (`idUsuarioCreador`) REFERENCES `usuario` (`idUsuario`),
-  ADD CONSTRAINT `FK_Reserva_UsuTerminador` FOREIGN KEY (`idUsuarioTerminador`) REFERENCES `usuario` (`idUsuario`);
+  ADD CONSTRAINT `FK_Reserva_Inquilino` FOREIGN KEY (`idInquilino`) REFERENCES `inquilino` (`idInquilino`);
 
 --
 -- Filtros para la tabla `usuario`
