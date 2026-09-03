@@ -42,7 +42,14 @@
 
                         @if (item.Estado)
                         {
-                            if (DateTime.Today <= item.FechaSalida)
+                            if (item.FechaMulta != null)
+                            {
+                                <a class="btn btn-success btn-sm disabled" aria-disabled="true" tabindex="-1"
+                                    title="Disponible en un futuro incremento">
+                                    Generar Pago
+                                </a>
+                            }
+                            else if (DateTime.Today <= item.FechaSalida)
                             {
                                 <a asp-action="SalidaAnticipada" asp-route-id="@item.IdReserva" class="btn btn-warning btn-sm">
                                     Salida Anticipada

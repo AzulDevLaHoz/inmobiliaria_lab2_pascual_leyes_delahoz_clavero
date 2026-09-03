@@ -54,7 +54,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         public int Baja(int id)
         {
             int res = -1;
-            
+
 
             using (var conn = new MySqlConnection(connectionString))
             {
@@ -229,6 +229,24 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                 }
             }
             return p;
+        }
+
+        public bool ActualizarSalidaAnticipada(Reserva reserva)
+        {
+            using var connection = new MySqlConnection(connectionString);
+            connection.Open();
+
+            string sql = @"UPDATE reserva 
+                        SET fechaMulta = @fechaMulta, multa = @multa, estado = @estado 
+                        WHERE idReserva = @id";
+
+            using var command = new MySqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@fechaMulta", reserva.FechaMulta);
+            command.Parameters.AddWithValue("@multa", reserva.Multa);
+            command.Parameters.AddWithValue("@estado", reserva.Estado);
+            command.Parameters.AddWithValue("@id", reserva.IdReserva);
+
+            return command.ExecuteNonQuery() > 0;
         }
     }
 }

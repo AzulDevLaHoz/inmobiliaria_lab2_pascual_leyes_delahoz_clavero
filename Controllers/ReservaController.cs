@@ -97,5 +97,54 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        //--------------------------
+        public IActionResult SalidaAnticipada(int id)
+        {
+            var reserva = repositorio.ObtenerPorId(id);
+            if (reserva == null) return NotFound();
+
+            var inmueble = repoInmueble.ObtenerPorId(reserva.IdInmueble);
+            ViewBag.MontoDiario = inmueble.montoDia; 
+
+            return View(reserva);
+        }
+
+        [HttpPost]
+        public IActionResult SalidaAnticipada(int idReserva, DateTime fechaRetiro)
+        {
+            var reserva = repositorio.ObtenerPorId(idReserva);
+            if (reserva == null) return NotFound();
+
+            var inmueble = repoInmueble.ObtenerPorId(reserva.IdInmueble);
+            decimal montoDiario = inmueble.montoDia;
+
+            int diasTotales = (reserva.FechaSalida - reserva.FechaEntrada).Days;
+            int diasTranscurridos = (fechaRetiro - reserva.FechaEntrada).Days;
+            decimal multa;
+
+            if (fechaRetiro < reserva.FechaSalida)
+            {
+                int diasRestantes = (reserva.FechaSalida - fechaRetiro).Days;
+                decimal montoRestante = diasRestantes * montoDiario;
+                decimal porcentaje = diasTranscurridos < diasTotales / 2.0 ? 0.50m : 0.25m;
+                multa = montoRestante * porcentaje;
+            }
+            else if (fechaRetiro > reserva.FechaSalida)
+            {
+                return BadRequest("Regla de exceso de días aún no definida.");
+            }
+            else
+            {
+                multa = 0m;
+            }
+
+            reserva.FechaMulta = fechaRetiro;
+            reserva.Multa = multa;
+            reserva.Estado = true; 
+
+            repositorio.ActualizarSalidaAnticipada(reserva);
+            
+            return RedirectToAction("Index");
+        }
     }
 }

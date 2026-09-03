@@ -1,0 +1,53 @@
+@model Reserva
+
+<h3>Salida Anticipada — Reserva #@Model.IdReserva</h3>
+
+<form method="post" asp-action="SalidaAnticipada">
+    <input type="hidden" name="idReserva" value="@Model.IdReserva" />
+
+    <div class="mb-3">
+        <label>Fecha de Entrada</label>
+        <input type="text" class="form-control" value="@Model.FechaEntrada.ToString("dd/MM/yyyy")" disabled />
+    </div>
+    <div class="mb-3">
+        <label>Fecha de Salida (pactada)</label>
+        <input type="text" class="form-control" value="@Model.FechaSalida.ToString("dd/MM/yyyy")" disabled />
+    </div>
+    <div class="mb-3">
+        <label>Fecha real de retiro</label>
+        <input type="date" id="fechaRetiro" name="fechaRetiro" class="form-control"
+            min="@Model.FechaEntrada.ToString("yyyy-MM-dd")" required />
+    </div>
+    <div class="mb-3">
+        <label>Monto Multa</label>
+        <input type="text" id="montoMulta" class="form-control" readonly />
+    </div>
+
+    <button type="submit" class="btn btn-danger">Confirmar Salida Anticipada</button>
+</form>
+
+<script>
+    const fechaEntrada = new Date("@Model.FechaEntrada.ToString("yyyy-MM-dd")");
+    const fechaSalida = new Date("@Model.FechaSalida.ToString("yyyy-MM-dd")");
+    const montoDiario = @ViewBag.MontoDiario;
+
+    document.getElementById("fechaRetiro").addEventListener("change", function () {
+        const fechaRetiro = new Date(this.value);
+        const msPorDia = 1000 * 60 * 60 * 24;
+        const diasTotales = Math.round((fechaSalida - fechaEntrada) / msPorDia);
+        const diasTranscurridos = Math.round((fechaRetiro - fechaEntrada) / msPorDia);
+
+        let multa = 0;
+        if (fechaRetiro < fechaSalida) {
+            const diasRestantes = Math.round((fechaSalida - fechaRetiro) / msPorDia);
+            const montoRestante = diasRestantes * montoDiario;
+            const porcentaje = diasTranscurridos < diasTotales / 2 ? 0.50 : 0.25;
+            multa = montoRestante * porcentaje;
+        } else if (fechaRetiro > fechaSalida) {
+            document.getElementById("montoMulta").value = "Pendiente de definir regla";
+            return;
+        }
+
+        document.getElementById("montoMulta").value = multa.toFixed(2);
+    });
+</script>
