@@ -1,0 +1,70 @@
+@model IEnumerable<inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models.TipoInmueble>
+
+@{
+    ViewData["Title"] = "Index";
+    var rnd = new Random();
+}
+
+<h1>Listado de Tipo de Inmuebles</h1>
+
+<div class="text-end mt-3">
+    <a asp-action="Alta" class="btn btn-primary">Crear Nuevo Tipo de Inmueble</a>
+</div>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdTipoInmueble)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nombre)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdTipoInmueble)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nombre)
+                </td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a class="btn btn-primary" asp-action="Modificar" asp-route-id="@item.IdTipoInmueble"
+                           title="Editar">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <button title="Eliminar" type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#modalEliminar-@item.IdTipoInmueble">
+                            <i class="bi bi-trash3"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+
+            <div class="modal fade" id="modalEliminar-@item.IdTipoInmueble" tabindex="-1"
+                 aria-labelledby="modalLabel-@item.IdTipoInmueble" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalLabel-@item.IdTipoInmueble">Confirmar Baja</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            ¿Estás seguro que deseás dar de baja el Tipo de Inmueble?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <form asp-action="Eliminar" asp-route-id="@item.IdTipoInmueble" method="post">
+                                <button type="submit" class="btn btn-danger">Sí, Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </tbody>
+</table>

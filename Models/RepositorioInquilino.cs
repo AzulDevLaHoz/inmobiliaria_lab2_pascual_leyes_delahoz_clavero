@@ -57,7 +57,6 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         }
 
 
-
         public int Alta(Inquilino i)
         {
             using (var conn = new MySqlConnection(connectionString))

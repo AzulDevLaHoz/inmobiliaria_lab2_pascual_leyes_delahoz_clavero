@@ -9,7 +9,8 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         [Display(Name = "Código Int.")]
         public int IdTipoInmueble { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "El nombre es obligatorio.")]
+        [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", ErrorMessage = "El nombre solo puede contener letras y espacios.")]
         public String Nombre { get; set; } = "";
 
         public override string ToString()
