@@ -57,6 +57,8 @@
                 </td>
                 <td>
                     <div class="btn-group" role="group">
+                        <a asp-action="Detalles" title="Detalles" asp-route-id="@item.IdPropietario"
+                            class="btn btn-info btn-sm"><i class="bi bi-eye"></i></a>
                         <a asp-action="Modificar" title="Editar" asp-route-id="@item.IdPropietario"
                             class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
                         <button title="Eliminar" type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
