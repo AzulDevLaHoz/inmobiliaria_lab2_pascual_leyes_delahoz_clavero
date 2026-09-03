@@ -33,6 +33,10 @@
                 </td>
                 <td>
                     <div class="btn-group" role="group">
+                        <a class="btn btn-info" asp-action="Detalles" asp-route-id="@item.IdTipoInmueble"
+                           title="Detalles">
+                            <i class="bi bi-eye"></i>
+                        </a>
                         <a class="btn btn-primary" asp-action="Modificar" asp-route-id="@item.IdTipoInmueble"
                            title="Editar">
                             <i class="bi bi-pencil-square"></i>

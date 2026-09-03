@@ -1,0 +1,52 @@
+@model inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models.Inmueble
+@using inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
+@{
+    ViewData["Title"] = "Detalles del Inmueble";
+    var propietario = (Propietario?)ViewBag.Propietario;
+    var tipoInmueble = (TipoInmueble?)ViewBag.TipoInmueble;
+}
+
+<h1>Detalles del Inmueble</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-5">
+        <dl class="row">
+            <dt class="col-sm-4">Dirección</dt>
+            <dd class="col-sm-8">@Model.Direccion</dd>
+
+            <dt class="col-sm-4">Capacidad</dt>
+            <dd class="col-sm-8">@Model.Capacidad</dd>
+
+            <dt class="col-sm-4">Latitud</dt>
+            <dd class="col-sm-8">@Model.Latitud</dd>
+
+            <dt class="col-sm-4">Longitud</dt>
+            <dd class="col-sm-8">@Model.Longitud</dd>
+
+            <dt class="col-sm-4">Monto por Día</dt>
+            <dd class="col-sm-8">@Model.montoDia</dd>
+
+            <dt class="col-sm-4">Porcentaje de Reserva</dt>
+            <dd class="col-sm-8">@Model.porcentajeReserva %</dd>
+
+            <dt class="col-sm-4">Estado</dt>
+            <dd class="col-sm-8">@(Model.Estado ? "Activo" : "Inactivo")</dd>
+
+            <dt class="col-sm-4">Propietario</dt>
+            <dd class="col-sm-8">@propietario?.ToString()</dd>
+
+            <dt class="col-sm-4">Tipo de Inmueble</dt>
+            <dd class="col-sm-8">@tipoInmueble?.Nombre</dd>
+        </dl>
+
+        @if (!String.IsNullOrEmpty(Model.StringPortada))
+        {
+            <img class="img-thumbnail mb-3" style="max-width: 250px;" src="@Model.StringPortada" alt="portada" />
+        }
+
+        <div>
+            <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+        </div>
+    </div>
+</div>

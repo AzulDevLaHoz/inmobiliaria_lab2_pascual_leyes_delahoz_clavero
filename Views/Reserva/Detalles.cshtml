@@ -1,0 +1,41 @@
+@model inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models.Reserva
+@using inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
+@{
+    ViewData["Title"] = "Detalles de la Reserva";
+    var inquilino = (Inquilino?)ViewBag.Inquilino;
+    var inmueble = (Inmueble?)ViewBag.Inmueble;
+}
+
+<h1>Detalles de la Reserva</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-5">
+        <dl class="row">
+            <dt class="col-sm-4">Fecha Entrada</dt>
+            <dd class="col-sm-8">@Model.FechaEntrada.ToShortDateString()</dd>
+
+            <dt class="col-sm-4">Fecha Salida</dt>
+            <dd class="col-sm-8">@Model.FechaSalida.ToShortDateString()</dd>
+
+            <dt class="col-sm-4">Estado</dt>
+            <dd class="col-sm-8">@(Model.Estado ? "Activa" : "Inactiva")</dd>
+
+            <dt class="col-sm-4">Inquilino</dt>
+            <dd class="col-sm-8">@inquilino?.ToString()</dd>
+
+            <dt class="col-sm-4">Inmueble</dt>
+            <dd class="col-sm-8">@inmueble?.Direccion</dd>
+
+            @if (Model.FechaMulta != null)
+            {
+                <dt class="col-sm-4">Fecha Multa</dt>
+                <dd class="col-sm-8">@Model.FechaMulta?.ToShortDateString()</dd>
+
+                <dt class="col-sm-4">Multa</dt>
+                <dd class="col-sm-8">@Model.Multa</dd>
+            }
+        </dl>
+        <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+    </div>
+</div>

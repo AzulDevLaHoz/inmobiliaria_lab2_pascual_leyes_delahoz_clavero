@@ -1,0 +1,20 @@
+@model inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models.TipoInmueble
+@{
+    ViewData["Title"] = "Detalles del Tipo de Inmueble";
+}
+
+<h1>Detalles del Tipo de Inmueble</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-5">
+        <dl class="row">
+            <dt class="col-sm-4">Código</dt>
+            <dd class="col-sm-8">@Model.IdTipoInmueble</dd>
+
+            <dt class="col-sm-4">Nombre</dt>
+            <dd class="col-sm-8">@Model.Nombre</dd>
+        </dl>
+        <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+    </div>
+</div>

@@ -84,6 +84,15 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             return View(entidad);
         }
 
+        public IActionResult Detalles(int id)
+        {
+            var entidad = repositorio.ObtenerPorId(id);
+            if (entidad == null) return NotFound();
+            ViewBag.Propietario = repoPropietario.ObtenerPorId(entidad.PropietarioId);
+            ViewBag.TipoInmueble = repoTipoInmueble.ObtenerPorId(entidad.TipoInmuebleId);
+            return View(entidad);
+        }
+
         [HttpPost]
         public IActionResult Modificar(int id, Inmueble entidad)
         {
