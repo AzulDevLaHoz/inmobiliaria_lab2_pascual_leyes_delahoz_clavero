@@ -9,44 +9,123 @@
 <h1>Detalles del Inmueble</h1>
 <hr />
 
-<div class="row">
-    <div class="col-md-5">
-        <dl class="row">
-            <dt class="col-sm-4">Dirección</dt>
-            <dd class="col-sm-8">@Model.Direccion</dd>
+<div id="app" class="row">
 
-            <dt class="col-sm-4">Capacidad</dt>
-            <dd class="col-sm-8">@Model.Capacidad</dd>
+    
+    <div class="col-md-5 mb-4">
+        <div class="card shadow-sm">
+            <img src="@(string.IsNullOrEmpty(Model.StringPortada) ? "/Uploads/sinImagen.png" : Model.StringPortada)" 
+                 class="card-img-top" 
+                 style="height: 250px; object-fit: cover;" 
+                 alt="Portada del Inmueble">
 
-            <dt class="col-sm-4">Latitud</dt>
-            <dd class="col-sm-8">@Model.Latitud</dd>
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Información del Inmueble</h5>
+            </div>
+            
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Dirección:</dt>
+                    <dd class="col-sm-7">@Model.Direccion</dd>
 
-            <dt class="col-sm-4">Longitud</dt>
-            <dd class="col-sm-8">@Model.Longitud</dd>
+                    <dt class="col-sm-5">Tipo:</dt>
+                    <dd class="col-sm-7">@tipoInmueble?.Nombre</dd>
 
-            <dt class="col-sm-4">Monto por Día</dt>
-            <dd class="col-sm-8">@Model.montoDia</dd>
+                    <dt class="col-sm-5">Propietario:</dt>
+                    <dd class="col-sm-7">@propietario?.ToString()</dd>
 
-            <dt class="col-sm-4">Porcentaje de Reserva</dt>
-            <dd class="col-sm-8">@Model.porcentajeReserva %</dd>
+                    <dt class="col-sm-5">Capacidad:</dt>
+                    <dd class="col-sm-7">@Model.Capacidad personas</dd>
 
-            <dt class="col-sm-4">Estado</dt>
-            <dd class="col-sm-8">@(Model.Estado ? "Activo" : "Inactivo")</dd>
+                    <dt class="col-sm-5">Monto x Día:</dt>
+                    <dd class="col-sm-7">$@Model.montoDia</dd>
 
-            <dt class="col-sm-4">Propietario</dt>
-            <dd class="col-sm-8">@propietario?.ToString()</dd>
+                    <dt class="col-sm-5">% Reserva:</dt>
+                    <dd class="col-sm-7">@Model.porcentajeReserva %</dd>
 
-            <dt class="col-sm-4">Tipo de Inmueble</dt>
-            <dd class="col-sm-8">@tipoInmueble?.Nombre</dd>
-        </dl>
+                    <dt class="col-sm-5">Coordenadas:</dt>
+                    <dd class="col-sm-7"><small>@Model.Latitud, @Model.Longitud</small></dd>
 
-        @if (!String.IsNullOrEmpty(Model.StringPortada))
-        {
-            <img class="img-thumbnail mb-3" style="max-width: 250px;" src="@Model.StringPortada" alt="portada" />
-        }
+                    <dt class="col-sm-5">Estado:</dt>
+                    <dd class="col-sm-7">
+                        <span class="badge @(Model.Estado ? "bg-success" : "bg-danger")">
+                            @(Model.Estado ? "Activo" : "Inactivo")
+                        </span>
+                    </dd>
+                </dl>
+            </div>
+            <div class="card-footer">
+                <a asp-action="Index" class="btn btn-secondary btn-sm">Volver a la lista</a>
+            </div>
+        </div>
+    </div>
 
-        <div>
-            <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+  
+    <div class="col-md-7">
+        <div class="card mb-4 shadow-sm border-0 bg-light">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Agregar Nueva Imagen a la Galería</h5>
+                <form asp-controller="Imagen" asp-action="AgregarImagen" method="post" enctype="multipart/form-data" class="row g-2 align-items-center">
+                    <input type="hidden" name="IdInmueble" value="@Model.Id" />
+                    
+                    <div class="col-sm-8">
+                        <input type="file" name="Archivo" class="form-control" accept="image/*" required />
+                    </div>
+                    <div class="col-sm-4">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-upload"></i> Subir Foto
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <h3 class="mb-3">Galería de Fotos ({{ imagenes.length }})</h3>
+
+    
+        <div v-if="imagenes.length === 0" class="alert alert-info">
+            <i class="bi bi-info-circle me-1"></i> Este inmueble no tiene imágenes adicionales asociadas.
+        </div>
+
+  
+        <div v-else class="row row-cols-1 row-cols-sm-2 g-3">
+            <div class="col" v-for="img in imagenes" :key="img.IdImagen">
+                <div class="card h-100 shadow-sm position-relative">
+                    <img :src="img.ImagenString || '/Uploads/sinImagen.png'" 
+                         class="card-img-top" 
+                         style="height: 180px; object-fit: cover;" 
+                         alt="Foto inmueble">
+                    
+        
+                    <div class="card-footer text-end bg-white border-top-0">
+                        <form asp-controller="Imagen" asp-action="EliminarImagen" method="post" onsubmit="return confirm('¿Confirma que desea eliminar esta imagen?');">
+                            <input type="hidden" name="id" :value="img.IdImagen" />
+                            <input type="hidden" name="idInmueble" value="@Model.Id" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <script>
+        const { createApp, ref } = Vue;
+
+        createApp({
+            setup() {
+                const imagenes = ref(@Html.Raw(ViewBag.ImagenesJson ?? "[]"));
+
+                return {
+                    imagenes
+                };
+            }
+        }).mount('#app');
+    </script>
+}

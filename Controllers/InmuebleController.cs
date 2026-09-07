@@ -8,12 +8,14 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         private readonly RepositorioInmueble repositorio;
         private readonly IRepositorioPropietario repoPropietario;
         private readonly RepositorioTipoInmueble repoTipoInmueble;
+        private readonly RepositorioImagen repoImagen;
 
-        public InmuebleController(RepositorioInmueble repositorio, IRepositorioPropietario repoPropietario, RepositorioTipoInmueble repoTipoInmueble)
-        {
+        public InmuebleController(RepositorioInmueble repositorio,RepositorioImagen repoImagen, IRepositorioPropietario repoPropietario, RepositorioTipoInmueble repoTipoInmueble)
+        {  
             this.repositorio = repositorio;
             this.repoPropietario = repoPropietario;
             this.repoTipoInmueble = repoTipoInmueble;
+            this.repoImagen= repoImagen;
         }
 
         public IActionResult Index()
@@ -90,6 +92,8 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             if (entidad == null) return NotFound();
             ViewBag.Propietario = repoPropietario.ObtenerPorId(entidad.PropietarioId);
             ViewBag.TipoInmueble = repoTipoInmueble.ObtenerPorId(entidad.TipoInmuebleId);
+            var imagenesAdicionales = repoImagen.ObtenerPorInmueble(id);
+    ViewBag.ImagenesJson = System.Text.Json.JsonSerializer.Serialize(imagenesAdicionales);
             return View(entidad);
         }
 
