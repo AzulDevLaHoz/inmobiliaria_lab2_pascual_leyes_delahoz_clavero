@@ -10,6 +10,7 @@ builder.Services.AddScoped<IRepositorioInquilino, RepositorioInquilino>();
 builder.Services.AddScoped<IRepositorioReserva, RepositorioReserva>();
 builder.Services.AddScoped<RepositorioInmueble>();
 builder.Services.AddScoped<RepositorioTipoInmueble>();
+builder.Services.AddScoped<RepositorioImagen>();
 
 var app = builder.Build();
 

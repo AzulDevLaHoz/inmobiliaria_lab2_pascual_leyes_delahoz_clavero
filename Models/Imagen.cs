@@ -11,8 +11,11 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         [Key]
         public int IdImagen { get; set; }
 
-        [Display(Name = "Imagen Portada")]
-        public string ImagenPortada { get; set; } = "";
+        [Display(Name = "Ubicacion Imagen ")]
+        public string ImagenString { get; set; } = "";
+    
+    [NotMapped]
+        public IFormFile? Archivo { get; set; }
     
  // --- Relación con Inmueble ---
     [Required]
