@@ -11,13 +11,32 @@
 
 <div id="app" class="row">
 
-    
     <div class="col-md-5 mb-4">
         <div class="card shadow-sm">
-            <img src="@(string.IsNullOrEmpty(Model.StringPortada) ? "/Uploads/sinImagen.png" : Model.StringPortada)" 
-                 class="card-img-top" 
-                 style="height: 250px; object-fit: cover;" 
-                 alt="Portada del Inmueble">
+            <div class="position-relative">
+                <img src="@(string.IsNullOrEmpty(Model.StringPortada) ? "/Uploads/sinImagen.png" : Model.StringPortada)" 
+                     class="card-img-top" 
+                     style="height: 250px; object-fit: cover;" 
+                     alt="Portada del Inmueble">
+
+            
+                <form asp-controller="Inmueble" asp-action="CambiarPortada" method="post" enctype="multipart/form-data" id="formCambiarPortada">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    
+                    <input type="file" 
+                           name="ImagenPortada" 
+                           id="inputPortada" 
+                           style="display: none;" 
+                           accept="image/*" 
+                           onchange="document.getElementById('formCambiarPortada').submit();" />
+                    
+                    <button type="button" 
+                            class="btn btn-sm btn-dark position-absolute bottom-0 end-0 m-2 opacity-75" 
+                            onclick="document.getElementById('inputPortada').click();">
+                        <i class="bi bi-camera"></i> Cambiar Portada
+                    </button>
+                </form>
+            </div>
 
             <div class="card-header bg-primary text-white">
                 <h5 class="card-title mb-0">Información del Inmueble</h5>
@@ -60,7 +79,6 @@
         </div>
     </div>
 
-  
     <div class="col-md-7">
         <div class="card mb-4 shadow-sm border-0 bg-light">
             <div class="card-body">
@@ -82,12 +100,10 @@
 
         <h3 class="mb-3">Galería de Fotos ({{ imagenes.length }})</h3>
 
-    
         <div v-if="imagenes.length === 0" class="alert alert-info">
             <i class="bi bi-info-circle me-1"></i> Este inmueble no tiene imágenes adicionales asociadas.
         </div>
 
-  
         <div v-else class="row row-cols-1 row-cols-sm-2 g-3">
             <div class="col" v-for="img in imagenes" :key="img.IdImagen">
                 <div class="card h-100 shadow-sm position-relative">
@@ -96,7 +112,6 @@
                          style="height: 180px; object-fit: cover;" 
                          alt="Foto inmueble">
                     
-        
                     <div class="card-footer text-end bg-white border-top-0">
                         <form asp-controller="Imagen" asp-action="EliminarImagen" method="post" onsubmit="return confirm('¿Confirma que desea eliminar esta imagen?');">
                             <input type="hidden" name="id" :value="img.IdImagen" />
