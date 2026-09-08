@@ -142,6 +142,37 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             return Json(propietarios);
         }
 
+         [HttpPost]
+public async Task<IActionResult> CambiarPortada(int id, IFormFile ImagenPortada, [FromServices] IWebHostEnvironment environment)
+{
+    var inmueble = repositorio.ObtenerPorId(id);
+    if (inmueble == null || ImagenPortada == null || ImagenPortada.Length == 0)
+        return RedirectToAction("Detalles", new { id });
+
+    //  Borro la foto anterior 
+    if (!string.IsNullOrEmpty(inmueble.StringPortada))
+    {
+        string fotoAntigua = Path.Combine(environment.WebRootPath, inmueble.StringPortada.TrimStart('/'));
+        if (System.IO.File.Exists(fotoAntigua)) System.IO.File.Delete(fotoAntigua);
+    }
+
+    //  Guardo  la nuevaafoto
+    string nombreArchivo = $"{Guid.NewGuid()}{Path.GetExtension(ImagenPortada.FileName)}";
+    string rutaFisica = Path.Combine(environment.WebRootPath, "Uploads", "Portadas", nombreArchivo);
+
+    using (var stream = new FileStream(rutaFisica, FileMode.Create))
+    {
+        await ImagenPortada.CopyToAsync(stream);
+    }
+
+   
+    inmueble.StringPortada = $"/Uploads/Portadas/{nombreArchivo}";
+    repositorio.Modificar(inmueble);
+
+    TempData["Mensaje"] = "Portada actualizada correctamente.";
+    return RedirectToAction("Detalles", new { id });
+}
+
     }
 
 }
