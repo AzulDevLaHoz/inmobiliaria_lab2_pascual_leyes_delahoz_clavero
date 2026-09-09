@@ -141,6 +141,17 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                                     : reader.GetDecimal(nameof(Reserva.Multa)),
                                 IdInquilino = reader.GetInt32(nameof(Reserva.IdInquilino)),
                                 IdInmueble = reader.GetInt32(nameof(Reserva.IdInmueble)),
+                                Inquilino = new Inquilino
+                                {
+                                    IdInquilino = reader.GetInt32(nameof(Reserva.IdInquilino)),
+                                    Nombre = reader.GetString("Nombre"),
+                                    Apellido = reader.GetString("Apellido"),
+                                },
+                                Inmueble = new Inmueble
+                                {
+                                    Id = reader.GetInt32(nameof(Reserva.IdInmueble)),
+                                    Direccion = reader.GetString("Direccion"),
+                                },
                             };
                             res.Add(r);
                         }
