@@ -229,37 +229,113 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         }
 
         public IList<Inmueble> ObtenerPorPropietario(int idPropietario)
-{
-    IList<Inmueble> lista = new List<Inmueble>();
-    using (var conn = new MySqlConnection(connectionString))
-    {
-        string sql = @"SELECT idInmueble, direccion, capacidad, montoDia, porcentajeReserva, imagenPortada, estado 
+        {
+            IList<Inmueble> lista = new List<Inmueble>();
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                string sql = @"SELECT idInmueble, direccion, capacidad, montoDia, porcentajeReserva, imagenPortada, estado 
                        FROM inmueble 
                        WHERE idPropietario = @idProp AND estado = 1;";
 
-        using (var cmd = new MySqlCommand(sql, conn))
-        {
-            cmd.Parameters.AddWithValue("@idProp", idPropietario);
-            conn.Open();
-            using (var reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
+                using (var cmd = new MySqlCommand(sql, conn))
                 {
-                    lista.Add(new Inmueble
+                    cmd.Parameters.AddWithValue("@idProp", idPropietario);
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        Id = reader.GetInt32("idInmueble"),
-                        Direccion = reader.GetString("direccion"),
-                        Capacidad = reader.GetInt32("capacidad"),
-                        montoDia = reader.GetDecimal("montoDia"),
-                        porcentajeReserva = reader.GetDecimal("porcentajeReserva"),
-                        StringPortada = reader.IsDBNull(reader.GetOrdinal("imagenPortada")) ? "" : reader.GetString("imagenPortada")
-                    });
+                        while (reader.Read())
+                        {
+                            lista.Add(new Inmueble
+                            {
+                                Id = reader.GetInt32("idInmueble"),
+                                Direccion = reader.GetString("direccion"),
+                                Capacidad = reader.GetInt32("capacidad"),
+                                montoDia = reader.GetDecimal("montoDia"),
+                                porcentajeReserva = reader.GetDecimal("porcentajeReserva"),
+                                StringPortada = reader.IsDBNull(reader.GetOrdinal("imagenPortada")) ? "" : reader.GetString("imagenPortada")
+                            });
+                        }
+                    }
                 }
             }
+            return lista;
         }
-    }
-    return lista;
-}
+
+        public IList<Inmueble> BuscarDisponibles(DateTime fechaEntrada, DateTime fechaSalida, int capacidadMinima, int idTipoInmueble = 0, int pagNro = 1, int tamPagina = 20)
+        {
+            IList<Inmueble> res = new List<Inmueble>();
+            int offset = (pagNro - 1) * tamPagina;
+
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                string sql = @"
+            SELECT
+                i.idInmueble,
+                i.direccion,
+                i.capacidad,
+                i.latitud,
+                i.longitud,
+                i.porcentajeReserva,
+                i.imagenPortada,
+                i.montoDia,
+                i.estado,
+                i.idPropietario,
+                i.idTipoInmueble,
+                t.nombre AS nombreTipo
+            FROM inmueble i
+            INNER JOIN tipoinmueble t ON i.idTipoInmueble = t.idTipoInmueble
+            WHERE i.estado = 1
+              AND i.capacidad >= @capacidadMinima
+              AND (@idTipoInmueble = 0 OR i.idTipoInmueble = @idTipoInmueble)
+              AND NOT EXISTS (
+                    SELECT 1 FROM reserva r
+                    WHERE r.idInmueble = i.idInmueble
+                      AND r.estado = 1
+                      AND r.fechaEntrada <= @fechaSalida
+                      AND r.fechaSalida  >= @fechaEntrada
+              )
+            ORDER BY i.idInmueble
+            LIMIT @tamPagina OFFSET @offset;";
+
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@capacidadMinima", capacidadMinima);
+                    cmd.Parameters.AddWithValue("@idTipoInmueble", idTipoInmueble);
+                    cmd.Parameters.AddWithValue("@fechaEntrada", fechaEntrada.Date);
+                    cmd.Parameters.AddWithValue("@fechaSalida", fechaSalida.Date);
+                    cmd.Parameters.AddWithValue("@tamPagina", tamPagina);
+                    cmd.Parameters.AddWithValue("@offset", offset);
+
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            res.Add(new Inmueble
+                            {
+                                Id = reader.GetInt32("idInmueble"),
+                                Direccion = reader.GetString("direccion"),
+                                Capacidad = reader.GetInt32("capacidad"),
+                                Latitud = reader.GetDecimal("latitud"),
+                                Longitud = reader.GetDecimal("longitud"),
+                                porcentajeReserva = reader.GetDecimal("porcentajeReserva"),
+                                StringPortada = reader.IsDBNull(reader.GetOrdinal("imagenPortada")) ? "" : reader.GetString("imagenPortada"),
+                                montoDia = reader.GetDecimal("montoDia"),
+                                Estado = reader.GetBoolean("estado"),
+                                PropietarioId = reader.GetInt32("idPropietario"),
+                                TipoInmuebleId = reader.GetInt32("idTipoInmueble"),
+                                NombreTipo = new TipoInmueble
+                                {
+                                    IdTipoInmueble = reader.GetInt32("idTipoInmueble"),
+                                    Nombre = reader.GetString("nombreTipo")
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+            return res;
+        }
 
     }
 

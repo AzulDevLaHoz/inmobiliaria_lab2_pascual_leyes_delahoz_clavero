@@ -10,12 +10,12 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         private readonly RepositorioTipoInmueble repoTipoInmueble;
         private readonly RepositorioImagen repoImagen;
 
-        public InmuebleController(RepositorioInmueble repositorio,RepositorioImagen repoImagen, IRepositorioPropietario repoPropietario, RepositorioTipoInmueble repoTipoInmueble)
-        {  
+        public InmuebleController(RepositorioInmueble repositorio, RepositorioImagen repoImagen, IRepositorioPropietario repoPropietario, RepositorioTipoInmueble repoTipoInmueble)
+        {
             this.repositorio = repositorio;
             this.repoPropietario = repoPropietario;
             this.repoTipoInmueble = repoTipoInmueble;
-            this.repoImagen= repoImagen;
+            this.repoImagen = repoImagen;
         }
 
         public IActionResult Index()
@@ -93,7 +93,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             ViewBag.Propietario = repoPropietario.ObtenerPorId(entidad.PropietarioId);
             ViewBag.TipoInmueble = repoTipoInmueble.ObtenerPorId(entidad.TipoInmuebleId);
             var imagenesAdicionales = repoImagen.ObtenerPorInmueble(id);
-    ViewBag.ImagenesJson = System.Text.Json.JsonSerializer.Serialize(imagenesAdicionales);
+            ViewBag.ImagenesJson = System.Text.Json.JsonSerializer.Serialize(imagenesAdicionales);
             return View(entidad);
         }
 
@@ -125,21 +125,41 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         }
 
         [HttpGet]
-        public IActionResult Buscar(string q)
+        public IActionResult Buscar()
         {
-            if (string.IsNullOrWhiteSpace(q))
+            ViewBag.TipoInmuebles = repoTipoInmueble.ObtenerTodos();
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult BuscarDisponibles(DateTime fechaEntrada, DateTime fechaSalida, int capacidad = 1, int idTipoInmueble = 0, int pagNro = 1, int tamPagina = 20)
+        {
+            if (fechaEntrada.Date < DateTime.Today)
             {
-                return Json(new List<object>());
+                return BadRequest(new { error = "La fecha de entrada no puede ser anterior a hoy." });
+            }
+            if (fechaSalida.Date <= fechaEntrada.Date)
+            {
+                return BadRequest(new { error = "La fecha de salida debe ser posterior a la de entrada." });
+            }
+            if (capacidad < 1)
+            {
+                return BadRequest(new { error = "La capacidad debe ser al menos 1." });
             }
 
-            var propietarios = repoPropietario.BuscarPorTexto(q)
-                .Select(p => new
-                {
-                    id = p.IdPropietario,
-                    texto = $"{p.Nombre} {p.Apellido} DNI: {p.Dni}"
-                });
+            var lista = repositorio.BuscarDisponibles(fechaEntrada, fechaSalida, capacidad, idTipoInmueble, pagNro, tamPagina);
 
-            return Json(propietarios);
+            var resultado = lista.Select(i => new
+            {
+                id = i.Id,
+                direccion = i.Direccion,
+                capacidad = i.Capacidad,
+                montoDia = i.montoDia,
+                imagenPortada = i.StringPortada,
+                tipo = i.NombreTipo?.Nombre
+            });
+
+            return Json(resultado);
         }
 
     }

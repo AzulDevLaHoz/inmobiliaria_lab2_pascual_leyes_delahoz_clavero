@@ -5,6 +5,9 @@
 <h1>Reservas</h1>
 <div class="text-end mt-3">
     <a asp-action="Alta" class="btn btn-primary">Crear Nueva Reserva</a>
+    <a asp-controller="Inmueble" asp-action="Buscar" class="btn btn-secondary">
+        <i class="bi bi-search"></i> Buscar Inmuebles
+    </a>
 </div>
 <table class="table table-striped">
     <thead>
@@ -30,12 +33,14 @@
                 <td>@item.IdInmueble</td>
                 <td>
                     <div class="btn-group" role="group">
-                        <a asp-action="Detalles" title="Detalles" asp-route-id="@item.IdReserva" class="btn btn-info btn-sm"><i class="bi bi-eye"></i></a>
-                        <a asp-action="Modificar" title="Editar" asp-route-id="@item.IdReserva" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
+                        <a asp-action="Detalles" title="Detalles" asp-route-id="@item.IdReserva"
+                           class="btn btn-info btn-sm"><i class="bi bi-eye"></i></a>
+                        <a asp-action="Modificar" title="Editar" asp-route-id="@item.IdReserva"
+                           class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
 
                         <button title="Eliminar" type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
                                 data-bs-target="#modalEliminar-@item.IdReserva">
-                                <i class="bi bi-trash3"></i>
+                            <i class="bi bi-trash3"></i>
                         </button>
 
                         @if (item.Estado)
@@ -43,13 +48,14 @@
                             if (item.FechaMulta != null)
                             {
                                 <a title="Generar Pago" class="btn btn-success btn-sm disabled" aria-disabled="true" tabindex="-1"
-                                    title="Disponible en un futuro incremento">
+                                   title="Disponible en un futuro incremento">
                                     <i class="bi bi-cash-coin"></i>
                                 </a>
                             }
                             else if (DateTime.Today <= item.FechaSalida)
                             {
-                                <a asp-action="SalidaAnticipada" title="Salida Anticipada" asp-route-id="@item.IdReserva" class="btn btn-warning btn-sm"><i class="bi bi-door-open"></i></a>
+                                <a asp-action="SalidaAnticipada" title="Salida Anticipada" asp-route-id="@item.IdReserva"
+                                   class="btn btn-warning btn-sm"><i class="bi bi-door-open"></i></a>
                             }
                             else
                             {
@@ -63,7 +69,7 @@
             </tr>
 
             <div class="modal fade" id="modalEliminar-@item.IdReserva" tabindex="-1"
-                aria-labelledby="modalLabel-@item.IdReserva" aria-hidden="true">
+                 aria-labelledby="modalLabel-@item.IdReserva" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">

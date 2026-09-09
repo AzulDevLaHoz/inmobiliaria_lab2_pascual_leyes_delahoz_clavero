@@ -1,0 +1,74 @@
+@model inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models.Inmueble
+@using inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
+@{
+    ViewData["Title"] = "Buscar Inmuebles";
+    var tipoInmueble = (TipoInmueble?)ViewBag.TipoInmueble;
+}
+
+<h1 class="mb-4">Buscar inmuebles disponibles</h1>
+
+<div id="app">
+    <form class="row row-cols-lg-auto g-3 align-items-end bg-light p-3 rounded mb-4" @@submit.prevent="buscar">
+        <div class="col-12">
+            <label class="form-label">Entrada</label>
+            <input type="date" class="form-control" v-model="filtros.fechaEntrada" required>
+        </div>
+        <div class="col-12">
+            <label class="form-label">Salida</label>
+            <input type="date" class="form-control" v-model="filtros.fechaSalida" required>
+        </div>
+        <div class="col-12">
+            <label class="form-label">Capacidad</label>
+            <input type="number" class="form-control" v-model.number="filtros.capacidad" min="1" required>
+        </div>
+        <div class="col-12">
+            <label class="form-label">Tipo</label>
+            <select class="form-select" v-model.number="filtros.idTipoInmueble">
+                <option value="0">Todos</option>
+                @if (ViewBag.TipoInmuebles != null)
+                {
+                    @foreach (var tipo in (IEnumerable<dynamic>)ViewBag.TipoInmuebles)
+                    {
+                        <option value="@tipo.IdTipoInmueble">@tipo.Nombre</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary" :disabled="cargando">
+                <span v-if="cargando" class="spinner-border spinner-border-sm me-1"></span>
+                {{ cargando ? "Buscando..." : "Buscar" }}
+            </button>
+        </div>
+    </form>
+
+    <div v-if="error" class="alert alert-danger">{{ error }}</div>
+    <div v-if="!cargando && buscoAlMenosUnaVez && resultados.length === 0 && !error" class="alert alert-secondary">
+        No se encontraron inmuebles disponibles para esos filtros.
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        <div class="col" v-for="inmueble in resultados" :key="inmueble.id">
+            <div class="card h-100 tarjeta-inmueble" @@click="irADetalle(inmueble.id)">
+                <img :src="inmueble.imagenPortada || '/img/sin-imagen.png'" :alt="inmueble.direccion"
+                     class="card-img-top">
+                <div class="card-body">
+                    <h6 class="card-title mb-1">{{ inmueble.direccion }}</h6>
+                    <p class="card-text text-muted small mb-2">{{ inmueble.tipo }} · hasta {{ inmueble.capacidad }}
+                        personas</p>
+                        <p class="card-text fw-bold mb-0">${{ inmueble.montoDia }} / día</p>
+                        <a class="btn btn-sm btn-primary mt-2 w-100"
+                           :href="`/Reserva/Alta?idInmueble=${inmueble.id}&fechaEntrada=${filtros.fechaEntrada}&fechaSalida=${filtros.fechaSalida}`"
+                            @@click.stop>
+                            Reservar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="~/js/buscador.js"></script>
+    }
