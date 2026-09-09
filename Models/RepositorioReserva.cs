@@ -109,11 +109,14 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             using (var conn = new MySqlConnection(connectionString))
             {
                 string sql = @"
-                SELECT idReserva, fechaEntrada, fechaSalida, estado, fechaMulta, multa, idInquilino, idInmueble
-                FROM reserva
-                WHERE estado=1
-                ORDER BY idReserva
-                LIMIT @tamPagina OFFSET @offset;";
+              SELECT r.idReserva, r.fechaEntrada, r.fechaSalida, r.estado, r.fechaMulta, r.multa, r.idInquilino, r.idInmueble,
+              inq.Nombre, inq.Apellido, im.Direccion
+              FROM reserva r
+              INNER JOIN inquilino inq ON r.idInquilino = inq.IdInquilino
+              INNER JOIN inmueble im ON r.idInmueble = im.idInmueble
+              WHERE r.estado = 1
+              ORDER BY r.idReserva
+              LIMIT @tamPagina OFFSET @offset;";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@tamPagina", tamPagina);

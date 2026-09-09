@@ -32,10 +32,12 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         [Required]
         [ForeignKey(nameof(Inquilino))]
         public int IdInquilino { get; set; }
+        public Inquilino? Inquilino { get; set; }
 
         // --- Relación con Inmueble ---
         [Required]
         [ForeignKey(nameof(Inmueble))]
         public int IdInmueble { get; set; }
+        public Inmueble? Inmueble { get; set; }
     }
 }
