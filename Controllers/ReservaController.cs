@@ -36,13 +36,13 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         public IActionResult Alta(Reserva reserva)
         {
             if (reserva.IdInquilino <= 0)
-             {
-        ModelState.AddModelError("IdInquilino", "Debe seleccionar un inquilino válido.");
-             }
-             if (reserva.IdInmueble <= 0)
-             {
-        ModelState.AddModelError("IdInmueble", "Debe seleccionar un inmueble válido.");
-              }
+            {
+                ModelState.AddModelError("IdInquilino", "Debe seleccionar un inquilino válido.");
+            }
+            if (reserva.IdInmueble <= 0)
+            {
+                ModelState.AddModelError("IdInmueble", "Debe seleccionar un inmueble válido.");
+            }
             if (reserva.FechaEntrada.Date < DateTime.Today)
             {
                 ModelState.AddModelError("FechaEntrada", "La fecha de entrada no puede ser anterior a hoy.");
@@ -52,6 +52,11 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
                 ModelState.AddModelError("FechaSalida", "La fecha de Salida no puede ser anterior a la de Ingreso.");
             }
 
+            if (reserva.IdInmueble > 0 && reserva.FechaEntrada.Date <= reserva.FechaSalida.Date
+            && repositorio.ExisteSolapamiento(reserva.IdInmueble, reserva.FechaEntrada, reserva.FechaSalida))
+            {
+                ModelState.AddModelError("IdInmueble", "El inmueble ya tiene una reserva activa en esas fechas.");
+            }
             if (ModelState.IsValid)
             {
                 repositorio.Alta(reserva);
@@ -90,7 +95,13 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         {
             var r = repositorio.ObtenerPorId(id);
             if (r == null) return NotFound();
+            if (entidad.IdInmueble > 0 && entidad.FechaEntrada.Date <= entidad.FechaSalida.Date
+            && repositorio.ExisteSolapamiento(entidad.IdInmueble, entidad.FechaEntrada, entidad.FechaSalida, id))
+            {
+                ModelState.AddModelError("IdInmueble", "El inmueble ya tiene una reserva activa en esas fechas.");
+            }
             if (ModelState.IsValid)
+
             {
                 r.FechaEntrada = entidad.FechaEntrada;
                 r.FechaSalida = entidad.FechaSalida;
@@ -121,7 +132,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             if (reserva == null) return NotFound();
 
             var inmueble = repoInmueble.ObtenerPorId(reserva.IdInmueble);
-            ViewBag.MontoDiario = inmueble.montoDia; 
+            ViewBag.MontoDiario = inmueble.montoDia;
 
             return View(reserva);
         }
@@ -157,11 +168,14 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
 
             reserva.FechaMulta = fechaRetiro;
             reserva.Multa = multa;
-            reserva.Estado = true; 
+            reserva.Estado = true;
 
             repositorio.ActualizarSalidaAnticipada(reserva);
-            
+
             return RedirectToAction("Index");
         }
+
+
+
     }
 }

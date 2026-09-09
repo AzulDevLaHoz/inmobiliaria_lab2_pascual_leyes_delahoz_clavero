@@ -9,5 +9,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
     {
         public IList<Reserva> ObtenerListaActivos(int paginaNro = 1, int tamPagina = 10);
         public bool ActualizarSalidaAnticipada(Reserva r);
+        bool ExisteSolapamiento(int idInmueble, DateTime fechaEntrada, DateTime fechaSalida, int? idReservaExcluir = null);
+
     }
 }

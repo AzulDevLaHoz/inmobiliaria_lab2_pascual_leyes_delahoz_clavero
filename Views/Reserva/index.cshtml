@@ -29,8 +29,8 @@
                 <td>@item.FechaEntrada.ToShortDateString()</td>
                 <td>@item.FechaSalida.ToShortDateString()</td>
                 <td>@(item.Estado ? "Activa" : "Inactiva")</td>
-                <td>@item.IdInquilino</td>
-                <td>@item.IdInmueble</td>
+                <td>@item.Inquilino?.ToString()</td>
+                <td>@item.Inmueble?.Direccion</td>
                 <td>
                     <div class="btn-group" role="group">
                         <a asp-action="Detalles" title="Detalles" asp-route-id="@item.IdReserva"

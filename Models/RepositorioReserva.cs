@@ -109,11 +109,14 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             using (var conn = new MySqlConnection(connectionString))
             {
                 string sql = @"
-                SELECT idReserva, fechaEntrada, fechaSalida, estado, fechaMulta, multa, idInquilino, idInmueble
-                FROM reserva
-                WHERE estado=1
-                ORDER BY idReserva
-                LIMIT @tamPagina OFFSET @offset;";
+              SELECT r.idReserva, r.fechaEntrada, r.fechaSalida, r.estado, r.fechaMulta, r.multa, r.idInquilino, r.idInmueble,
+              inq.Nombre, inq.Apellido, im.Direccion
+              FROM reserva r
+              INNER JOIN inquilino inq ON r.idInquilino = inq.IdInquilino
+              INNER JOIN inmueble im ON r.idInmueble = im.idInmueble
+              WHERE r.estado = 1
+              ORDER BY r.idReserva
+              LIMIT @tamPagina OFFSET @offset;";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@tamPagina", tamPagina);
@@ -138,6 +141,17 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                                     : reader.GetDecimal(nameof(Reserva.Multa)),
                                 IdInquilino = reader.GetInt32(nameof(Reserva.IdInquilino)),
                                 IdInmueble = reader.GetInt32(nameof(Reserva.IdInmueble)),
+                                Inquilino = new Inquilino
+                                {
+                                    IdInquilino = reader.GetInt32(nameof(Reserva.IdInquilino)),
+                                    Nombre = reader.GetString("Nombre"),
+                                    Apellido = reader.GetString("Apellido"),
+                                },
+                                Inmueble = new Inmueble
+                                {
+                                    Id = reader.GetInt32(nameof(Reserva.IdInmueble)),
+                                    Direccion = reader.GetString("Direccion"),
+                                },
                             };
                             res.Add(r);
                         }
@@ -247,6 +261,35 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             command.Parameters.AddWithValue("@id", reserva.IdReserva);
 
             return command.ExecuteNonQuery() > 0;
+        }
+
+        public bool ExisteSolapamiento(int idInmueble, DateTime fechaEntrada, DateTime fechaSalida, int? idReservaExcluir = null)
+        {
+            using var connection = new MySqlConnection(connectionString);
+            connection.Open();
+
+            string sql = @"SELECT COUNT(*) FROM reserva 
+                           WHERE idInmueble = @idInmueble 
+                           AND estado = 1 
+                           AND ((fechaEntrada < @fechaSalida) AND (fechaSalida > @fechaEntrada))";
+
+            if (idReservaExcluir.HasValue)
+            {
+                sql += " AND idReserva != @idReservaExcluir";
+            }
+
+            using var command = new MySqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@idInmueble", idInmueble);
+            command.Parameters.AddWithValue("@fechaEntrada", fechaEntrada);
+            command.Parameters.AddWithValue("@fechaSalida", fechaSalida);
+
+            if (idReservaExcluir.HasValue)
+            {
+                command.Parameters.AddWithValue("@idReservaExcluir", idReservaExcluir.Value);
+            }
+
+            int count = Convert.ToInt32(command.ExecuteScalar());
+            return count > 0;
         }
     }
 }
