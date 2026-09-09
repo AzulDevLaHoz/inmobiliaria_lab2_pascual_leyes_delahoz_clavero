@@ -21,16 +21,6 @@ async function buscarDisponibles(filtros) {
   return respuesta.json();
 }
 
-async function obtenerDetalle(id) {
-  const respuesta = await fetch(`${BASE_URL}/DetalleJson/${id}`);
-
-  if (!respuesta.ok) {
-    throw new Error(`No se pudo obtener el detalle (${respuesta.status})`);
-  }
-
-  return respuesta.json();
-}
-
 const { createApp } = Vue;
 
 createApp({
