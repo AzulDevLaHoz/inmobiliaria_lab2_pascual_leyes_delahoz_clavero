@@ -248,6 +248,35 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
 
             return command.ExecuteNonQuery() > 0;
         }
+
+        public bool ExisteSolapamiento(int idInmueble, DateTime fechaEntrada, DateTime fechaSalida, int? idReservaExcluir = null)
+        {
+            using var connection = new MySqlConnection(connectionString);
+            connection.Open();
+
+            string sql = @"SELECT COUNT(*) FROM reserva 
+                           WHERE idInmueble = @idInmueble 
+                           AND estado = 1 
+                           AND ((fechaEntrada < @fechaSalida) AND (fechaSalida > @fechaEntrada))";
+
+            if (idReservaExcluir.HasValue)
+            {
+                sql += " AND idReserva != @idReservaExcluir";
+            }
+
+            using var command = new MySqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@idInmueble", idInmueble);
+            command.Parameters.AddWithValue("@fechaEntrada", fechaEntrada);
+            command.Parameters.AddWithValue("@fechaSalida", fechaSalida);
+
+            if (idReservaExcluir.HasValue)
+            {
+                command.Parameters.AddWithValue("@idReservaExcluir", idReservaExcluir.Value);
+            }
+
+            int count = Convert.ToInt32(command.ExecuteScalar());
+            return count > 0;
+        }
     }
 }
 
