@@ -214,7 +214,8 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                             Latitud = reader.GetInt32("latitud"),
                             Longitud = reader.GetInt32("longitud"),
                             porcentajeReserva = reader.GetDecimal("porcentajeReserva"),
-                            StringPortada = reader.GetString("imagenPortada"),
+                            StringPortada = reader.IsDBNull(reader.GetOrdinal("imagenPortada")) 
+                                         ? "/Uploads/sinImagen.png" : reader.GetString("imagenPortada"), 
                             montoDia = reader.GetDecimal("montoDia"),
                             Estado = reader.GetBoolean("estado"),
                             PropietarioId = reader.GetInt32("idPropietario"),
