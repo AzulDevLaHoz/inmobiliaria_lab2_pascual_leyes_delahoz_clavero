@@ -68,14 +68,14 @@ public IActionResult EliminarImagen(int id, int idInmueble, [FromServices] IWebH
 
     if (img != null)
     {
-        // 1. Borramos el archivo físico del servidor
+       
         string rutaFisica = Path.Combine(environment.WebRootPath, img.ImagenString.TrimStart('/'));
         if (System.IO.File.Exists(rutaFisica))
         {
             System.IO.File.Delete(rutaFisica);
         }
 
-        // 2. Eliminamos el registro de la BD
+       
         repoImagen.Baja(id);
         TempData["Mensaje"] = "La imagen fue eliminada.";
     }

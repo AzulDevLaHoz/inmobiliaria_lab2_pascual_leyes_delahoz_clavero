@@ -13,174 +13,196 @@
 
     <div class="col-md-5 mb-4">
         <div class="card shadow-sm">
-            <img src="@(string.IsNullOrEmpty(Model.StringPortada) ? "/Uploads/sinImagen.png" : Model.StringPortada)"
-                 class="card-img-top" style="height: 250px; object-fit: cover;" alt="Portada del Inmueble">
+            <<<<<<< HEAD <img
+                src="@(string.IsNullOrEmpty(Model.StringPortada) ? "/Uploads/sinImagen.png" : Model.StringPortada)"
+                class="card-img-top" style="height: 250px; object-fit: cover;" alt="Portada del Inmueble">
+                =======
+                <div class="position-relative">
+                    <img src="@(string.IsNullOrEmpty(Model.StringPortada) ? "/Uploads/sinImagen.png" : Model.StringPortada)"
+                         class="card-img-top" style="height: 250px; object-fit: cover;" alt="Portada del Inmueble">
 
-            <div class="card-header bg-primary text-white">
-                <h5 class="card-title mb-0">Información del Inmueble</h5>
-            </div>
+            
+                    <form asp-controller="Inmueble" asp-action="CambiarPortada" method="post"
+                          enctype="multipart/form-data" id="formCambiarPortada">
+                        <input type="hidden" name="id" value="@Model.Id" />
 
-            <div class="card-body">
-                <dl class="row mb-0">
-                    <dt class="col-sm-5">Dirección:</dt>
-                    <dd class="col-sm-7">@Model.Direccion</dd>
+                        <input type="file" name="ImagenPortada" id="inputPortada" style="display: none;"
+                               accept="image/*" onchange="document.getElementById('formCambiarPortada').submit();" />
 
-                    <dt class="col-sm-5">Tipo:</dt>
-                    <dd class="col-sm-7">@tipoInmueble?.Nombre</dd>
-
-                    <dt class="col-sm-5">Propietario:</dt>
-                    <dd class="col-sm-7">@propietario?.ToString()</dd>
-
-                    <dt class="col-sm-5">Capacidad:</dt>
-                    <dd class="col-sm-7">@Model.Capacidad personas</dd>
-
-                    <dt class="col-sm-5">Monto x Día:</dt>
-                    <dd class="col-sm-7">$@Model.montoDia</dd>
-
-                    <dt class="col-sm-5">% Reserva:</dt>
-                    <dd class="col-sm-7">@Model.porcentajeReserva %</dd>
-
-                    <dt class="col-sm-5">Coordenadas:</dt>
-                    <dd class="col-sm-7"><small>@Model.Latitud, @Model.Longitud</small></dd>
-
-                    <dt class="col-sm-5">Estado:</dt>
-                    <dd class="col-sm-7">
-                        <span class="badge @(Model.Estado ? "bg-success" : "bg-danger")">
-                            @(Model.Estado ? "Activo" : "Inactivo")
-                        </span>
-                    </dd>
-                </dl>
-            </div>
-            <div class="card-footer">
-                <a asp-action="Index" class="btn btn-secondary btn-sm">Volver a la lista</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-7">
-
-        <button type="button" class="btn btn-outline-primary mb-3" @@click="mostrarForm = !mostrarForm">
-            <i class="bi" :class="mostrarForm ? 'bi-dash-circle' : 'bi-plus-circle'"></i>
-            {{ mostrarForm ? 'Cancelar' : 'Agregar imagen' }}
-        </button>
-
-        <div v-if="mostrarForm" class="card mb-4 shadow-sm border-0 bg-light">
-            <div class="card-body">
-                <h5 class="card-title mb-3">Agregar Nueva Imagen a la Galería</h5>
-                <form asp-controller="Imagen" asp-action="AgregarImagen" method="post" enctype="multipart/form-data"
-                      class="row g-2 align-items-center">
-                    <input type="hidden" name="IdInmueble" value="@Model.Id" />
-
-                    <div class="col-sm-8">
-                        <input type="file" name="Archivo" class="form-control" accept="image/*" required
-                        @@change="onFileChange" />
-                    </div>
-                    <div class="col-sm-4">
-                        <button type="submit" class="btn btn-success w-100">
-                            <i class="bi bi-upload"></i> Subir Foto
-                        </button>
-                    </div>
-
-                    <div class="col-12" v-if="previewUrl">
-                        <p class="small text-muted mb-1">Vista previa:</p>
-                        <img :src="previewUrl" class="img-thumbnail" style="max-height: 150px;" alt="Vista previa">
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <h3 class="mb-3">Galería de Fotos ({{ imagenes.length }})</h3>
-
-        <div v-if="imagenes.length === 0" class="alert alert-info">
-            <i class="bi bi-info-circle me-1"></i> Este inmueble no tiene imágenes adicionales asociadas.
-        </div>
-
-        <div v-else class="row row-cols-1 row-cols-sm-2 g-3">
-            <div class="col" v-for="img in imagenes" :key="img.IdImagen">
-                <div class="card h-100 shadow-sm position-relative">
-                    <img :src="img.ImagenString || '/Uploads/sinImagen.png'" class="card-img-top"
-                         style="height: 180px; object-fit: cover; cursor: zoom-in;" alt="Foto inmueble"
-                    @@click="ampliarImagen(img.ImagenString)">
-
-                    <form asp-controller="Imagen" asp-action="EliminarImagen" method="post"
-                          class="position-absolute top-0 end-0 m-1"
-                          onsubmit="return confirm('¿Confirma que desea eliminar esta imagen?');">
-                        <input type="hidden" name="id" :value="img.IdImagen" />
-                        <input type="hidden" name="idInmueble" value="@Model.Id" />
-                        <button type="submit" class="btn btn-sm btn-light rounded-circle shadow-sm" title="Eliminar">
-                            <i class="bi bi-x-lg text-danger"></i>
+                        <button type="button"
+                                class="btn btn-sm btn-dark position-absolute bottom-0 end-0 m-2 opacity-75"
+                                onclick="document.getElementById('inputPortada').click();">
+                            <i class="bi bi-camera"></i> Cambiar Portada
                         </button>
                     </form>
                 </div>
+                >>>>>>> b87744f93fe7ddf823165f39c13d6e0cf86793d7
+
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Información del Inmueble</h5>
+                </div>
+
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Dirección:</dt>
+                        <dd class="col-sm-7">@Model.Direccion</dd>
+
+                        <dt class="col-sm-5">Tipo:</dt>
+                        <dd class="col-sm-7">@tipoInmueble?.Nombre</dd>
+
+                        <dt class="col-sm-5">Propietario:</dt>
+                        <dd class="col-sm-7">@propietario?.ToString()</dd>
+
+                        <dt class="col-sm-5">Capacidad:</dt>
+                        <dd class="col-sm-7">@Model.Capacidad personas</dd>
+
+                        <dt class="col-sm-5">Monto x Día:</dt>
+                        <dd class="col-sm-7">$@Model.montoDia</dd>
+
+                        <dt class="col-sm-5">% Reserva:</dt>
+                        <dd class="col-sm-7">@Model.porcentajeReserva %</dd>
+
+                        <dt class="col-sm-5">Coordenadas:</dt>
+                        <dd class="col-sm-7"><small>@Model.Latitud, @Model.Longitud</small></dd>
+
+                        <dt class="col-sm-5">Estado:</dt>
+                        <dd class="col-sm-7">
+                            <span class="badge @(Model.Estado ? "bg-success" : "bg-danger")">
+                                @(Model.Estado ? "Activo" : "Inactivo")
+                            </span>
+                        </dd>
+                    </dl>
+                </div>
+                <div class="card-footer">
+                    <a asp-action="Index" class="btn btn-secondary btn-sm">Volver a la lista</a>
+                </div>
             </div>
+        </div>
+
+        <div class="col-md-7">
+
+            <button type="button" class="btn btn-outline-primary mb-3" @@click="mostrarForm = !mostrarForm">
+                <i class="bi" :class="mostrarForm ? 'bi-dash-circle' : 'bi-plus-circle'"></i>
+                {{ mostrarForm ? 'Cancelar' : 'Agregar imagen' }}
+            </button>
+
+            <div v-if="mostrarForm" class="card mb-4 shadow-sm border-0 bg-light">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Agregar Nueva Imagen a la Galería</h5>
+                    <form asp-controller="Imagen" asp-action="AgregarImagen" method="post" enctype="multipart/form-data"
+                          class="row g-2 align-items-center">
+                        <input type="hidden" name="IdInmueble" value="@Model.Id" />
+
+                        <div class="col-sm-8">
+                            <input type="file" name="Archivo" class="form-control" accept="image/*" required
+                            @@change="onFileChange" />
+                        </div>
+                        <div class="col-sm-4">
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-upload"></i> Subir Foto
+                            </button>
+                        </div>
+
+                        <div class="col-12" v-if="previewUrl">
+                            <p class="small text-muted mb-1">Vista previa:</p>
+                            <img :src="previewUrl" class="img-thumbnail" style="max-height: 150px;" alt="Vista previa">
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <h3 class="mb-3">Galería de Fotos ({{ imagenes.length }})</h3>
+
+            <div v-if="imagenes.length === 0" class="alert alert-info">
+                <i class="bi bi-info-circle me-1"></i> Este inmueble no tiene imágenes adicionales asociadas.
+            </div>
+
+            <div v-else class="row row-cols-1 row-cols-sm-2 g-3">
+                <div class="col" v-for="img in imagenes" :key="img.IdImagen">
+                    <div class="card h-100 shadow-sm position-relative">
+                        <img :src="img.ImagenString || '/Uploads/sinImagen.png'" class="card-img-top"
+                             style="height: 180px; object-fit: cover; cursor: zoom-in;" alt="Foto inmueble"
+                        @@click="ampliarImagen(img.ImagenString)">
+
+                        <form asp-controller="Imagen" asp-action="EliminarImagen" method="post"
+                              class="position-absolute top-0 end-0 m-1"
+                              onsubmit="return confirm('¿Confirma que desea eliminar esta imagen?');">
+                            <input type="hidden" name="id" :value="img.IdImagen" />
+                            <input type="hidden" name="idInmueble" value="@Model.Id" />
+                            <button type="submit" class="btn btn-sm btn-light rounded-circle shadow-sm" title="Eliminar">
+                                <i class="bi bi-x-lg text-danger"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="imagenAmpliada" class="lightbox-overlay" @@click.self="imagenAmpliada = null">
+            <button class="btn btn-light rounded-circle lightbox-cerrar" @@click="imagenAmpliada = null">
+                <i class="bi bi-x-lg"></i>
+            </button>
+            <img :src="imagenAmpliada" class="lightbox-imagen" alt="Imagen ampliada">
         </div>
     </div>
 
-    <div v-if="imagenAmpliada" class="lightbox-overlay" @@click.self="imagenAmpliada = null">
-        <button class="btn btn-light rounded-circle lightbox-cerrar" @@click="imagenAmpliada = null">
-            <i class="bi bi-x-lg"></i>
-        </button>
-        <img :src="imagenAmpliada" class="lightbox-imagen" alt="Imagen ampliada">
-    </div>
-</div>
-
-<style>
-    .lightbox-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.85);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1060;
-        padding: 2rem;
-    }
-
-    .lightbox-imagen {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-        border-radius: 6px;
-    }
-
-    .lightbox-cerrar {
-        position: absolute;
-        top: 1.5rem;
-        right: 1.5rem;
-    }
-</style>
-
-@section Scripts {
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-
-    <script>
-        const { createApp, ref } = Vue;
-
-        createApp({
-        setup() {
-        const imagenes = ref(@Html.Raw(ViewBag.ImagenesJson ?? "[]"));
-        const mostrarForm = ref(false);
-        const previewUrl = ref(null);
-        const imagenAmpliada = ref(null);
-
-        function onFileChange(event) {
-        const archivo = event.target.files[0];
-        previewUrl.value = archivo ? URL.createObjectURL(archivo) : null;
+    <style>
+        .lightbox-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1060;
+            padding: 2rem;
         }
 
-        function ampliarImagen(src) {
-        imagenAmpliada.value = src;
+        .lightbox-imagen {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 6px;
         }
 
-        return {
-        imagenes,
-        mostrarForm,
-        previewUrl,
-        imagenAmpliada,
-        onFileChange,
-        ampliarImagen,
-        };
+        .lightbox-cerrar {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
         }
-        }).mount('#app');
-    </script>
-}
+    </style>
+
+    @section Scripts {
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+        <script>
+            const { createApp, ref } = Vue;
+
+            createApp({
+            setup() {
+            const imagenes = ref(@Html.Raw(ViewBag.ImagenesJson ?? "[]"));
+            const mostrarForm = ref(false);
+            const previewUrl = ref(null);
+            const imagenAmpliada = ref(null);
+
+            function onFileChange(event) {
+            const archivo = event.target.files[0];
+            previewUrl.value = archivo ? URL.createObjectURL(archivo) : null;
+            }
+
+            function ampliarImagen(src) {
+            imagenAmpliada.value = src;
+            }
+
+            return {
+            imagenes,
+            mostrarForm,
+            previewUrl,
+            imagenAmpliada,
+            onFileChange,
+            ampliarImagen,
+            };
+            }
+            }).mount('#app');
+        </script>
+    }
