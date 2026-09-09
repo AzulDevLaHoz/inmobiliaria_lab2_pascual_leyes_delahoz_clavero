@@ -32,6 +32,31 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             ViewBag.Inmuebles = repoInmueble.ObtenerLista();
             return View();
         }
+
+        [HttpGet]
+        public IActionResult Alta(int? idInmueble,DateTime? fechaEntrada,DateTime? fechaSalida)
+        {
+           ViewBag.Inquilinos = repoInquilino.ObtenerLista();
+           ViewBag.Inmuebles = repoInmueble.ObtenerLista();
+
+           var reserva= new Reserva();  
+           if (idInmueble.HasValue && idInmueble > 0)
+    {
+        reserva.IdInmueble = idInmueble.Value;
+    }
+
+    if (fechaEntrada.HasValue && fechaEntrada.Value != DateTime.MinValue)
+    {
+        reserva.FechaEntrada = fechaEntrada.Value;
+    }
+
+    if (fechaSalida.HasValue && fechaSalida.Value != DateTime.MinValue)
+    {
+        reserva.FechaSalida = fechaSalida.Value;
+    }
+
+    return View(reserva); 
+        }
         [HttpPost]
         public IActionResult Alta(Reserva reserva)
         {

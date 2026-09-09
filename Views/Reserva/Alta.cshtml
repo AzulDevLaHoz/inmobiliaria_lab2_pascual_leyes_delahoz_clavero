@@ -16,13 +16,13 @@
 
             <div class="mb-3">
                 <label asp-for="FechaEntrada" class="form-label"></label>
-                <input asp-for="FechaEntrada" class="form-control" type="date" />
+                <input asp-for="FechaEntrada" class="form-control" type="date" value="@(Model?.FechaEntrada != DateTime.MinValue ? Model?.FechaEntrada.ToString("yyyy-MM-dd") : "")" />
                 <span asp-validation-for="FechaEntrada" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="FechaSalida" class="form-label"></label>
-                <input asp-for="FechaSalida" class="form-control" type="date" />
+                <input asp-for="FechaSalida" class="form-control" type="date" value="@(Model?.FechaSalida != DateTime.MinValue ? Model?.FechaSalida.ToString("yyyy-MM-dd") : "")" />
                 <span asp-validation-for="FechaSalida" class="text-danger"></span>
             </div>
 
