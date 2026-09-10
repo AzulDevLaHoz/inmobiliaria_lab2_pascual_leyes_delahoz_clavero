@@ -39,6 +39,11 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             {
                 if (inmueble.ImagenPortada != null && inmueble.ImagenPortada.Length > 0)
                 {
+                    if (!ValidarImagen(inmueble.ImagenPortada))
+                     {
+                     ViewBag.TipoInmuebles = repoTipoInmueble.ObtenerTodos();
+                     return View(inmueble);
+                     }
                     string wwwPath = environment.WebRootPath;
                     string path = Path.Combine(wwwPath, "Uploads", "Portadas");
 
@@ -168,7 +173,13 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             var inmueble = repositorio.ObtenerPorId(id);
             if (inmueble == null || ImagenPortada == null || ImagenPortada.Length == 0)
                 return RedirectToAction("Detalles", new { id });
-
+             
+             if (!ValidarImagen(ImagenPortada))
+             {
+              var error = ModelState["ImagenPortada"]?.Errors.FirstOrDefault()?.ErrorMessage;
+              TempData["Error"] = error ?? "La imagen no es válida.";
+              return RedirectToAction("Detalles", new { id });
+              }
             //  Borro la foto anterior 
             if (!string.IsNullOrEmpty(inmueble.StringPortada))
             {
@@ -192,6 +203,36 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             TempData["Mensaje"] = "Portada actualizada correctamente.";
             return RedirectToAction("Detalles", new { id });
         }
+
+
+
+       private bool ValidarImagen(IFormFile archivo)
+{
+    long maxSizeBytes = 10 * 1024 * 1024;
+    if (archivo.Length > maxSizeBytes)
+    {
+        ModelState.AddModelError("ImagenPortada", "La imagen no debe superar los 2 MB de peso.");
+        return false;
+    }
+
+    var extensionesPermitidas = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+    var extension = Path.GetExtension(archivo.FileName).ToLowerInvariant();
+
+    if (string.IsNullOrEmpty(extension) || !extensionesPermitidas.Contains(extension))
+    {
+        ModelState.AddModelError("ImagenPortada", "Solo se permiten imágenes con extensión .jpg, .jpeg, .png o .webp.");
+        return false;
+    }
+
+    var mimeTypesPermitidos = new[] { "image/jpeg", "image/png", "image/webp" };
+    if (!mimeTypesPermitidos.Contains(archivo.ContentType.ToLower()))
+    {
+        ModelState.AddModelError("ImagenPortada", "El archivo subido no es una imagen válida.");
+        return false;
+    }
+
+    return true;
+}
 
     }
 
