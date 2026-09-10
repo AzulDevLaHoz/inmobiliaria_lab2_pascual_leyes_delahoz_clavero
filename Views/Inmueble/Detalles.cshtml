@@ -74,89 +74,109 @@
 
     <div class="col-md-7">
 
-        <button type="button" class="btn btn-outline-primary mb-3" @@click="mostrarForm = !mostrarForm">
-            <i class="bi" :class="mostrarForm ? 'bi-dash-circle' : 'bi-plus-circle'"></i>
-            {{ mostrarForm ? 'Cancelar' : 'Agregar imágenes' }}
-        </button>
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <form asp-controller="Imagen" asp-action="AgregarImagen" method="post" enctype="multipart/form-data"
+                  id="formAgregarImagenes" class="d-flex align-items-center gap-2">
+                <input type="hidden" name="IdInmueble" value="@Model.Id" />
 
-        <div v-if="mostrarForm" class="card mb-4 shadow-sm border-0 bg-light">
-            <div class="card-body">
-                <h5 class="card-title mb-3">Agregar Nuevas Imágenes a la Galería</h5>
-                <form asp-controller="Imagen" asp-action="AgregarImagen" method="post" enctype="multipart/form-data"
-                      class="row g-2 align-items-center">
-                    <input type="hidden" name="IdInmueble" value="@Model.Id" />
+                <input type="file" name="Archivos" id="inputArchivos" style="display: none;" accept="image/*" multiple
+                @@change="onFilesChange" />
 
-                    <div class="col-sm-8">
-                        <input type="file" name="Archivos" class="form-control" accept="image/*" multiple required
-                        @@change="onFilesChange" />
-                    </div>
-                    <div class="col-sm-4">
-                        <button type="submit" class="btn btn-success w-100">
-                            <i class="bi bi-upload"></i> Subir Fotos
-                        </button>
-                    </div>
+                <button type="button" class="btn btn-primary"
+                        onclick="document.getElementById('inputArchivos').click();">
+                    <i class="bi bi-plus-circle"></i> Agregar imágenes
+                </button>
 
-                    <div class="col-12 d-flex flex-wrap gap-2" v-if="previews.length">
-                        <img v-for="(src, idx) in previews" :key="idx" :src="src" class="img-thumbnail"
-                             style="max-height: 100px;" alt="Vista previa">
-                    </div>
-                </form>
+                <button v-if="previews.length" type="submit" class="btn btn-success">
+                    <i class="bi bi-upload"></i> Subir ({{ previews.length }})
+                </button>
+            </form>
+
+            <div class="btn-group" role="group">
+                <button type="button" class="btn"
+                        :class="vistaActiva === 'galeria' ? 'btn-primary' : 'btn-outline-primary'"
+                    @@click="vistaActiva = 'galeria'">
+                    <i class="bi bi-images"></i> Galería
+                </button>
+                <button type="button" class="btn"
+                        :class="vistaActiva === 'historial' ? 'btn-primary' : 'btn-outline-primary'"
+                    @@click="mostrarHistorial">
+                    <i class="bi bi-clock-history"></i> Historial de Reservas
+                </button>
             </div>
         </div>
 
-        <h3 class="mb-3">Galería de Fotos ({{ imagenes.length }})</h3>
-
-        <div v-if="imagenes.length === 0" class="alert alert-info">
-            <i class="bi bi-info-circle me-1"></i> Este inmueble no tiene imágenes adicionales asociadas.
+        <div v-if="previews.length" class="d-flex flex-wrap gap-2 mb-3">
+            <img v-for="(src, idx) in previews" :key="idx" :src="src" class="img-thumbnail" style="max-height: 80px;"
+                 alt="Vista previa">
         </div>
 
-        <div v-else class="row row-cols-1 row-cols-sm-2 g-3">
-            <div class="col" v-for="img in imagenes" :key="img.IdImagen">
-                <div class="card h-100 shadow-sm position-relative">
-                    <img :src="img.ImagenString || '/Uploads/sinImagen.png'" class="card-img-top"
-                         style="height: 180px; object-fit: cover; cursor: zoom-in;" alt="Foto inmueble"
-                    @@click="ampliarImagen(img.ImagenString)">
+        <div v-if="vistaActiva === 'galeria'">
+            <h3 class="mb-3">Galería de Fotos ({{ imagenes.length }})</h3>
 
-                    <button type="button"
-                            class="btn btn-sm btn-light rounded-circle shadow-sm position-absolute top-0 end-0 m-2"
-                            title="Eliminar" data-bs-toggle="modal" :data-bs-target="'#modalEliminar-' + img.IdImagen">
-                        <i class="bi bi-trash text-danger"></i>
-                    </button>
+            <div v-if="imagenes.length === 0" class="alert alert-info">
+                <i class="bi bi-info-circle me-1"></i> Este inmueble no tiene imágenes adicionales asociadas.
+            </div>
 
-                    <div class="modal fade" :id="'modalEliminar-' + img.IdImagen" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content border-0 shadow-lg rounded-4">
-                                <div class="modal-header bg-danger text-white border-0 rounded-top-4">
-                                    <h5 class="modal-title fw-bold">
-                                        <i class="bi bi-exclamation-triangle-fill me-2"></i> Confirmar Eliminación
-                                    </h5>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                </div>
+            <div v-else class="row row-cols-1 row-cols-sm-2 g-3">
+                <div class="col" v-for="img in imagenes" :key="img.IdImagen">
+                    <div class="card h-100 shadow-sm position-relative">
+                        <img :src="img.ImagenString || '/Uploads/sinImagen.png'" class="card-img-top"
+                             style="height: 180px; object-fit: cover; cursor: zoom-in;" alt="Foto inmueble"
+                        @@click="ampliarImagen(img.ImagenString)">
 
-                                <div class="modal-body text-center p-4">
-                                    <p class="fs-5 mb-4 text-dark">¿Estás seguro que deseás eliminar esta imagen?</p>
-                                    <img :src="img.ImagenString" class="img-thumbnail shadow-sm mb-2"
-                                         style="height: 140px; object-fit: cover; border-radius: 12px;">
-                                </div>
-
-                                <div class="modal-footer border-0 bg-light justify-content-center rounded-bottom-4 p-3">
-                                    <button type="button" class="btn btn-secondary px-4 rounded-pill"
-                                            data-bs-dismiss="modal">Cancelar</button>
-
-                                    <form asp-controller="Imagen" asp-action="EliminarImagen" method="post" class="m-0">
-                                        <input type="hidden" name="id" :value="img.IdImagen" />
-                                        <input type="hidden" name="idInmueble" value="@Model.Id" />
-                                        <button type="submit" class="btn btn-danger px-4 rounded-pill shadow-sm">
-                                            Sí, Eliminar
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                        <form asp-controller="Imagen" asp-action="EliminarImagen" method="post"
+                              class="position-absolute top-0 end-0 m-1"
+                              onsubmit="return confirm('¿Confirma que desea eliminar esta imagen?');">
+                            <input type="hidden" name="id" :value="img.IdImagen" />
+                            <input type="hidden" name="idInmueble" value="@Model.Id" />
+                            <button type="submit" class="btn btn-sm btn-light rounded-circle shadow-sm"
+                                    title="Eliminar">
+                                <i class="bi bi-x-lg text-danger"></i>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div v-if="vistaActiva === 'historial'">
+            <h3 class="mb-3">Historial de Reservas</h3>
+
+            <div v-if="cargandoHistorial" class="text-center text-muted py-4">
+                <div class="spinner-border spinner-border-sm me-2"></div> Cargando historial...
+            </div>
+
+            <div v-else-if="reservas.length === 0" class="alert alert-info">
+                <i class="bi bi-info-circle me-1"></i> Este inmueble todavía no tiene reservas registradas.
+            </div>
+
+            <table v-else class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Entrada</th>
+                        <th>Salida</th>
+                        <th>Inquilino</th>
+                        <th>Estado</th>
+                        <th>Total</th>
+                        <th>Multa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="r in reservas" :key="r.id">
+                        <td>{{ r.fechaEntrada }}</td>
+                        <td>{{ r.fechaSalida }}</td>
+                        <td>{{ r.inquilino }}</td>
+                        <td>
+                            <span class="badge" :class="r.estado ? 'bg-success' : 'bg-secondary'">
+                                {{ r.estado ? 'Activa' : 'Inactiva' }}
+                            </span>
+                        </td>
+                        <td>${{ r.montoTotal.toLocaleString('es-AR') }}</td>
+                        <td>{{ r.multa != null ? '$' + r.multa : '-' }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -168,6 +188,32 @@
     </div>
 </div>
 
+<style>
+    .lightbox-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1060;
+        padding: 2rem;
+    }
+
+    .lightbox-imagen {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border-radius: 6px;
+    }
+
+    .lightbox-cerrar {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+    }
+</style>
+
 @section Scripts {
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
@@ -177,9 +223,13 @@
         createApp({
         setup() {
         const imagenes = ref(@Html.Raw(ViewBag.ImagenesJson ?? "[]"));
-        const mostrarForm = ref(false);
         const previews = ref([]);
         const imagenAmpliada = ref(null);
+
+        const vistaActiva = ref('galeria');
+        const reservas = ref([]);
+        const historialCargado = ref(false);
+        const cargandoHistorial = ref(false);
 
         function onFilesChange(event) {
         const archivos = Array.from(event.target.files);
@@ -190,13 +240,27 @@
         imagenAmpliada.value = src;
         }
 
+        async function mostrarHistorial() {
+        vistaActiva.value = 'historial';
+        if (historialCargado.value) return;
+
+        cargandoHistorial.value = true;
+        try {
+        const respuesta = await fetch(`/Reserva/HistorialJson/@Model.Id`);
+        if (!respuesta.ok) throw new Error('No se pudo cargar el historial.');
+        reservas.value = await respuesta.json();
+        historialCargado.value = true;
+        } catch (e) {
+        console.error(e);
+        } finally {
+        cargandoHistorial.value = false;
+        }
+        }
+
         return {
-        imagenes,
-        mostrarForm,
-        previews,
-        imagenAmpliada,
-        onFilesChange,
-        ampliarImagen,
+        imagenes, previews, imagenAmpliada,
+        onFilesChange, ampliarImagen,
+        vistaActiva, reservas, cargandoHistorial, mostrarHistorial,
         };
         }
         }).mount('#app');

@@ -291,6 +291,55 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             int count = Convert.ToInt32(command.ExecuteScalar());
             return count > 0;
         }
+
+        public IList<Reserva> ObtenerPorInmueble(int idInmueble)
+        {
+            IList<Reserva> res = new List<Reserva>();
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                string sql = @"
+            SELECT r.idReserva, r.fechaEntrada, r.fechaSalida, r.estado, r.fechaMulta, r.multa, r.idInquilino, r.idInmueble,
+                   inq.Nombre, inq.Apellido
+            FROM reserva r
+            INNER JOIN inquilino inq ON r.idInquilino = inq.IdInquilino
+            WHERE r.idInmueble = @idInmueble
+            ORDER BY r.fechaEntrada DESC;";
+
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@idInmueble", idInmueble);
+                    conn.Open();
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            res.Add(new Reserva
+                            {
+                                IdReserva = reader.GetInt32(nameof(Reserva.IdReserva)),
+                                FechaEntrada = reader.GetDateTime(nameof(Reserva.FechaEntrada)),
+                                FechaSalida = reader.GetDateTime(nameof(Reserva.FechaSalida)),
+                                Estado = reader.GetBoolean(nameof(Reserva.Estado)),
+                                FechaMulta = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.FechaMulta)))
+                                    ? null : reader.GetDateTime(nameof(Reserva.FechaMulta)),
+                                Multa = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.Multa)))
+                                    ? null : reader.GetDecimal(nameof(Reserva.Multa)),
+                                IdInquilino = reader.GetInt32(nameof(Reserva.IdInquilino)),
+                                IdInmueble = reader.GetInt32(nameof(Reserva.IdInmueble)),
+                                Inquilino = new Inquilino
+                                {
+                                    IdInquilino = reader.GetInt32(nameof(Reserva.IdInquilino)),
+                                    Nombre = reader.GetString("Nombre"),
+                                    Apellido = reader.GetString("Apellido"),
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+            return res;
+        }
+
     }
 }
 

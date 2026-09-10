@@ -1,5 +1,6 @@
 using inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
 {
@@ -34,28 +35,28 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         }
 
         [HttpGet]
-        public IActionResult Alta(int? idInmueble,DateTime? fechaEntrada,DateTime? fechaSalida)
+        public IActionResult Alta(int? idInmueble, DateTime? fechaEntrada, DateTime? fechaSalida)
         {
-           ViewBag.Inquilinos = repoInquilino.ObtenerLista();
-           ViewBag.Inmuebles = repoInmueble.ObtenerLista();
+            ViewBag.Inquilinos = repoInquilino.ObtenerLista();
+            ViewBag.Inmuebles = repoInmueble.ObtenerLista();
 
-           var reserva= new Reserva();  
-           if (idInmueble.HasValue && idInmueble > 0)
-    {
-        reserva.IdInmueble = idInmueble.Value;
-    }
+            var reserva = new Reserva();
+            if (idInmueble.HasValue && idInmueble > 0)
+            {
+                reserva.IdInmueble = idInmueble.Value;
+            }
 
-    if (fechaEntrada.HasValue && fechaEntrada.Value != DateTime.MinValue)
-    {
-        reserva.FechaEntrada = fechaEntrada.Value;
-    }
+            if (fechaEntrada.HasValue && fechaEntrada.Value != DateTime.MinValue)
+            {
+                reserva.FechaEntrada = fechaEntrada.Value;
+            }
 
-    if (fechaSalida.HasValue && fechaSalida.Value != DateTime.MinValue)
-    {
-        reserva.FechaSalida = fechaSalida.Value;
-    }
+            if (fechaSalida.HasValue && fechaSalida.Value != DateTime.MinValue)
+            {
+                reserva.FechaSalida = fechaSalida.Value;
+            }
 
-    return View(reserva); 
+            return View(reserva);
         }
         [HttpPost]
         public IActionResult Alta(Reserva reserva)
@@ -200,7 +201,27 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpGet("Reserva/HistorialJson/{idInmueble}")]
+        public IActionResult HistorialJson(int idInmueble)
+        {
+            var inmueble = repoInmueble.ObtenerPorId(idInmueble);
+            if (inmueble == null) return NotFound();
 
+            var reservas = repositorio.ObtenerPorInmueble(idInmueble);
+
+            var resultado = reservas.Select(r => new
+            {
+                id = r.IdReserva,
+                fechaEntrada = r.FechaEntrada.ToString("dd/MM/yyyy"),
+                fechaSalida = r.FechaSalida.ToString("dd/MM/yyyy"),
+                estado = r.Estado,
+                inquilino = r.Inquilino != null ? $"{r.Inquilino.Nombre} {r.Inquilino.Apellido}" : "-",
+                multa = r.Multa,
+                montoTotal = (r.FechaSalida - r.FechaEntrada).Days * inmueble.montoDia
+            });
+
+            return Json(resultado);
+        }
 
     }
 }
