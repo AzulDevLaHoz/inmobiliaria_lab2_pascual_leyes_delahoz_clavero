@@ -167,7 +167,10 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             throw new NotImplementedException();
         }
 
-        public int ObtenerCantidad => throw new NotImplementedException();
+       public int ObtenerCantidad()
+        {
+            throw new NotImplementedException();
+        }
 
         virtual public Propietario ObtenerPorId(int id)
         {

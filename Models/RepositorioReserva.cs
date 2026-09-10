@@ -11,7 +11,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         {
         }
 
-        public int ObtenerCantidad
+        /*public int ObtenerCantidad
         {
             get
             {
@@ -25,7 +25,14 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                     }
                 }
             }
+        }*/
+
+        public int ObtenerCantidad()
+        {
+           throw new NotImplementedException();
         }
+
+
 
         public int Alta(Reserva p)
         {
