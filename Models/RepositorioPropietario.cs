@@ -167,8 +167,20 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             throw new NotImplementedException();
         }
 
-        public int ObtenerCantidad => throw new NotImplementedException();
-
+         public int ObtenerCantidad()
+{
+    int total = 0;
+    using (var conn = new MySqlConnection(connectionString))
+    {
+        string sql = "SELECT COUNT(*) FROM propietario WHERE estado = 1;";
+        using (var cmd = new MySqlCommand(sql, conn))
+        {
+            conn.Open();
+            total = Convert.ToInt32(cmd.ExecuteScalar());
+        }
+    }
+    return total;
+}
         virtual public Propietario ObtenerPorId(int id)
         {
             Propietario? p = null;

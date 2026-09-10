@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Inquilinos";
+    int paginaActual = ViewBag.PaginaActual ?? 1;
+    int totalPaginas = ViewBag.TotalPaginas ?? 1;
 }
 
 <h1>Inquilinos</h1>
@@ -71,31 +73,51 @@
                             <i class="bi bi-trash3"></i>
                         </button>
                     </div>
-                </td>
-            </tr>
 
-
-            <div class="modal fade" id="modalEliminar-@item.IdInquilino" tabindex="-1"
-                 aria-labelledby="modalLabel-@item.IdInquilino" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="modalLabel-@item.IdInquilino">Confirmar Baja</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            ¿Estás seguro que deseás dar de baja al inquilino <strong>@item.Nombre @item.Apellido</strong>?
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <form asp-action="Eliminar" asp-route-id="@item.IdInquilino" method="post">
-                                <button type="submit" class="btn btn-danger">Sí, Eliminar</button>
-                            </form>
+                    <div class="modal fade" id="modalEliminar-@item.IdInquilino" tabindex="-1"
+                         aria-labelledby="modalLabel-@item.IdInquilino" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalLabel-@item.IdInquilino">Confirmar Baja</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    ¿Estás seguro que deseás dar de baja al inquilino <strong>@item.Nombre @item.Apellido</strong>?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <form asp-action="Eliminar" asp-route-id="@item.IdInquilino" method="post">
+                                        <button type="submit" class="btn btn-danger">Sí, Eliminar</button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </td>
+            </tr>
         }
     </tbody>
 </table>
 
+@if (totalPaginas > 1)
+{
+    <nav aria-label="Paginación de inquilinos" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(paginaActual == 1 ? "disabled" : "")">
+                <a class="page-link" asp-action="Index" asp-route-pagina="@(paginaActual - 1)">Anterior</a>
+            </li>
+
+            @for (int i = 1; i <= totalPaginas; i++)
+            {
+                <li class="page-item @(i == paginaActual ? "active" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-pagina="@i">@i</a>
+                </li>
+            }
+
+            <li class="page-item @(paginaActual == totalPaginas ? "disabled" : "")">
+                <a class="page-link" asp-action="Index" asp-route-pagina="@(paginaActual + 1)">Siguiente</a>
+            </li>
+        </ul>
+    </nav>
+}

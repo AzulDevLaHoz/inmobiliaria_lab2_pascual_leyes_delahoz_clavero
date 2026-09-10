@@ -1,0 +1,35 @@
+@model inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models.Pago
+@{
+    ViewData["Title"] = "Modificar Pago";
+}
+
+<h1>Modificar Pago</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-5">
+        <form asp-action="Modificar" asp-route-id="@Model.IdPago" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label class="form-label">Importe</label>
+                <input class="form-control" value="@Model.Importe.ToString("C")" disabled />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Fecha de pago</label>
+                <input class="form-control" value="@Model.FechaPago.ToShortDateString()" disabled />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Concepto" class="form-label"></label>
+                <input asp-for="Concepto" class="form-control" />
+                <span asp-validation-for="Concepto" class="text-danger"></span>
+            </div>
+
+            <div class="mt-4">
+                <input type="submit" value="Guardar" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary ms-2">Volver a la lista</a>
+            </div>
+        </form>
+    </div>
+</div>

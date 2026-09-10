@@ -16,15 +16,20 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             this.logger = logger;
         }
 
-        public IActionResult Index()
-        {
-            var lista = repositorio.ObtenerLista();
-            return View(lista);
-        }
-        public IActionResult Alta()
-        {
-            return View();
-        }
+       public IActionResult Index(int pagina = 1)
+{
+    int tamPagina = 10;
+    
+    var inquilinos = repositorio.ObtenerLista(pagNro : pagina, tamPagina: tamPagina);
+
+   
+    int totalRegistros = repositorio.ObtenerCantidad();
+
+    ViewBag.PaginaActual = pagina;
+    ViewBag.TotalPaginas = (int)Math.Ceiling((double)totalRegistros / tamPagina);
+
+    return View(inquilinos);
+}
 
         [HttpPost]
         public IActionResult Alta(Inquilino inquilino)
