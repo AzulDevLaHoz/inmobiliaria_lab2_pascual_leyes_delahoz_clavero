@@ -9,14 +9,16 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         private readonly IRepositorioReserva repositorio;
         private readonly IRepositorioInquilino repoInquilino;
         private readonly RepositorioInmueble repoInmueble;
+        private readonly IRepositorioPago repoPago;
         private readonly IConfiguration configuration;
         private readonly ILogger<ReservaController> logger;
 
-        public ReservaController(IRepositorioReserva repositorio, IRepositorioInquilino repoInquilino, RepositorioInmueble repoInmueble, IConfiguration configuration, ILogger<ReservaController> logger)
+        public ReservaController(IRepositorioReserva repositorio, IRepositorioInquilino repoInquilino, RepositorioInmueble repoInmueble, IRepositorioPago repoPago, IConfiguration configuration, ILogger<ReservaController> logger)
         {
             this.repositorio = repositorio;
             this.repoInquilino = repoInquilino;
             this.repoInmueble = repoInmueble;
+            this.repoPago = repoPago;
             this.configuration = configuration;
             this.logger = logger;
         }
@@ -25,6 +27,23 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         public IActionResult Index()
         {
             var lista = repositorio.ObtenerLista();
+
+            var reservasConPago = new HashSet<int>();
+            var reservasConMultaPagada = new HashSet<int>();
+            foreach (var r in lista)
+            {
+                if (repoPago.ExistePagoCompletado(r.IdReserva))
+                {
+                    reservasConPago.Add(r.IdReserva);
+                }
+                if (r.FechaMulta != null && repoPago.ExistePagoMulta(r.IdReserva))
+                {
+                    reservasConMultaPagada.Add(r.IdReserva);
+                }
+            }
+            ViewBag.ReservasConPago = reservasConPago;
+            ViewBag.ReservasConMultaPagada = reservasConMultaPagada;
+
             return View(lista);
         }
         public IActionResult Alta()
