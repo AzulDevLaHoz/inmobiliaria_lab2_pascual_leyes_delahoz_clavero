@@ -46,15 +46,22 @@ html {
   right: 0.5rem;
 }
 
-.lightbox-overlay {
+.overlay-base {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1060;
   padding: 2rem;
+}
+
+.overlay-oscuro {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.overlay-claro {
+  background: rgba(0, 0, 0, 0.6);
 }
 
 .lightbox-imagen {
@@ -68,6 +75,36 @@ html {
   position: absolute;
   top: 1.5rem;
   right: 1.5rem;
+}
+
+.confirm-box {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  max-width: 420px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.confirm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.confirm-body {
+  padding: 1.25rem;
+  color: #212529;
+}
+
+.confirm-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid #dee2e6;
 }
 
 @media (min-width: 768px) {

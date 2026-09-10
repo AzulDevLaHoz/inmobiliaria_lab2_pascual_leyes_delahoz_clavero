@@ -126,12 +126,11 @@
                         @@click="ampliarImagen(img.ImagenString)">
 
                         <form asp-controller="Imagen" asp-action="EliminarImagen" method="post"
-                              class="position-absolute top-0 end-0 m-1"
-                              onsubmit="return confirm('¿Confirma que desea eliminar esta imagen?');">
+                              class="position-absolute top-0 end-0 m-1" :id="`form-eliminar-${img.IdImagen}`">
                             <input type="hidden" name="id" :value="img.IdImagen" />
                             <input type="hidden" name="idInmueble" value="@Model.Id" />
-                            <button type="submit" class="btn btn-sm btn-light rounded-circle shadow-sm"
-                                    title="Eliminar">
+                            <button type="button" class="btn btn-sm btn-light rounded-circle shadow-sm" title="Eliminar"
+                                @@click="imagenAEliminar = img">
                                 <i class="bi bi-x-lg text-danger"></i>
                             </button>
                         </form>
@@ -180,39 +179,31 @@
         </div>
     </div>
 
-    <div v-if="imagenAmpliada" class="lightbox-overlay" @@click.self="imagenAmpliada = null">
+    <div v-if="imagenAmpliada" class="overlay-base overlay-oscuro" @@click.self="imagenAmpliada = null">
         <button class="btn btn-light rounded-circle lightbox-cerrar" @@click="imagenAmpliada = null">
             <i class="bi bi-x-lg"></i>
         </button>
         <img :src="imagenAmpliada" class="lightbox-imagen" alt="Imagen ampliada">
     </div>
+
+    <div v-if="imagenAEliminar" class="overlay-base overlay-claro" @@click.self="imagenAEliminar = null">
+        <div class="confirm-box">
+            <div class="confirm-header">
+                <h5 class="mb-0">Confirmar eliminación</h5>
+                <button type="button" class="btn-close" @@click="imagenAEliminar = null"></button>
+            </div>
+            <div class="confirm-body">
+                ¿Estás seguro que deseás eliminar esta imagen? Esta acción no se puede deshacer.
+            </div>
+            <div class="confirm-footer">
+                <button type="button" class="btn btn-secondary" @@click="imagenAEliminar = null">Cancelar</button>
+                <button type="button" class="btn btn-danger" @@click="confirmarEliminarImagen">
+                    <i class="bi bi-trash3"></i> Sí, Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
-
-<style>
-    .lightbox-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.85);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1060;
-        padding: 2rem;
-    }
-
-    .lightbox-imagen {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-        border-radius: 6px;
-    }
-
-    .lightbox-cerrar {
-        position: absolute;
-        top: 1.5rem;
-        right: 1.5rem;
-    }
-</style>
 
 @section Scripts {
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -230,6 +221,12 @@
         const reservas = ref([]);
         const historialCargado = ref(false);
         const cargandoHistorial = ref(false);
+        const imagenAEliminar = ref(null);
+
+        function confirmarEliminarImagen() {
+        if (!imagenAEliminar.value) return;
+        document.getElementById(`form-eliminar-${imagenAEliminar.value.IdImagen}`).submit();
+        }
 
         function onFilesChange(event) {
         const archivos = Array.from(event.target.files);
@@ -261,6 +258,7 @@
         imagenes, previews, imagenAmpliada,
         onFilesChange, ampliarImagen,
         vistaActiva, reservas, cargandoHistorial, mostrarHistorial,
+        imagenAEliminar, confirmarEliminarImagen,
         };
         }
         }).mount('#app');
