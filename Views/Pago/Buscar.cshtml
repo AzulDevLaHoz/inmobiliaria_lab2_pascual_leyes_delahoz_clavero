@@ -1,0 +1,76 @@
+@model IEnumerable<inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models.Pago>
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Buscar pagos por inmueble";
+    var inmuebles = ViewBag.Inmuebles as IEnumerable<Inmueble>;
+    int? idSeleccionado = ViewBag.IdInmuebleSeleccionado as int?;
+}
+
+<h1>Buscar pagos por inmueble</h1>
+<hr />
+
+<form method="get" asp-action="Buscar" class="row g-2 mb-4">
+    <div class="col-auto">
+        <select name="idInmueble" class="form-select"
+                asp-items="@(new SelectList(inmuebles, "Id", "Direccion", idSeleccionado))">
+            <option value="">-- Seleccione un inmueble --</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-search"></i> Buscar
+        </button>
+    </div>
+</form>
+
+@if (idSeleccionado.HasValue)
+{
+    @if (!Model.Any())
+    {
+        <p>No hay pagos registrados para este inmueble.</p>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Fecha de pago</th>
+                    <th>Concepto</th>
+                    <th>Importe</th>
+                    <th>Estado</th>
+                    <th>Período de la reserva</th>
+                    <th>Detalle de multa</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pago in Model)
+                {
+                    <tr>
+                        <td>@pago.FechaPago.ToShortDateString()</td>
+                        <td>@pago.Concepto</td>
+                        <td>@pago.Importe.ToString("C")</td>
+                        <td>@(pago.Estado ? "Activo" : "Anulado")</td>
+                        <td>
+                            @if (pago.Reserva != null)
+                            {
+                                @($"{pago.Reserva.FechaEntrada:dd/MM/yyyy} - {pago.Reserva.FechaSalida:dd/MM/yyyy}")
+                            }
+                        </td>
+                        <td>
+                            @if (pago.Reserva?.FechaMulta != null)
+                            {
+                                <span>Salida real: @pago.Reserva.FechaMulta.Value.ToShortDateString() — Multa: @pago.Reserva.Multa?.ToString("C")</span>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Detalles" asp-route-id="@pago.IdPago" class="btn btn-sm btn-info">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}

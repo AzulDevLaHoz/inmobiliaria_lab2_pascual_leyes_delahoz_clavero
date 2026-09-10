@@ -1,0 +1,61 @@
+@model inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models.Pago
+@{
+    ViewData["Title"] = "Detalles del Pago";
+    var reserva = (Reserva?)ViewBag.Reserva;
+    bool mostrarAuditoria = ViewBag.MostrarAuditoria as bool? ?? false;
+}
+
+<h1>Detalles del Pago</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-5">
+        <dl class="row">
+            <dt class="col-sm-4">Concepto</dt>
+            <dd class="col-sm-8">@Model.Concepto</dd>
+
+            <dt class="col-sm-4">Importe</dt>
+            <dd class="col-sm-8">@Model.Importe.ToString("C")</dd>
+
+            <dt class="col-sm-4">Fecha de pago</dt>
+            <dd class="col-sm-8">@Model.FechaPago.ToShortDateString()</dd>
+
+            <dt class="col-sm-4">Estado</dt>
+            <dd class="col-sm-8">@(Model.Estado ? "Activo" : "Anulado")</dd>
+
+            @if (reserva != null)
+            {
+                <dt class="col-sm-4">Período de la reserva</dt>
+                <dd class="col-sm-8">@reserva.FechaEntrada.ToShortDateString() - @reserva.FechaSalida.ToShortDateString()
+                </dd>
+
+                @if (reserva.FechaMulta != null)
+                {
+                    <dt class="col-sm-4">Salida real</dt>
+                    <dd class="col-sm-8">@reserva.FechaMulta.Value.ToShortDateString()</dd>
+
+                    <dt class="col-sm-4">Multa asociada</dt>
+                    <dd class="col-sm-8">@reserva.Multa?.ToString("C")</dd>
+                }
+            }
+        </dl>
+
+        @if (mostrarAuditoria)
+        {
+            <hr />
+            <h5>Auditoría</h5>
+            <dl class="row">
+                <dt class="col-sm-4">Creado por</dt>
+                <dd class="col-sm-8">Usuario #@Model.IdUsuarioCreador</dd>
+
+                @if (Model.IdUsuarioAnulador.HasValue)
+                {
+                    <dt class="col-sm-4">Anulado por</dt>
+                    <dd class="col-sm-8">Usuario #@Model.IdUsuarioAnulador</dd>
+                }
+            </dl>
+        }
+
+        <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+    </div>
+</div>
