@@ -8,8 +8,11 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
     {
         public RepositorioPago(IConfiguration configuration) : base(configuration) { }
 
-        public int ObtenerCantidad => throw new NotImplementedException();
-
+        public int ObtenerCantidad ()
+        {
+         throw new NotImplementedException();
+        }
+        
         public int Alta(Pago p)
         {
             using (var conn = new MySqlConnection(connectionString))
