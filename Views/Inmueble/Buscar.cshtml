@@ -48,7 +48,7 @@
     </div>
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-        <div class="col" v-for="inmueble in resultados" :key="inmueble.id">
+        <div v-cloak class="col" v-for="inmueble in resultados" :key="inmueble.id">
             <div class="card h-100 tarjeta-inmueble" @@click="irADetalle(inmueble.id)">
                 <img :src="inmueble.imagenPortada || '/img/sin-imagen.png'" :alt="inmueble.direccion"
                      class="card-img-top">

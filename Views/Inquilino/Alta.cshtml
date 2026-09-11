@@ -49,7 +49,7 @@
         </form>
     </div>
 
-    <div v-if="duplicado" class="overlay-base overlay-claro" @@click.self="cancelar">
+    <div v-cloak v-if="duplicado" class="overlay-base overlay-claro" @@click.self="cancelar">
         <div class="confirm-box">
             <div class="confirm-header">
                 <h5 class="mb-0">DNI ya registrado</h5>

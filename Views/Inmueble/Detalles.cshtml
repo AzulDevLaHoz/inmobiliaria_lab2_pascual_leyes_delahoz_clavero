@@ -179,14 +179,14 @@
         </div>
     </div>
 
-    <div v-if="imagenAmpliada" class="overlay-base overlay-oscuro" @@click.self="imagenAmpliada = null">
+    <div v-cloak v-if="imagenAmpliada" class="overlay-base overlay-oscuro" @@click.self="imagenAmpliada = null">
         <button class="btn btn-light rounded-circle lightbox-cerrar" @@click="imagenAmpliada = null">
             <i class="bi bi-x-lg"></i>
         </button>
         <img :src="imagenAmpliada" class="lightbox-imagen" alt="Imagen ampliada">
     </div>
 
-    <div v-if="imagenAEliminar" class="overlay-base overlay-claro" @@click.self="imagenAEliminar = null">
+    <div v-cloak v-if="imagenAEliminar" class="overlay-base overlay-claro" @@click.self="imagenAEliminar = null">
         <div class="confirm-box">
             <div class="confirm-header">
                 <h5 class="mb-0">Confirmar eliminación</h5>
