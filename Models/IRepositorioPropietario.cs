@@ -10,5 +10,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         Propietario? ObtenerPorEmail(string email);
         IList<Propietario> BuscarPorNombre(string nombre);
         IList<Propietario> BuscarPorTexto(string nombre);
+        Propietario? ObtenerPorDni(string dni);
+        int Reactivar(int id);
     }
 }

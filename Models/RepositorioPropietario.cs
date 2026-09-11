@@ -167,20 +167,20 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             throw new NotImplementedException();
         }
 
-         public int ObtenerCantidad()
-{
-    int total = 0;
-    using (var conn = new MySqlConnection(connectionString))
-    {
-        string sql = "SELECT COUNT(*) FROM propietario WHERE estado = 1;";
-        using (var cmd = new MySqlCommand(sql, conn))
+        public int ObtenerCantidad()
         {
-            conn.Open();
-            total = Convert.ToInt32(cmd.ExecuteScalar());
+            int total = 0;
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                string sql = "SELECT COUNT(*) FROM propietario WHERE estado = 1;";
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    conn.Open();
+                    total = Convert.ToInt32(cmd.ExecuteScalar());
+                }
+            }
+            return total;
         }
-    }
-    return total;
-}
         virtual public Propietario ObtenerPorId(int id)
         {
             Propietario? p = null;
@@ -243,6 +243,55 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                             });
                         }
                     }
+                }
+            }
+            return res;
+        }
+
+        public Propietario? ObtenerPorDni(string dni)
+        {
+            Propietario? p = null;
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                string sql = @"SELECT idPropietario, nombre, apellido, dni, telefono, email, estado
+                        FROM propietario WHERE dni = @dni";
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@dni", dni);
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            p = new Propietario
+                            {
+                                IdPropietario = reader.GetInt32("idPropietario"),
+                                Nombre = reader.GetString("nombre"),
+                                Apellido = reader.GetString("apellido"),
+                                Dni = reader.GetString("dni"),
+                                Telefono = reader.GetString("telefono"),
+                                Email = reader.GetString("email"),
+                                Estado = reader.GetBoolean("estado")
+                            };
+                        }
+                    }
+                }
+            }
+            return p;
+        }
+
+        public int Reactivar(int id)
+        {
+            int res = -1;
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                string sql = "UPDATE propietario SET estado = @es WHERE IdPropietario = @id";
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.Parameters.AddWithValue("@es", true);
+                    conn.Open();
+                    res = cmd.ExecuteNonQuery();
                 }
             }
             return res;

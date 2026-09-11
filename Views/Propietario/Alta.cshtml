@@ -7,9 +7,9 @@
 <h1>Alta de Propietario</h1>
 <hr />
 
-<div class="row">
+<div id="app" class="row">
     <div class="col-md-4">
-        <form asp-action="Alta" method="post">
+        <form asp-action="Alta" method="post" id="formAlta">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
             <div class="mb-3">
@@ -26,7 +26,7 @@
 
             <div class="mb-3">
                 <label asp-for="Dni" class="form-label"></label>
-                <input asp-for="Dni" class="form-control" />
+                <input asp-for="Dni" class="form-control" id="inputDni" />
                 <span asp-validation-for="Dni" class="text-danger"></span>
             </div>
 
@@ -48,4 +48,47 @@
             </div>
         </form>
     </div>
+
+    <div v-if="duplicado" class="overlay-base overlay-claro" @@click.self="cancelar">
+        <div class="confirm-box">
+            <div class="confirm-header">
+                <h5 class="mb-0">DNI ya registrado</h5>
+                <button type="button" class="btn-close" @@click="cancelar"></button>
+            </div>
+            <div class="confirm-body">
+                Ya existe un propietario dado de baja con este DNI: <strong>{{ duplicado.nombre }}</strong>.
+                ¿Querés reactivarlo en vez de crear uno nuevo?
+            </div>
+            <div class="confirm-footer">
+                <button type="button" class="btn btn-secondary" @@click="cancelar">Cancelar</button>
+                <form asp-action="Reactivar" method="post">
+                    <input type="hidden" name="id" :value="duplicado.id" />
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-arrow-repeat"></i> Sí, reactivar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        const { createApp, ref } = Vue;
+
+        createApp({
+        setup() {
+        const duplicado = ref(@Html.Raw(ViewBag.DniDuplicadoJson ?? "null"));
+
+        function cancelar() {
+        duplicado.value = null;
+        document.getElementById('inputDni').value = '';
+        document.getElementById('inputDni').focus();
+        }
+
+        return { duplicado, cancelar };
+        }
+        }).mount('#app');
+    </script>
+}
