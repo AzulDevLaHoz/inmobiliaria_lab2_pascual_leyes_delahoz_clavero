@@ -16,27 +16,52 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             this.logger = logger;
         }
 
-       public IActionResult Index(int pagina = 1)
-{
-    int tamPagina = 10;
-    
-    var inquilinos = repositorio.ObtenerLista(pagNro : pagina, tamPagina: tamPagina);
+        public IActionResult Index(int pagina = 1)
+        {
+            int tamPagina = 10;
 
-   
-    int totalRegistros = repositorio.ObtenerCantidad();
+            var inquilinos = repositorio.ObtenerLista(pagNro: pagina, tamPagina: tamPagina);
 
-    ViewBag.PaginaActual = pagina;
-    ViewBag.TotalPaginas = (int)Math.Ceiling((double)totalRegistros / tamPagina);
 
-    return View(inquilinos);
-}
+            int totalRegistros = repositorio.ObtenerCantidad();
+
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = (int)Math.Ceiling((double)totalRegistros / tamPagina);
+
+            return View(inquilinos);
+        }
+
+        [HttpGet]
+        public IActionResult Alta()
+        {
+            return View();
+        }
 
         [HttpPost]
         public IActionResult Alta(Inquilino inquilino)
         {
+            var existente = repositorio.ObtenerPorDni(inquilino.Dni);
+
+            if (existente != null && existente.Estado)
+            {
+                TempData["Error"] = "Ya existe un inquilino activo con ese DNI.";
+                return View(inquilino);
+            }
+
+            if (existente != null && !existente.Estado)
+            {
+                ViewBag.DniDuplicadoJson = System.Text.Json.JsonSerializer.Serialize(new
+                {
+                    id = existente.IdInquilino,
+                    nombre = $"{existente.Nombre} {existente.Apellido}"
+                });
+                return View(inquilino);
+            }
+
             if (ModelState.IsValid)
             {
                 repositorio.Alta(inquilino);
+                TempData["Mensaje"] = "El inquilino fue registrado correctamente.";
                 return RedirectToAction(nameof(Index));
             }
             return View(inquilino);
@@ -68,7 +93,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
                 i.Email = entidad.Email;
                 i.Telefono = entidad.Telefono;
                 repositorio.Modificar(i);
-                TempData["Mensaje"] = "Datos guardados correctamente"; 
+                TempData["Mensaje"] = "Datos guardados correctamente";
                 return RedirectToAction(nameof(Index));
             }
             return View(entidad);
@@ -97,6 +122,14 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
                 });
 
             return Json(inquilinos);
+        }
+
+        [HttpPost]
+        public IActionResult Reactivar(int id)
+        {
+            repositorio.Reactivar(id);
+            TempData["Mensaje"] = "El inquilino fue reactivado correctamente.";
+            return RedirectToAction(nameof(Detalles), new { id });
         }
 
     }

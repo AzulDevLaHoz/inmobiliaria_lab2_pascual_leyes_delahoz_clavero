@@ -9,6 +9,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
     {
         IList<Inquilino> BuscarPorTexto(string nombre);
 
-
+        Inquilino? ObtenerPorDni(string dni);
+        int Reactivar(int id);
     }
 }

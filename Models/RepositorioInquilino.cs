@@ -214,18 +214,68 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         }
 
         public int ObtenerCantidad()
-{
-    int total = 0;
-    using (var conn = new MySqlConnection(connectionString))
-    {
-        string sql = "SELECT COUNT(*) FROM inquilino WHERE estado = 1;";
-        using (var cmd = new MySqlCommand(sql, conn))
         {
-            conn.Open();
-            total = Convert.ToInt32(cmd.ExecuteScalar());
+            int total = 0;
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                string sql = "SELECT COUNT(*) FROM inquilino WHERE estado = 1;";
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    conn.Open();
+                    total = Convert.ToInt32(cmd.ExecuteScalar());
+                }
+            }
+            return total;
         }
-    }
-    return total;
-}
+
+        public Inquilino? ObtenerPorDni(string dni)
+        {
+            Inquilino? p = null;
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                string sql = @"SELECT idinquilino, nombre, apellido, dni, telefono, email, estado
+                        FROM inquilino WHERE dni = @dni";
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@dni", dni);
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            p = new Inquilino
+                            {
+                                IdInquilino = reader.GetInt32("idinquilino"),
+                                Nombre = reader.GetString("nombre"),
+                                Apellido = reader.GetString("apellido"),
+                                Dni = reader.GetString("dni"),
+                                Telefono = reader.GetString("telefono"),
+                                Email = reader.GetString("email"),
+                                Estado = reader.GetBoolean("estado")
+                            };
+                        }
+                    }
+                }
+            }
+            return p;
+        }
+
+        public int Reactivar(int id)
+        {
+            int res = -1;
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                string sql = "UPDATE inquilino SET estado = @es WHERE IdInquilino = @id";
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.Parameters.AddWithValue("@es", true);
+                    conn.Open();
+                    res = cmd.ExecuteNonQuery();
+                }
+            }
+            return res;
+        }
+
     }
 }
