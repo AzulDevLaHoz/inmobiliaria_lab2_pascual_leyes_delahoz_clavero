@@ -32,8 +32,8 @@ El sistema cuenta con la arquitectura base y el flujo completo de **ABM / CRUD**
 
 - [x] **Propietarios:** Registro de datos personales, edición de información y borrado de registros.
 - [x] **Inquilinos:** Gestión completa de los inquilinos asociados al sistema inmobiliario.
-- [ ] **Inmuebles:** *(En desarrollo)*
-- [ ] **Contratos / Alquileres:** *(Próximamente)*
+- [X] **Inmuebles:** Gestion Completa
+- [X] **RESERVA **  Gestion Completa
 
 ---
 
