@@ -67,12 +67,14 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             return View(inquilino);
         }
 
+        [HttpGet]
         public ActionResult Modificar(int id)
         {
             var entidad = repositorio.ObtenerPorId(id);
             return View(entidad);
         }
 
+        [HttpGet]
         public IActionResult Detalles(int id)
         {
             var entidad = repositorio.ObtenerPorId(id);
