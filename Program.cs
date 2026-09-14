@@ -19,9 +19,9 @@ builder.Services.AddScoped<IRepositorioRol, RepositorioRol>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Usuarios/Login";
-        options.LogoutPath = "/Usuarios/Logout";
-        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.LoginPath = "/Usuario/Login";
+        options.LogoutPath = "/Usuario/Logout";
+        options.ExpireTimeSpan = TimeSpan.FromHours(1);
     });
 
 var app = builder.Build();
