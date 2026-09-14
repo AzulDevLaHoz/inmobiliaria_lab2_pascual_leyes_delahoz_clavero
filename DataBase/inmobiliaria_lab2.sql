@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-09-2026 a las 20:34:19
+-- Tiempo de generación: 14-09-2026 a las 20:41:13
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -35,6 +35,16 @@ CREATE TABLE `imagen` (
   `idInmueble` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `imagen`
+--
+
+INSERT INTO `imagen` (`idImagen`, `imagen`, `idInmueble`) VALUES
+(1, '/Uploads/Galeria/b646d05e-d5b2-4715-a1ca-7709bf7beed3.webp', 9),
+(3, '/Uploads/Galeria/8597cb6f-a532-42ee-829f-b058958ea5de.webp', 9),
+(4, '/Uploads/Galeria/5d37eb99-8839-4e97-8a23-83c373260f98.webp', 3),
+(5, '/Uploads/Galeria/bb434f5e-774b-46b0-8a12-ae1e3c8a125e.webp', 3);
+
 -- --------------------------------------------------------
 
 --
@@ -60,10 +70,9 @@ CREATE TABLE `inmueble` (
 --
 
 INSERT INTO `inmueble` (`idInmueble`, `direccion`, `capacidad`, `latitud`, `longitud`, `porcentajeReserva`, `imagenPortada`, `montoDia`, `estado`, `idPropietario`, `idTipoInmueble`) VALUES
-(1, 'siempreViva 123', 5, 45, 33, 50.00, 'Microsoft.AspNetCore.Http.FormFile', 45000, 1, 9, 1),
-(3, 'los Almendros 649', 4, 33, 45, 30.00, 'Microsoft.AspNetCore.Http.FormFile', 50000, 1, 9, 1),
-(4, 'Lavalle 3122', 2, 22, 12, 20.00, NULL, 43000, 1, 9, 2),
-(8, 'prueba 123', 2, 23, 23, 30.00, '/Uploads/Portadas/b8b03ce0-0faa-4d68-a376-3c6b0d176636.webp', 30000, 1, 9, 1);
+(1, 'siempreViva 123', 5, 45, 33, 50.00, '/Uploads/Portadas/7fc8de71-15d9-417c-968f-09dd26d34765.webp', 50000, 1, 9, 1),
+(3, 'los Almendros 649', 4, 33, 45, 30.00, '/Uploads/Portadas/f982e3c2-0541-451e-bbe7-084525ac3b84.webp', 50000, 1, 9, 1),
+(9, 'prueba 123', 2, 23, 23, 30.00, '/Uploads/Portadas/28705137-555a-4a23-b4f1-49f2c3cca40c.webp', 60000, 1, 15, 1);
 
 -- --------------------------------------------------------
 
@@ -88,8 +97,19 @@ CREATE TABLE `inquilino` (
 INSERT INTO `inquilino` (`idInquilino`, `dni`, `nombre`, `apellido`, `telefono`, `email`, `estado`) VALUES
 (2, '123132312', 'Homero', 'Simpson', '25533231', 'homero@simpson.com', 0),
 (3, '123123', 'Lautaro', 'Martinez', '76866666', 'torito22@gmail.com', 0),
-(4, '12312332', 'Lautaro', 'Martinez', '76866666', 'torito22@gmail.com', 1),
-(5, '11222333', 'Homero', 'Simpson', '2665252525', 'homero@simpson.com', 1);
+(4, '12312333', 'Lautaro', 'Martinez', '76866666', 'torito22@gmail.com', 1),
+(5, '11222333', 'Homero', 'Simpson', '2665252525', 'homero@simpson.com', 1),
+(6, '21221221', 'martin', 'lopez', '11223333', 'martin@fomd.com', 1),
+(7, '32333212', 'harry', 'potter', '2665333321', 'harry@potter.com', 1),
+(8, '44323221', 'Lisa', 'simpson', '11233233', 'lisa@simpson.com', 1),
+(10, '12223456', 'roberto', 'carlos', '547878777', 'rc@gmail.com', 1),
+(11, '35123456', 'Juan Pablo', 'Gómez', '2664123456', 'juan.gomez@gmail.com', 1),
+(12, '38987654', 'María Laura', 'Fernández', '2664987654', 'mlaura.fernandez@hotmail.com', 1),
+(13, '32456789', 'Carlos Eduardo', 'Rodríguez', '2664456789', 'carlos.rodriguez@yahoo.com', 1),
+(14, '40112233', 'Sofia Belén', 'Martínez', '2664112233', 'sofi.martinez@outlook.com', 1),
+(15, '36778899', 'Lucas Matías', 'López', '2664778899', 'lucas.lopez@gmail.com', 1),
+(16, '41554433', 'Camila Agustina', 'Pérez', '2664554433', 'camila.perez@live.com', 1),
+(17, '33665544', 'Gonzalo Hernán', 'Sánchez', '2664665544', 'gonzalo.sanchez@gmail.com', 0);
 
 -- --------------------------------------------------------
 
@@ -108,6 +128,13 @@ CREATE TABLE `pago` (
   `idUsuarioCreador` int(11) NOT NULL,
   `idUsuarioAnulador` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `pago`
+--
+
+INSERT INTO `pago` (`idPago`, `concepto`, `importe`, `fechaPago`, `metodoPago`, `estado`, `idReserva`, `idUsuarioCreador`, `idUsuarioAnulador`) VALUES
+(3, 'Completado', 100000.00, '2026-09-11 00:00:00', 'efectivo', '1', 9, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -133,7 +160,17 @@ INSERT INTO `propietario` (`idPropietario`, `nombre`, `apellido`, `telefono`, `d
 (2, 'Leo ', 'Messi', '222222222223', '70077777', 'leomessi@his.com', 0),
 (8, ' Patricio Oscar', 'pascual', '02665100116', '33333333', 'patriciopascual2@gmail.com', 0),
 (9, 'Patricio Oscar', 'Pascual', '2664302211', '33333333', 'patriciopascual2@gmail.com', 1),
-(15, 'Adrian', 'Martinez', '1152535433', '34444333', 'adrian@maravilla.com', 1);
+(15, 'Adrian', 'Martinez', '1152535433', '34444333', 'adrian@maravilla.com', 1),
+(16, 'Roberto Daniel', 'Alvarez', '2664111222', '25111222', 'roberto.alvarez@gmail.com', 1),
+(17, 'Silvia Beatriz', 'Quiroga', '2664333444', '28333444', 'silvia.quiroga@hotmail.com', 1),
+(18, 'Marcelo Alejandro', 'Romero', '2664555666', '31555666', 'marcelo.romero@yahoo.com', 1),
+(19, 'Patricia Elizabeth', 'Torres', '2664777888', '24777888', 'patricia.torres@outlook.com', 1),
+(20, 'Jorge Alberto', 'Benítez', '2664999000', '29999000', 'jorge.benitez@gmail.com', 1),
+(21, 'Alicia Ester', 'Sosa', '2664123987', '27123987', 'alicia.sosa@live.com', 1),
+(22, 'Fernando Gabriel', 'Acosta', '2664456654', '30456654', 'fernando.acosta@gmail.com', 1),
+(23, 'Claudia Marcela', 'Medina', '2664789987', '26789987', 'claudia.medina@hotmail.com', 1),
+(24, 'Gustavo Adolfo', 'Castro', '2664112244', '33112244', 'gustavo.castro@yahoo.com', 1),
+(25, 'Marta Inés', 'Navarro', '2664556677', '28556677', 'marta.navarro@outlook.com', 1);
 
 -- --------------------------------------------------------
 
@@ -145,7 +182,7 @@ CREATE TABLE `reserva` (
   `idReserva` int(11) NOT NULL,
   `fechaEntrada` date NOT NULL,
   `fechaSalida` date NOT NULL,
-  `estado` varchar(20) DEFAULT 'Vigente',
+  `estado` tinyint(20) NOT NULL,
   `fechaMulta` date DEFAULT NULL,
   `multa` decimal(10,2) DEFAULT 0.00,
   `idInquilino` int(11) NOT NULL,
@@ -157,10 +194,10 @@ CREATE TABLE `reserva` (
 --
 
 INSERT INTO `reserva` (`idReserva`, `fechaEntrada`, `fechaSalida`, `estado`, `fechaMulta`, `multa`, `idInquilino`, `idInmueble`) VALUES
-(2, '2026-09-20', '2026-09-22', '0', NULL, NULL, 4, 3),
-(3, '2026-09-02', '2026-09-04', '0', NULL, NULL, 4, 4),
-(4, '2026-09-06', '2026-09-08', '1', NULL, NULL, 3, 1),
-(5, '2026-09-09', '2026-09-04', '1', NULL, NULL, 4, 4);
+(7, '2026-09-22', '2026-09-25', 1, NULL, NULL, 5, 9),
+(8, '2026-09-10', '2026-09-13', 1, NULL, NULL, 4, 3),
+(9, '2026-09-10', '2026-09-12', 1, NULL, NULL, 12, 1),
+(10, '2026-09-12', '2026-09-13', 1, NULL, NULL, 6, 1);
 
 -- --------------------------------------------------------
 
@@ -172,6 +209,13 @@ CREATE TABLE `rol` (
   `idRol` int(11) NOT NULL,
   `nombre` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `rol`
+--
+
+INSERT INTO `rol` (`idRol`, `nombre`) VALUES
+(1, 'Administrador');
 
 -- --------------------------------------------------------
 
@@ -189,9 +233,10 @@ CREATE TABLE `tipoinmueble` (
 --
 
 INSERT INTO `tipoinmueble` (`idTipoInmueble`, `nombre`) VALUES
-(1, 'casa'),
-(2, 'departamento'),
-(3, 'quinta');
+(1, 'Casa'),
+(2, 'Departamento'),
+(3, 'quinta'),
+(4, 'Local Comercial');
 
 -- --------------------------------------------------------
 
@@ -201,12 +246,22 @@ INSERT INTO `tipoinmueble` (`idTipoInmueble`, `nombre`) VALUES
 
 CREATE TABLE `usuario` (
   `idUsuario` int(11) NOT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `apellido` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `contrasena` varchar(255) NOT NULL,
+  `clave` varchar(255) NOT NULL,
   `estado` tinyint(1) DEFAULT 1,
   `avatar` varchar(255) DEFAULT NULL,
   `idRol` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `usuario`
+--
+
+INSERT INTO `usuario` (`idUsuario`, `nombre`, `apellido`, `email`, `clave`, `estado`, `avatar`, `idRol`) VALUES
+(1, '', '', 'admin@inmo.com', '1234', 1, NULL, 1),
+(5, 'patricio ', 'pascual', 'patriciopascual2@gmail.com', 'AQAAAAIAAYagAAAAEEH9EhlXuSkTvHQiVUTPOAXQ92hdE3Eh6L0VbaFZHT+XkromHaUQJMOxD6jCfHNRrg==', 1, NULL, 1);
 
 --
 -- Índices para tablas volcadas
@@ -285,55 +340,55 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `imagen`
 --
 ALTER TABLE `imagen`
-  MODIFY `idImagen` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idImagen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `inmueble`
 --
 ALTER TABLE `inmueble`
-  MODIFY `idInmueble` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `idInmueble` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `inquilino`
 --
 ALTER TABLE `inquilino`
-  MODIFY `idInquilino` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `idInquilino` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `pago`
 --
 ALTER TABLE `pago`
-  MODIFY `idPago` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idPago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `propietario`
 --
 ALTER TABLE `propietario`
-  MODIFY `idPropietario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `idPropietario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT de la tabla `reserva`
 --
 ALTER TABLE `reserva`
-  MODIFY `idReserva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `idReserva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `rol`
 --
 ALTER TABLE `rol`
-  MODIFY `idRol` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `tipoinmueble`
 --
 ALTER TABLE `tipoinmueble`
-  MODIFY `idTipoInmueble` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idTipoInmueble` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Restricciones para tablas volcadas
