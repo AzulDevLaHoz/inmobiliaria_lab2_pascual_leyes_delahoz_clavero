@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
 namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
-{
+{ 
+    
    public class UsuarioController : Controller
 {
     private readonly RepositorioUsuario repoUsuario;
