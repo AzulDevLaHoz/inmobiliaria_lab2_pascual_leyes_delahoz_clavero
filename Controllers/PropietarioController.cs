@@ -1,8 +1,10 @@
 using inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
-{
+{   
+    
     public class PropietarioController : Controller
     {
         private readonly IRepositorioPropietario repositorio;
