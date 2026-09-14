@@ -7,19 +7,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
 namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
-<<<<<<< HEAD
 {
-    public class UsuarioController : Controller
-=======
-{ 
-    
-   public class UsuarioController : Controller
-{
-    private readonly RepositorioUsuario repoUsuario;
-    private readonly IRepositorioRol repoRol;
 
-    public UsuarioController(RepositorioUsuario repoUsuario, IRepositorioRol repoRol)
->>>>>>> 5d3acf5dca62ab075e0a5e65a7e6e42763b26e17
+    public class UsuarioController : Controller
     {
         private readonly RepositorioUsuario repoUsuario;
         private readonly IRepositorioRol repoRol;
