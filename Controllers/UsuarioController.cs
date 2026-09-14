@@ -33,6 +33,11 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         public IActionResult Alta(Usuario u)
         {
             u.Estado = true;
+                       //VALIDE ACA POR QUE SE SACO ELRQUIRED DEL MODEL 
+            if (string.IsNullOrWhiteSpace(u.Clave))
+           {
+             ModelState.AddModelError("Clave", "La clave es obligatoria al crear un usuario.");
+           }
 
             if (ModelState.IsValid)
             {
@@ -49,40 +54,69 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             return View(u);
         }
 
-        //GET MODIFICAR
-        [HttpGet]
-        public IActionResult Modificar(int id)
+       // GET MODIFICAR
+[HttpGet]
+[Authorize]
+public IActionResult Modificar(int id)
+{
+    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    int.TryParse(userIdClaim, out int idUsuarioLogueado);
+    bool esAdmin = User.IsInRole("Administrador");
+
+    // SOLO PUEDE EDITR SU PERF SI NO ES ADM
+    if (!esAdmin && id != idUsuarioLogueado)
+    {
+        TempData["Error"] = "No tienes permisos para modificar otros usuarios.";
+        return RedirectToAction("Index", "Home");
+    }
+
+    var usuario = repoUsuario.ObtenerPorId(id);
+    if (usuario == null) return NotFound();
+
+    ViewBag.Roles = repoRol.ObtenerTodos();
+    return View(usuario);
+}
+
+// POST MODIFICAR
+[HttpPost]
+[ValidateAntiForgeryToken]
+[Authorize]
+public IActionResult Modificar(int id, Usuario u)
+{
+    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    int.TryParse(userIdClaim, out int idUsuarioLogueado);
+    bool esAdmin = User.IsInRole("Administrador");
+
+    if (!esAdmin && id != idUsuarioLogueado)
+    {
+        TempData["Error"] = "No tienes permisos para modificar otros usuarios.";
+        return RedirectToAction("Index", "Home");
+    }
+
+    var p = repoUsuario.ObtenerPorId(id);
+    if (p == null) return NotFound();
+
+    if (ModelState.IsValid)
+    {
+        p.Nombre = u.Nombre;
+        p.Apellido = u.Apellido;
+        p.Email = u.Email;
+        p.Avatar = u.Avatar;
+
+        // SOLO ADMIN PUEDdE CAMBIAR ROLES
+        if (esAdmin)
         {
-            var usuario = repoUsuario.ObtenerPorId(id);
-            if (usuario == null) return NotFound();
-            ViewBag.Roles = repoRol.ObtenerTodos();
-            return View(usuario);
+            p.IdRol = u.IdRol;
         }
 
-        //POST MODIFICAR
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Modificar(int id, Usuario u)
-        {
-            var p = repoUsuario.ObtenerPorId(id);
-            if (p == null) return NotFound();
+        repoUsuario.Modificar(p);
+        TempData["Mensaje"] = "Usuario modificado correctamente.";
+        return RedirectToAction(nameof(Index));
+    }
 
-            if (ModelState.IsValid)
-            {
-                p.Nombre = u.Nombre;
-                p.Apellido = u.Apellido;
-                p.Email = u.Email;
-                p.IdRol = u.IdRol;
-                p.Avatar = u.Avatar;
-                repoUsuario.Modificar(p);
-                TempData["Mensaje"] = "Usuario modificado correctamente.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            ViewBag.Roles = repoRol.ObtenerTodos();
-            return View(u);
-        }
-
+    ViewBag.Roles = repoRol.ObtenerTodos();
+    return View(u);
+}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Eliminar(int id)

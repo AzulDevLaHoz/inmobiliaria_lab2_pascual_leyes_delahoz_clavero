@@ -18,7 +18,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         public string Apellido { get; set; } = "";
         [Required(ErrorMessage = "El Email es obligatorio"), EmailAddress]
         public string Email { get; set; } = "";
-        //[Required(ErrorMessage ="la clave es obligatoria"), DataType(DataType.Password)]
+       
         public string Clave { get; set; } = "";
 
         public string? Avatar { get; set; }

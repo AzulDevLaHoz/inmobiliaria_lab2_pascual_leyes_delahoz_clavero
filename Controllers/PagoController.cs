@@ -115,6 +115,7 @@ public IActionResult Alta(Pago pago)
         }
 
         [HttpPost]
+        [Authorize (Roles ="Administrador")]
         public IActionResult Eliminar(int id)
         {
             repositorio.Baja(id);

@@ -21,4 +21,13 @@ public class HomeController : Controller
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
+
+   
+
+public IActionResult AccesoDenegado()
+{
+    TempData["Error"] = "No tienes permisos suficientes (requieres rol de Administrador) para realizar esa acción.";
+
+    return RedirectToAction("Index", "Home");
+}
 }

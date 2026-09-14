@@ -1,6 +1,7 @@
 using inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
 {
@@ -164,6 +165,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles ="Administrador")]
         public ActionResult Eliminar(int id)
         {
             repositorio.Baja(id);

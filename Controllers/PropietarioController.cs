@@ -95,8 +95,9 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             }
             return View(entidad);
         }
-
+        
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public ActionResult Eliminar(int id)
         {
             repositorio.Baja(id);
