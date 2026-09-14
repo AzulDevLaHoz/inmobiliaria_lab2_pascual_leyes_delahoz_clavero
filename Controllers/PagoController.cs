@@ -1,5 +1,7 @@
 using inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
 {
@@ -59,22 +61,36 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             return View(pago);
         }
 
-        [HttpPost]
-        public IActionResult Alta(Pago pago)
+[HttpPost]
+[Authorize] 
+public IActionResult Alta(Pago pago)
+{
+    if (pago.IdReserva <= 0)
+    {
+        ModelState.AddModelError("IdReserva", "El pago debe estar asociado a una reserva válida.");
+    }
+
+    if (ModelState.IsValid)
+    {
+     
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (int.TryParse(userIdClaim, out int idUsuario))
         {
-            if (pago.IdReserva <= 0)
-            {
-                ModelState.AddModelError("IdReserva", "El pago debe estar asociado a una reserva valida.");
-            }
-            if (ModelState.IsValid)
-            {
-                // Modificar por el usuario que esta logueado cuando hagamos loguin
-                pago.IdUsuarioCreador = 1;
-                repositorio.Alta(pago);
-                return RedirectToAction(nameof(Index));
-            }
+            pago.IdUsuarioCreador = idUsuario;
+        }
+        else
+        {
+            ModelState.AddModelError("", "No se pudo identificar al usuario autenticado.");
             return View(pago);
         }
+
+        repositorio.Alta(pago);
+        return RedirectToAction(nameof(Index));
+    }
+
+    return View(pago);
+}
 
         public IActionResult Modificar(int id)
         {
