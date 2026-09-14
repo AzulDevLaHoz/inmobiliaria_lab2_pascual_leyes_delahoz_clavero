@@ -12,36 +12,39 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         {
         }
         
-        public int Alta(Usuario u)
+       public int Alta(Usuario u)
+{
+    int res = -1;
+    using (var conn = new MySqlConnection(connectionString))
+    {
+        // Se corrigieron las comas dobles en VALUES
+        string sql = "INSERT INTO usuario (Nombre, Apellido, Email, Clave, Avatar, idRol, estado) VALUES (@n, @a, @e, @c, @av, @r, @es);";
+        
+        using (var command = new MySqlCommand(sql, conn))
         {
-            int res =-1;
-            using (var conn=new MySqlConnection(connectionString) )
-            {
-                string sql= "INSERT INTO USUARIO (Nombre,Apellido ,Email,Clave,Avatar,idRol,estado ) VALUES (@n,@a,@e,@c,,@av,@r,@e) ";
-                using (var command= new MySqlCommand( sql,conn))
-                {
-                   command.Parameters.AddWithValue("@n",u.Nombre);
-                   command.Parameters.AddWithValue("@a",u.Apellido);
-                   command.Parameters.AddWithValue("@e",u.Email);
-                   command.Parameters.AddWithValue("@c",u.Clave);
-                   command.Parameters.AddWithValue("@av", null);
-                   command.Parameters.AddWithValue("@r",u.IdRol); 
-                   command.Parameters.AddWithValue("@e",true); 
-                   conn.Open();
-                   res= command.ExecuteNonQuery();
-                
-                   
-                }
-            }
-            return res;
+            command.Parameters.AddWithValue("@n", u.Nombre);
+            command.Parameters.AddWithValue("@a", u.Apellido);
+            command.Parameters.AddWithValue("@e", u.Email);
+            command.Parameters.AddWithValue("@c", u.Clave); 
+            command.Parameters.AddWithValue("@av", DBNull.Value);
+            command.Parameters.AddWithValue("@r", u.IdRol); 
+            command.Parameters.AddWithValue("@es", true); 
+            
+            conn.Open();
+            command.ExecuteNonQuery();
+            u.Id = Convert.ToInt32(command.LastInsertedId);
+            res = u.Id;
         }
+    }
+    return res;
+}
 
         public int Baja(int id)
 		{
 			int res = -1;
 			using (var conn = new MySqlConnection(connectionString))
 			{
-				string sql = "UPDATE Usuario SET Estado=false WHERE Id = @id";
+				string sql = "UPDATE Usuario SET Estado=false WHERE IdRol = @id";
 				using (var command= new MySqlCommand(sql, conn))
 				{
 					command.CommandType = CommandType.Text;
@@ -61,7 +64,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
     using (var conn = new MySqlConnection(connectionString))
     {
         string sql = @"
-            SELECT u.Id, u.Nombre, u.Apellido, u.Email, u.Clave, u.Avatar, u.IdRol, u.Estado, r.Nombre AS NombreRol
+            SELECT u.IdUsuario, u.Nombre, u.Apellido, u.Email, u.Clave, u.Avatar, u.IdRol, u.Estado, r.Nombre AS NombreRol
             FROM usuario u
             INNER JOIN rol r ON u.IdRol = r.IdRol
             WHERE u.Email = @e AND u.Estado = 1;";
@@ -75,18 +78,18 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                 if (reader.Read())
                 {
                     u = new Usuario
-                    {
-                        Id = Convert.ToInt32(reader["Id"]),
+                    {   
+                        Id = Convert.ToInt32(reader["IdUsuario"]),
                         Nombre = reader["Nombre"].ToString() ?? "",
                         Apellido = reader["Apellido"].ToString() ?? "",
+                         IdRol = Convert.ToInt32(reader["IdRol"]),
                         Email = reader["Email"].ToString() ?? "",
                         Clave = reader["Clave"].ToString() ?? "",
                         Avatar = reader["Avatar"] != DBNull.Value ? reader["Avatar"].ToString() : null,
-                        IdRol = Convert.ToInt32(reader["IdRol"]),
                         Estado = Convert.ToBoolean(reader["Estado"]),
                         rol = new Rol
                         {
-                            Id = Convert.ToInt32(reader["IdRol"]),
+                            IdRol = Convert.ToInt32(reader["IdRol"]),
                             Nombre = reader["NombreRol"].ToString() ?? ""
                         }
                     };

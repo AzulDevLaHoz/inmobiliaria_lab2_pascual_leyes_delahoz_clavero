@@ -4,6 +4,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
 {
@@ -33,7 +34,11 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         u.Estado = true;
 
         if (ModelState.IsValid)
-        {
+        {   
+          
+          var passwordHasher = new PasswordHasher<Usuario>();
+
+            u.Clave = passwordHasher.HashPassword(u, u.Clave);
             repoUsuario.Alta(u);
             TempData["Mensaje"] = "Usuario creado correctamente.";
             return RedirectToAction(nameof(Index));
@@ -58,26 +63,33 @@ public async Task<IActionResult> Login(Login model)
     {
         var usuario = repoUsuario.ObtenerPorEmail(model.Email);
 
-        if (usuario != null && usuario.Clave == model.Clave)
+        if (usuario != null)
         {
-            var claims = new List<Claim>
+            var passwordHasher = new PasswordHasher<Usuario>();
+
+            var result = passwordHasher.VerifyHashedPassword(usuario, usuario.Clave, model.Clave);
+
+            if (result == PasswordVerificationResult.Success)
             {
-                new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
-                new Claim(ClaimTypes.Name, $"{usuario.Nombre} {usuario.Apellido}"),
-                new Claim(ClaimTypes.Email, usuario.Email),
-                new Claim(ClaimTypes.Role, usuario.rol?.Nombre ?? "Empleado"),
-                new Claim("Avatar", usuario.Avatar ?? "/img/avatar-default.png")
-            };
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
+                    new Claim(ClaimTypes.Name, $"{usuario.Nombre} {usuario.Apellido}"),
+                    new Claim(ClaimTypes.Email, usuario.Email),
+                    new Claim(ClaimTypes.Role, usuario.rol?.Nombre ?? "Empleado"),
+                    new Claim("Avatar", usuario.Avatar ?? "/img/avatar-default.png")
+                };
 
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity)
-            );
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity)
+                );
 
-            TempData["Mensaje"] = $"¡Bienvenido {usuario.Nombre}!";
-            return RedirectToAction("Index", "Home");
+                TempData["Mensaje"] = $"¡Bienvenido {usuario.Nombre}!";
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         ModelState.AddModelError("", "El email o la clave ingresada son incorrectos.");

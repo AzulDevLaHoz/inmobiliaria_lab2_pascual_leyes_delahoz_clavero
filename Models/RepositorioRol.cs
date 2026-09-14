@@ -15,7 +15,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             var res = new List<Rol>();
             using (var conn = new MySqlConnection(connectionString))
             {
-                string sql = "SELECT IdRol, Nombre FROM rol ORDER BY IdRol;";
+                string sql = "SELECT idRol, Nombre FROM rol ORDER BY idRol;";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
                     conn.Open();
@@ -25,7 +25,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                         {
                             res.Add(new Rol
                             {
-                                Id = Convert.ToInt32(reader["IdRol"]),
+                                IdRol = Convert.ToInt32(reader["idRol"]),
                                 Nombre = reader["Nombre"].ToString() ?? ""
                             });
                         }
@@ -51,7 +51,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                         {
                             r = new Rol
                             {
-                                Id = Convert.ToInt32(reader["IdRol"]),
+                                IdRol = Convert.ToInt32(reader["IdRol"]),
                                 Nombre = reader["Nombre"].ToString() ?? ""
                             };
                         }
