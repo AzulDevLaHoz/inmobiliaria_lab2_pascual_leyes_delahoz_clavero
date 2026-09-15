@@ -196,5 +196,164 @@ public IActionResult Modificar(int id, Usuario u)
 
             return View(usuarios);
         }
+        [HttpGet]
+        public IActionResult Detalles(int id)
+        {
+            var usuario = repoUsuario.ObtenerPorId(id);
+
+            if (usuario == null)
+            {
+                TempData["Error"] = "El usuario solicitado no existe.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(usuario);
+        }
+
+        
+[HttpGet]
+[Authorize]
+public IActionResult CambiarClave(int id)
+{
+    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    int.TryParse(userIdClaim, out int idUsuarioLogueado);
+    bool esAdmin = User.IsInRole("Administrador");
+
+    if (!esAdmin && id != idUsuarioLogueado)
+    {
+        TempData["Error"] = "No tienes permisos para modificar este usuario.";
+        return RedirectToAction("Index", "Home");
+    }
+
+    var usuario = repoUsuario.ObtenerPorId(id);
+    if (usuario == null)
+    {
+        TempData["Error"] = "El usuario solicitado no existe.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    return View(usuario);
+}
+
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+[Authorize]
+public IActionResult CambiarClave(int id, string claveVieja, string claveNueva, string confirmarClave)
+{
+    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    int.TryParse(userIdClaim, out int idUsuarioLogueado);
+    bool esAdmin = User.IsInRole("Administrador");
+
+
+    if (!esAdmin && id != idUsuarioLogueado)
+    {
+        TempData["Error"] = "No tienes permisos para realizar esta acción.";
+        return RedirectToAction("Index", "Home");
+    }
+
+    if (string.IsNullOrWhiteSpace(claveNueva) || claveNueva != confirmarClave)
+    {
+        TempData["Error"] = "Las nuevas contraseñas no coinciden o están vacías.";
+        return RedirectToAction(nameof(CambiarClave), new { id });
+    }
+
+   
+    var usuario = repoUsuario.ObtenerPorId(id);
+    if (usuario == null) return NotFound();
+
+
+    if (string.IsNullOrWhiteSpace(claveVieja))
+    {
+        TempData["Error"] = "Debes ingresar tu contraseña actual.";
+        return RedirectToAction(nameof(CambiarClave), new { id });
+    }
+
+    var passwordHasher = new PasswordHasher<Usuario>();
+    var result = passwordHasher.VerifyHashedPassword(usuario, usuario.Clave, claveVieja);
+
+    if (result != PasswordVerificationResult.Success)
+    {
+        TempData["Error"] = "La contraseña actual es incorrecta.";
+        return RedirectToAction(nameof(CambiarClave), new { id });
+    }
+
+    string claveHashed = passwordHasher.HashPassword(usuario, claveNueva);
+    repoUsuario.CambiarClave(id, claveHashed);
+
+    TempData["Mensaje"] = "Contraseña actualizada correctamente.";
+    return RedirectToAction(nameof(Detalles), new { id });
+}
+[HttpPost]
+[ValidateAntiForgeryToken]
+[Authorize]
+public IActionResult CambiarAvatar(int id, IFormFile ImagenAvatar)
+{
+    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    int.TryParse(userIdClaim, out int idUsuarioLogueado);
+    bool esAdmin = User.IsInRole("Administrador");
+
+    if (!esAdmin && id != idUsuarioLogueado)
+    {
+        TempData["Error"] = "No tienes permisos para modificar este avatar.";
+        return RedirectToAction("Index", "Home");
+    }
+
+    if (ImagenAvatar == null || ImagenAvatar.Length == 0 || !ValidarImagenAvatar(ImagenAvatar))
+    {
+        var error = ModelState["ImagenAvatar"]?.Errors.FirstOrDefault()?.ErrorMessage;
+        TempData["Error"] = error ?? "Debe seleccionar una imagen válida.";
+        return RedirectToAction(nameof(Detalles), new { id });
+    }
+
+    var usuario = repoUsuario.ObtenerPorId(id);
+    if (usuario == null) return NotFound();
+
+    string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads");
+    if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+    string nombreArchivo = $"avatar_{id}_{Guid.NewGuid()}{Path.GetExtension(ImagenAvatar.FileName)}";
+    string rutaCompleta = Path.Combine(uploadsFolder, nombreArchivo);
+
+    using (var stream = new FileStream(rutaCompleta, FileMode.Create))
+    {
+        ImagenAvatar.CopyTo(stream);
+    }
+
+    repoUsuario.CambiarAvatar(id, "/Uploads/" + nombreArchivo);
+    TempData["Mensaje"] = "Avatar actualizado correctamente.";
+
+    return RedirectToAction(nameof(Detalles), new { id });
+}
+
+//Validacion de avatar 
+private bool ValidarImagenAvatar(IFormFile archivo)
+{
+    
+    long maxSizeBytes = 10 * 1024 * 1024; 
+    if (archivo.Length > maxSizeBytes)
+    {
+        ModelState.AddModelError("ImagenAvatar", "La imagen no debe superar los 10 MB de peso.");
+        return false;
+    }
+
+    var extensionesPermitidas = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+    var extension = Path.GetExtension(archivo.FileName).ToLowerInvariant();
+
+    if (string.IsNullOrEmpty(extension) || !extensionesPermitidas.Contains(extension))
+    {
+        ModelState.AddModelError("ImagenAvatar", "Solo se permiten imágenes con extensión .jpg, .jpeg, .png o .webp.");
+        return false;
+    }
+
+    var mimeTypesPermitidos = new[] { "image/jpeg", "image/png", "image/webp" };
+    if (!mimeTypesPermitidos.Contains(archivo.ContentType.ToLower()))
+    {
+        ModelState.AddModelError("ImagenAvatar", "El archivo subido no es una imagen válida.");
+        return false;
+    }
+
+    return true;
+}
     }
 }
