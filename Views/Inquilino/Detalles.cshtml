@@ -1,32 +1,133 @@
 @model inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models.Inquilino
+
 @{
     ViewData["Title"] = "Detalles del Inquilino";
 }
 
+<style>
+    [v-cloak] {
+        display: none !important;
+    }
+</style>
+
 <h1>Detalles del Inquilino</h1>
 <hr />
 
-<div class="row">
-    <div class="col-md-5">
-        <dl class="row">
-            <dt class="col-sm-4">Nombre</dt>
-            <dd class="col-sm-8">@Model.Nombre</dd>
+<div id="app" class="row" v-cloak>
+    <div class="col-md-5 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Información Personal</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Nombre:</dt>
+                    <dd class="col-sm-8">@Model.Nombre @Model.Apellido</dd>
 
-            <dt class="col-sm-4">Apellido</dt>
-            <dd class="col-sm-8">@Model.Apellido</dd>
+                    <dt class="col-sm-4">DNI:</dt>
+                    <dd class="col-sm-8">@Model.Dni</dd>
 
-            <dt class="col-sm-4">DNI</dt>
-            <dd class="col-sm-8">@Model.Dni</dd>
+                    <dt class="col-sm-4">Teléfono:</dt>
+                    <dd class="col-sm-8">@Model.Telefono</dd>
 
-            <dt class="col-sm-4">Teléfono</dt>
-            <dd class="col-sm-8">@Model.Telefono</dd>
+                    <dt class="col-sm-4">Email:</dt>
+                    <dd class="col-sm-8">@Model.Email</dd>
 
-            <dt class="col-sm-4">Email</dt>
-            <dd class="col-sm-8">@Model.Email</dd>
+                    <dt class="col-sm-4">Estado:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge @(Model.Estado ? "bg-success" : "bg-danger")">
+                            @(Model.Estado ? "Activo" : "Inactivo")
+                        </span>
+                    </dd>
+                </dl>
+            </div>
+            <div class="card-footer">
+                <a asp-action="Index" class="btn btn-secondary btn-sm">Volver a la lista</a>
+            </div>
+        </div>
+    </div>
 
-            <dt class="col-sm-4">Estado</dt>
-            <dd class="col-sm-8">@(Model.Estado ? "Activo" : "Inactivo")</dd>
-        </dl>
-        <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-clock-history me-1"></i> Historial de Reservas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div v-if="cargando" class="text-center text-muted py-4">
+                    <div class="spinner-border spinner-border-sm me-2"></div> Cargando historial de reservas...
+                </div>
+
+                <div v-else-if="reservas.length === 0" class="alert alert-info mb-0">
+                    <i class="bi bi-info-circle me-1"></i> Este inquilino no posee reservas registradas.
+                </div>
+
+                <div v-else class="table-responsive">
+                    <table class="table table-striped align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Entrada</th>
+                                <th>Salida</th>
+                                <th>Inmueble</th>
+                                <th>Estado</th>
+                                <th>Monto Total</th>
+                                <th>Multa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="r in reservas" :key="r.id">
+                                <td>{{ r.fechaEntrada }}</td>
+                                <td>{{ r.fechaSalida }}</td>
+                                <td>{{ r.inmueble }}</td>
+                                <td>
+                                    <span class="badge" :class="r.estado ? 'bg-success' : 'bg-secondary'">
+                                        {{ r.estado ? 'Activa' : 'Inactiva' }}
+                                    </span>
+                                </td>
+                                <td>${{ r.montoTotal.toLocaleString('es-AR') }}</td>
+                                <td>{{ r.multa != null ? '$' + r.multa : '-' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <script>
+        const { createApp, ref, onMounted } = Vue;
+
+        createApp({
+            setup() {
+                const reservas = ref([]);
+                const cargando = ref(true);
+
+                async function cargarHistorial() {
+                    try {
+                        const respuesta = await fetch(`/Inquilino/HistorialReservasJson/@Model.IdInquilino`);
+                        if (!respuesta.ok) throw new Error('No se pudo obtener el historial.');
+                        reservas.value = await respuesta.json();
+                    } catch (e) {
+                        console.error('Error al cargar reservas:', e);
+                    } finally {
+                        cargando.value = false;
+                    }
+                }
+
+                onMounted(() => {
+                    cargarHistorial();
+                });
+
+                return {
+                    reservas,
+                    cargando
+                };
+            }
+        }).mount('#app');
+    </script>
+}

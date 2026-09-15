@@ -11,5 +11,6 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
 
         Inquilino? ObtenerPorDni(string dni);
         int Reactivar(int id);
+        IList<Reserva> BuscarReservas(int idInquilino);
     }
 }
