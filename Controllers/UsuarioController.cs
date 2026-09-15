@@ -211,20 +211,79 @@ public IActionResult Modificar(int id, Usuario u)
         }
 
         
-        [HttpGet]
-        public IActionResult CambiarClave(int id)
-        {
-            var usuario = repoUsuario.ObtenerPorId(id);
+[HttpGet]
+[Authorize]
+public IActionResult CambiarClave(int id)
+{
+    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    int.TryParse(userIdClaim, out int idUsuarioLogueado);
+    bool esAdmin = User.IsInRole("Administrador");
 
-            if (usuario == null)
-            {
-                TempData["Error"] = "El usuario solicitado no existe.";
-                return RedirectToAction(nameof(Index));
-            }
+    if (!esAdmin && id != idUsuarioLogueado)
+    {
+        TempData["Error"] = "No tienes permisos para modificar este usuario.";
+        return RedirectToAction("Index", "Home");
+    }
 
-            return View(usuario);
-        }
+    var usuario = repoUsuario.ObtenerPorId(id);
+    if (usuario == null)
+    {
+        TempData["Error"] = "El usuario solicitado no existe.";
+        return RedirectToAction(nameof(Index));
+    }
 
+    return View(usuario);
+}
+
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+[Authorize]
+public IActionResult CambiarClave(int id, string claveVieja, string claveNueva, string confirmarClave)
+{
+    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    int.TryParse(userIdClaim, out int idUsuarioLogueado);
+    bool esAdmin = User.IsInRole("Administrador");
+
+
+    if (!esAdmin && id != idUsuarioLogueado)
+    {
+        TempData["Error"] = "No tienes permisos para realizar esta acción.";
+        return RedirectToAction("Index", "Home");
+    }
+
+    if (string.IsNullOrWhiteSpace(claveNueva) || claveNueva != confirmarClave)
+    {
+        TempData["Error"] = "Las nuevas contraseñas no coinciden o están vacías.";
+        return RedirectToAction(nameof(CambiarClave), new { id });
+    }
+
+   
+    var usuario = repoUsuario.ObtenerPorId(id);
+    if (usuario == null) return NotFound();
+
+
+    if (string.IsNullOrWhiteSpace(claveVieja))
+    {
+        TempData["Error"] = "Debes ingresar tu contraseña actual.";
+        return RedirectToAction(nameof(CambiarClave), new { id });
+    }
+
+    var passwordHasher = new PasswordHasher<Usuario>();
+    var result = passwordHasher.VerifyHashedPassword(usuario, usuario.Clave, claveVieja);
+
+    if (result != PasswordVerificationResult.Success)
+    {
+        TempData["Error"] = "La contraseña actual es incorrecta.";
+        return RedirectToAction(nameof(CambiarClave), new { id });
+    }
+
+    string claveHashed = passwordHasher.HashPassword(usuario, claveNueva);
+    repoUsuario.CambiarClave(id, claveHashed);
+
+    TempData["Mensaje"] = "Contraseña actualizada correctamente.";
+    return RedirectToAction(nameof(Detalles), new { id });
+}
 [HttpPost]
 [ValidateAntiForgeryToken]
 [Authorize]
