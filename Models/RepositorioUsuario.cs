@@ -249,7 +249,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             Usuario? u = null;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"SELECT IdUsuario, Nombre, Apellido, Email, IdRol
+                string sql = @"SELECT IdUsuario, Nombre, Apellido, Email, IdRol,Avatar
                             FROM Usuario
                             WHERE IdUsuario = @id";
 
@@ -268,7 +268,8 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                             Nombre = reader.GetString("Nombre"),
                             Apellido = reader.GetString("Apellido"),
                             Email = reader.GetString("Email"),
-                            IdRol = reader.GetInt32("IdRol")
+                            IdRol = reader.GetInt32("IdRol"),
+                            Avatar = reader.IsDBNull(reader.GetOrdinal("Avatar"))  ? null   : reader.GetString("Avatar")
                         };
                     }
                     connection.Close();
@@ -276,6 +277,27 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             }
             return u;
         }
+
+    public int CambiarAvatar(int id, string avatarPath)
+{
+    int res = -1;
+    using (var conn = new MySqlConnection(connectionString))
+    {
+    
+        string sql = @"UPDATE usuario 
+                       SET avatar = @avatar 
+                       WHERE IdUsuario = @id;";
+
+        using (var cmd = new MySqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@avatar", avatarPath);
+            cmd.Parameters.AddWithValue("@id", id);
+            conn.Open();
+            res = cmd.ExecuteNonQuery();
+        }
+    }
+    return res;
+}
 
     }
 
