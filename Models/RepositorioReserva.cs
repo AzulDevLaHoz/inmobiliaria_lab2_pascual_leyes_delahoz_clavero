@@ -11,28 +11,10 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         {
         }
 
-        /*public int ObtenerCantidad
-        {
-            get
-            {
-                using (var conn = new MySqlConnection(connectionString))
-                {
-                    string sql = "SELECT COUNT(*) FROM reserva";
-                    using (var cmd = new MySqlCommand(sql, conn))
-                    {
-                        conn.Open();
-                        return Convert.ToInt32(cmd.ExecuteScalar());
-                    }
-                }
-            }
-        }*/
-
         public int ObtenerCantidad()
         {
            throw new NotImplementedException();
         }
-
-
 
         public int Alta(Reserva p)
         {
@@ -61,7 +43,6 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         public int Baja(int id)
         {
             int res = -1;
-
 
             using (var conn = new MySqlConnection(connectionString))
             {
@@ -121,7 +102,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                 FROM reserva r
                 INNER JOIN inquilino inq ON r.idInquilino = inq.IdInquilino
                 INNER JOIN inmueble im ON r.idInmueble = im.idInmueble
-                WHERE r.estado = 1
+                WHERE (r.estado = 1 OR r.fechaMulta IS NOT NULL)
                 ORDER BY r.idReserva
                 LIMIT @tamPagina OFFSET @offset;";
                 using (var cmd = new MySqlCommand(sql, conn))
@@ -349,7 +330,3 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
 
     }
 }
-
-
-
-

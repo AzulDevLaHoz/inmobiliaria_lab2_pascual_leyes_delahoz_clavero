@@ -39,5 +39,6 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         [ForeignKey(nameof(Inmueble))]
         public int IdInmueble { get; set; }
         public Inmueble? Inmueble { get; set; }
+        public decimal? MontoTotalAbonado { get; set; }
     }
 }

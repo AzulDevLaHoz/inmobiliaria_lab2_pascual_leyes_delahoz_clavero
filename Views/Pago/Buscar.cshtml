@@ -49,7 +49,7 @@
                     <tr>
                         <td>@pago.FechaPago.ToShortDateString()</td>
                         <td>@pago.Concepto</td>
-                        <td>@pago.Importe.ToString("C")</td>
+                        <td>@FormatoAr.Moneda(pago.Importe)</td>
                         <td>@(pago.Estado ? "Activo" : "Anulado")</td>
                         <td>
                             @if (pago.Reserva != null)
@@ -60,7 +60,7 @@
                         <td>
                             @if (pago.Reserva?.FechaMulta != null)
                             {
-                                <span>Salida real: @pago.Reserva.FechaMulta.Value.ToShortDateString() — Multa: @pago.Reserva.Multa?.ToString("C")</span>
+                                <span>Salida real: @pago.Reserva.FechaMulta.Value.ToShortDateString() — Multa: @(pago.Reserva.Multa.HasValue ? FormatoAr.Moneda(pago.Reserva.Multa.Value) : "")</span>
                             }
                         </td>
                         <td>

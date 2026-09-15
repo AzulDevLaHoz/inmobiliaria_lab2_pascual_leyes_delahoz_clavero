@@ -22,9 +22,18 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
 
         public IActionResult Index()
         {
-            var lista = repositorio.ObtenerLista();
-            ViewBag.Inmuebles = repoInmueble.ObtenerLista();
+            var lista = repositorio.ObtenerReservasFinalizadas(10);
             return View(lista);
+        }
+
+        public IActionResult DetalleReserva(int idReserva)
+        {
+            var reserva = repoReserva.ObtenerPorId(idReserva);
+            if (reserva == null) return NotFound();
+
+            var pagos = repositorio.ObtenerPorReserva(idReserva);
+            ViewBag.Reserva = reserva;
+            return View(pagos);
         }
 
         [HttpGet]
@@ -38,6 +47,10 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             var reserva = repoReserva.ObtenerPorId(idReserva.Value);
             if (reserva == null) return NotFound();
 
+            var inmueble = repoInmueble.ObtenerPorId(reserva.IdInmueble);
+            int dias = (reserva.FechaSalida - reserva.FechaEntrada).Days;
+            decimal montoTotal = dias * inmueble.montoDia;
+
             var pago = new Pago { IdReserva = idReserva.Value };
 
             if (tipo == "Multa")
@@ -49,48 +62,51 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
                 pago.Concepto = "Multa";
                 pago.Importe = reserva.Multa.Value;
             }
+            else if (tipo == "Seña")
+            {
+                pago.Concepto = "Seña";
+                pago.Importe = montoTotal * (inmueble.porcentajeReserva / 100m);
+            }
             else
             {
-                var inmueble = repoInmueble.ObtenerPorId(reserva.IdInmueble);
-                int dias = (reserva.FechaSalida - reserva.FechaEntrada).Days;
+                decimal montoSeniaPagada = repositorio.ObtenerImportePorConcepto(idReserva.Value, "Seña") ?? 0m;
                 pago.Concepto = "Completado";
-                pago.Importe = dias * inmueble.montoDia;
+                pago.Importe = Math.Max(0m, montoTotal - montoSeniaPagada);
             }
 
             ViewBag.Tipo = tipo;
             return View(pago);
         }
 
-[HttpPost]
-[Authorize] 
-public IActionResult Alta(Pago pago)
-{
-    if (pago.IdReserva <= 0)
-    {
-        ModelState.AddModelError("IdReserva", "El pago debe estar asociado a una reserva válida.");
-    }
-
-    if (ModelState.IsValid)
-    {
-     
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        if (int.TryParse(userIdClaim, out int idUsuario))
+        [HttpPost]
+        [Authorize] 
+        public IActionResult Alta(Pago pago)
         {
-            pago.IdUsuarioCreador = idUsuario;
-        }
-        else
-        {
-            ModelState.AddModelError("", "No se pudo identificar al usuario autenticado.");
+            if (pago.IdReserva <= 0)
+            {
+                ModelState.AddModelError("IdReserva", "El pago debe estar asociado a una reserva válida.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (int.TryParse(userIdClaim, out int idUsuario))
+                {
+                    pago.IdUsuarioCreador = idUsuario;
+                }
+                else
+                {
+                    ModelState.AddModelError("", "No se pudo identificar al usuario autenticado.");
+                    return View(pago);
+                }
+
+                repositorio.Alta(pago);
+                return RedirectToAction(nameof(Index));
+            }
+
             return View(pago);
         }
-
-        repositorio.Alta(pago);
-        return RedirectToAction(nameof(Index));
-    }
-
-    return View(pago);
-}
 
         public IActionResult Modificar(int id)
         {
@@ -115,19 +131,28 @@ public IActionResult Alta(Pago pago)
         }
 
         [HttpPost]
-        [Authorize (Roles ="Administrador")]
         public IActionResult Eliminar(int id)
         {
+            var pago = repositorio.ObtenerPorId(id);
             repositorio.Baja(id);
+            if (pago != null)
+            {
+                return RedirectToAction(nameof(DetalleReserva), new { idReserva = pago.IdReserva });
+            }
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
         public IActionResult AnularPago(int id)
         {
+            var pago = repositorio.ObtenerPorId(id);
             // Modificar por el usuario que esta logueado cuando hagamos loguin
             int idUsuarioAnulador = 1;
             repositorio.AnularPago(id, idUsuarioAnulador);
+            if (pago != null)
+            {
+                return RedirectToAction(nameof(DetalleReserva), new { idReserva = pago.IdReserva });
+            }
             return RedirectToAction(nameof(Index));
         }
 

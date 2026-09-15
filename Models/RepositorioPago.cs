@@ -8,11 +8,11 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
     {
         public RepositorioPago(IConfiguration configuration) : base(configuration) { }
 
-        public int ObtenerCantidad ()
+        public int ObtenerCantidad()
         {
-         throw new NotImplementedException();
+            throw new NotImplementedException();
         }
-        
+
         public int Alta(Pago p)
         {
             using (var conn = new MySqlConnection(connectionString))
@@ -239,6 +239,133 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                     return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
                 }
             }
+        }
+
+        public bool ExistePagoSenia(int idReserva)
+        {
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                string sql = @"SELECT COUNT(*) FROM pago 
+                        WHERE idReserva = @idReserva AND concepto = @concepto AND estado = 1";
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@idReserva", idReserva);
+                    cmd.Parameters.AddWithValue("@concepto", "Seña");
+                    conn.Open();
+                    return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+                }
+            }
+        }
+
+        public decimal? ObtenerImportePorConcepto(int idReserva, string concepto)
+        {
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                string sql = @"SELECT importe FROM pago 
+                        WHERE idReserva = @idReserva AND concepto = @concepto AND estado = 1
+                        LIMIT 1";
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@idReserva", idReserva);
+                    cmd.Parameters.AddWithValue("@concepto", concepto);
+                    conn.Open();
+                    var resultado = cmd.ExecuteScalar();
+                    return (resultado == null || resultado == DBNull.Value)
+                        ? (decimal?)null
+                        : Convert.ToDecimal(resultado);
+                }
+            }
+        }
+
+        public IList<Pago> ObtenerPorReserva(int idReserva)
+        {
+            IList<Pago> res = new List<Pago>();
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                string sql = @"SELECT idPago, concepto, importe, fechaPago, metodoPago, estado,
+                        idReserva, idUsuarioCreador, idUsuarioAnulador
+                        FROM pago
+                        WHERE idReserva = @idReserva
+                        ORDER BY fechaPago;";
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@idReserva", idReserva);
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            res.Add(BuscarPago(reader));
+                        }
+                    }
+                }
+            }
+            return res;
+        }
+
+        public IList<Reserva> ObtenerReservasFinalizadas(int cantidad = 10)
+        {
+            IList<Reserva> res = new List<Reserva>();
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                // "Finalizada" = tiene Completado vigente y nunca tuvo Salida Anticipada,
+                // O tuvo Salida Anticipada (fechaMulta no nula) y ya tiene la Multa vigente cobrada.
+                string sql = @"
+                    SELECT r.idReserva, r.fechaEntrada, r.fechaSalida, r.estado, r.fechaMulta, r.multa,
+                           r.idInquilino, r.idInmueble, inq.Nombre, inq.Apellido,
+                           SUM(p.importe) AS montoTotal,
+                           MAX(p.fechaPago) AS ultimoPago
+                    FROM reserva r
+                    INNER JOIN inquilino inq ON r.idInquilino = inq.IdInquilino
+                    INNER JOIN pago p ON p.idReserva = r.idReserva AND p.estado = 1
+                    WHERE
+                        (r.fechaMulta IS NULL AND EXISTS (
+                            SELECT 1 FROM pago pc WHERE pc.idReserva = r.idReserva AND pc.concepto = 'Completado' AND pc.estado = 1
+                        ))
+                        OR
+                        (r.fechaMulta IS NOT NULL AND EXISTS (
+                            SELECT 1 FROM pago pm WHERE pm.idReserva = r.idReserva AND pm.concepto = 'Multa' AND pm.estado = 1
+                        ))
+                    GROUP BY r.idReserva, r.fechaEntrada, r.fechaSalida, r.estado, r.fechaMulta, r.multa,
+                             r.idInquilino, r.idInmueble, inq.Nombre, inq.Apellido
+                    ORDER BY ultimoPago DESC
+                    LIMIT @cantidad;";
+
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@cantidad", cantidad);
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            res.Add(new Reserva
+                            {
+                                IdReserva = reader.GetInt32(nameof(Reserva.IdReserva)),
+                                FechaEntrada = reader.GetDateTime(nameof(Reserva.FechaEntrada)),
+                                FechaSalida = reader.GetDateTime(nameof(Reserva.FechaSalida)),
+                                Estado = reader.GetBoolean(nameof(Reserva.Estado)),
+                                FechaMulta = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.FechaMulta)))
+                                    ? null
+                                    : reader.GetDateTime(nameof(Reserva.FechaMulta)),
+                                Multa = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.Multa)))
+                                    ? null
+                                    : reader.GetDecimal(nameof(Reserva.Multa)),
+                                IdInquilino = reader.GetInt32(nameof(Reserva.IdInquilino)),
+                                IdInmueble = reader.GetInt32(nameof(Reserva.IdInmueble)),
+                                MontoTotalAbonado = reader.GetDecimal("montoTotal"),
+                                Inquilino = new Inquilino
+                                {
+                                    IdInquilino = reader.GetInt32(nameof(Reserva.IdInquilino)),
+                                    Nombre = reader.GetString("Nombre"),
+                                    Apellido = reader.GetString("Apellido"),
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+            return res;
         }
     }
 }

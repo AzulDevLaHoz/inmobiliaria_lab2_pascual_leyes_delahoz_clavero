@@ -33,7 +33,7 @@
                 <dd class="col-sm-8">@Model.FechaMulta?.ToShortDateString()</dd>
 
                 <dt class="col-sm-4">Multa</dt>
-                <dd class="col-sm-8">@Model.Multa</dd>
+                <dd class="col-sm-8">@(Model.Multa.HasValue ? FormatoAr.Moneda(Model.Multa.Value) : "")</dd>
             }
         </dl>
         <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>

@@ -14,40 +14,65 @@
         <input type="text" class="form-control" value="@Model.FechaSalida.ToString("dd/MM/yyyy")" disabled />
     </div>
     <div class="mb-3">
+        <label>Seña ya abonada</label>
+        <input type="text" class="form-control" value="@(((decimal)ViewBag.MontoSeniaPagada).ToString("C"))" disabled />
+    </div>
+    <div class="mb-3">
         <label>Fecha real de retiro</label>
         <input type="date" id="fechaRetiro" name="fechaRetiro" class="form-control"
             min="@Model.FechaEntrada.ToString("yyyy-MM-dd")" required />
     </div>
     <div class="mb-3">
+        <label>Monto Hospedaje a cobrar (días ya consumidos)</label>
+        <input type="text" id="montoHospedaje" class="form-control" readonly />
+    </div>
+    <div class="mb-3">
         <label>Monto Multa</label>
         <input type="text" id="montoMulta" class="form-control" readonly />
+    </div>
+    <div class="mb-3">
+        <label for="metodoDePago">Método de Pago</label>
+        <select id="metodoDePago" name="metodoDePago" class="form-select" required>
+            <option value="">Seleccionar...</option>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Transferencia">Transferencia</option>
+            <option value="Tarjeta">Tarjeta</option>
+        </select>
     </div>
 
     <button type="submit" class="btn btn-danger">Confirmar Salida Anticipada</button>
 </form>
 
+@section Scripts {
 <script>
     const fechaEntrada = new Date("@Model.FechaEntrada.ToString("yyyy-MM-dd")");
     const fechaSalida = new Date("@Model.FechaSalida.ToString("yyyy-MM-dd")");
     const montoDiario = @ViewBag.MontoDiario;
+    const montoSeniaPagada = @(((decimal)ViewBag.MontoSeniaPagada).ToString(System.Globalization.CultureInfo.InvariantCulture));
 
     document.getElementById("fechaRetiro").addEventListener("change", function () {
         const fechaRetiro = new Date(this.value);
         const msPorDia = 1000 * 60 * 60 * 24;
         const diasTotales = Math.round((fechaSalida - fechaEntrada) / msPorDia);
-        const diasTranscurridos = Math.round((fechaRetiro - fechaEntrada) / msPorDia);
+        const diasQuedado = Math.round((fechaRetiro - fechaEntrada) / msPorDia);
 
+        let hospedaje = Math.max(0, (diasQuedado * montoDiario) - montoSeniaPagada);
         let multa = 0;
+
         if (fechaRetiro < fechaSalida) {
             const diasRestantes = Math.round((fechaSalida - fechaRetiro) / msPorDia);
             const montoRestante = diasRestantes * montoDiario;
-            const porcentaje = diasTranscurridos < diasTotales / 2 ? 0.50 : 0.25;
+            // "mitad incluida": empate va a 50%
+            const porcentaje = diasQuedado <= diasTotales / 2 ? 0.50 : 0.25;
             multa = montoRestante * porcentaje;
         } else if (fechaRetiro > fechaSalida) {
             document.getElementById("montoMulta").value = "Pendiente de definir regla";
+            document.getElementById("montoHospedaje").value = hospedaje.toFixed(2);
             return;
         }
 
+        document.getElementById("montoHospedaje").value = hospedaje.toFixed(2);
         document.getElementById("montoMulta").value = multa.toFixed(2);
     });
 </script>
+}

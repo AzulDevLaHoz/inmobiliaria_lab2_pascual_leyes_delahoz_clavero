@@ -44,47 +44,52 @@
                         </button>
 
                         @{
+                            var reservasConSenia = ViewBag.ReservasConSenia as HashSet<int> ?? new HashSet<int>();
                             var reservasConPago = ViewBag.ReservasConPago as HashSet<int> ?? new HashSet<int>();
                             var reservasConMultaPagada = ViewBag.ReservasConMultaPagada as HashSet<int> ?? new HashSet<int>();
                         }
-                        ...
-                        @if (item.Estado)
+
+                        @if (!reservasConSenia.Contains(item.IdReserva))
                         {
-                            if (item.FechaMulta != null)
+                            <a asp-controller="Pago" asp-action="Alta" asp-route-idReserva="@item.IdReserva"
+                            asp-route-tipo="Seña" title="Pagar Seña" class="btn btn-primary btn-sm">
+                                <i class="bi bi-piggy-bank"></i> Pagar Seña
+                            </a>
+                        }
+                        else if (item.FechaMulta != null)
+                        {
+                            if (reservasConMultaPagada.Contains(item.IdReserva))
                             {
-                                if (reservasConMultaPagada.Contains(item.IdReserva))
-                                {
-                                    <a class="btn btn-success btn-sm disabled" aria-disabled="true" tabindex="-1"
-                                    title="Multa ya generada">
-                                        <i class="bi bi-check-circle"></i> Multa Generada
-                                    </a>
-                                }
-                                else
-                                {
-                                    <a asp-controller="Pago" asp-action="Alta" asp-route-idReserva="@item.IdReserva"
-                                    asp-route-tipo="Multa" title="Generar Pago de Multa" class="btn btn-danger btn-sm">
-                                        <i class="bi bi-cash-coin"></i> Generar Pago Multa
-                                    </a>
-                                }
-                            }
-                            else if (!reservasConPago.Contains(item.IdReserva))
-                            {
-                                <a asp-controller="Pago" asp-action="Alta" asp-route-idReserva="@item.IdReserva"
-                                asp-route-tipo="Completo" title="Generar Pago de Reserva" class="btn btn-success btn-sm">
-                                    <i class="bi bi-cash-coin"></i>
+                                <a class="btn btn-success btn-sm disabled" aria-disabled="true" tabindex="-1"
+                                title="Multa ya cobrada">
+                                    <i class="bi bi-check-circle"></i> Multa Cobrada
                                 </a>
-                            }
-                            else if (DateTime.Today <= item.FechaSalida)
-                            {
-                                <a asp-action="SalidaAnticipada" title="Salida Anticipada" asp-route-id="@item.IdReserva"
-                                class="btn btn-warning btn-sm"><i class="bi bi-door-open"></i></a>
                             }
                             else
                             {
-                                <a asp-action="GenerarMulta" asp-route-id="@item.IdReserva" class="btn btn-danger btn-sm">
-                                    Generar Multa
+                                <a asp-controller="Pago" asp-action="Alta" asp-route-idReserva="@item.IdReserva"
+                                asp-route-tipo="Multa" title="Cobrar multa por salida anticipada" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-cash-coin"></i> Pagar Multa
                                 </a>
                             }
+                        }
+                        else if (reservasConPago.Contains(item.IdReserva))
+                        {
+                            <a class="btn btn-success btn-sm disabled" aria-disabled="true" tabindex="-1"
+                            title="Hospedaje ya pagado">
+                                <i class="bi bi-check-circle"></i> Hospedaje Pagado
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-controller="Pago" asp-action="Alta" asp-route-idReserva="@item.IdReserva"
+                            asp-route-tipo="Completo" title="Pagar Hospedaje" class="btn btn-success btn-sm">
+                                <i class="bi bi-cash-coin"></i> Pagar Hospedaje
+                            </a>
+                            <a asp-action="SalidaAnticipada" asp-route-id="@item.IdReserva"
+                            title="Salida Anticipada" class="btn btn-warning btn-sm">
+                                <i class="bi bi-door-open"></i> Salida Anticipada
+                            </a>
                         }
                     </div>
                 </td>

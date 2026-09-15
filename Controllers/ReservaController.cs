@@ -1,7 +1,8 @@
 using inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
 {
@@ -29,10 +30,15 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         {
             var lista = repositorio.ObtenerLista();
 
+            var reservasConSenia = new HashSet<int>();
             var reservasConPago = new HashSet<int>();
             var reservasConMultaPagada = new HashSet<int>();
             foreach (var r in lista)
             {
+                if (repoPago.ExistePagoSenia(r.IdReserva))
+                {
+                    reservasConSenia.Add(r.IdReserva);
+                }
                 if (repoPago.ExistePagoCompletado(r.IdReserva))
                 {
                     reservasConPago.Add(r.IdReserva);
@@ -42,6 +48,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
                     reservasConMultaPagada.Add(r.IdReserva);
                 }
             }
+            ViewBag.ReservasConSenia = reservasConSenia;
             ViewBag.ReservasConPago = reservasConPago;
             ViewBag.ReservasConMultaPagada = reservasConMultaPagada;
 
@@ -153,7 +160,6 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
                 r.FechaSalida = entidad.FechaSalida;
                 r.IdInmueble = entidad.IdInmueble;
                 r.IdInquilino = entidad.IdInquilino;
-                r.FechaMulta = entidad.FechaMulta;
                 repositorio.Modificar(r);
                 return RedirectToAction(nameof(Index));
             }
@@ -165,7 +171,6 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles ="Administrador")]
         public ActionResult Eliminar(int id)
         {
             repositorio.Baja(id);
@@ -180,12 +185,14 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
 
             var inmueble = repoInmueble.ObtenerPorId(reserva.IdInmueble);
             ViewBag.MontoDiario = inmueble.montoDia;
+            ViewBag.MontoSeniaPagada = repoPago.ObtenerImportePorConcepto(id, "Seña") ?? 0m;
 
             return View(reserva);
         }
 
         [HttpPost]
-        public IActionResult SalidaAnticipada(int idReserva, DateTime fechaRetiro)
+        [Authorize]
+        public IActionResult SalidaAnticipada(int idReserva, DateTime fechaRetiro, string metodoDePago)
         {
             var reserva = repositorio.ObtenerPorId(idReserva);
             if (reserva == null) return NotFound();
@@ -194,14 +201,19 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             decimal montoDiario = inmueble.montoDia;
 
             int diasTotales = (reserva.FechaSalida - reserva.FechaEntrada).Days;
-            int diasTranscurridos = (fechaRetiro - reserva.FechaEntrada).Days;
+            int diasQuedado = (fechaRetiro - reserva.FechaEntrada).Days;
+
+            decimal montoSeniaPagada = repoPago.ObtenerImportePorConcepto(idReserva, "Seña") ?? 0m;
+            decimal montoHospedajePendiente = Math.Max(0m, (diasQuedado * montoDiario) - montoSeniaPagada);
+
             decimal multa;
 
             if (fechaRetiro < reserva.FechaSalida)
             {
                 int diasRestantes = (reserva.FechaSalida - fechaRetiro).Days;
                 decimal montoRestante = diasRestantes * montoDiario;
-                decimal porcentaje = diasTranscurridos < diasTotales / 2.0 ? 0.50m : 0.25m;
+                // "mitad incluida": si se cumplio la mitad de los dias sigue siendo 50%
+                decimal porcentaje = diasQuedado <= diasTotales / 2.0 ? 0.50m : 0.25m;
                 multa = montoRestante * porcentaje;
             }
             else if (fechaRetiro > reserva.FechaSalida)
@@ -213,9 +225,31 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
                 multa = 0m;
             }
 
+            // Se cobra ahora mismo el hospedaje correspondiente a los dias efectivamente consumidos
+            if (montoHospedajePendiente > 0)
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!int.TryParse(userIdClaim, out int idUsuario))
+                {
+                    return BadRequest("No se pudo identificar al usuario autenticado.");
+                }
+
+                var pagoHospedaje = new Pago
+                {
+                    Concepto = "Completado",
+                    Importe = montoHospedajePendiente,
+                    FechaPago = DateTime.Today,
+                    MetodoDePago = metodoDePago,
+                    IdReserva = idReserva,
+                    IdUsuarioCreador = idUsuario
+                };
+                repoPago.Alta(pagoHospedaje);
+            }
+
+            // La multa queda registrada en la reserva; se cobra en un segundo paso desde "Pagar Multa"
             reserva.FechaMulta = fechaRetiro;
             reserva.Multa = multa;
-            reserva.Estado = true;
+            reserva.Estado = false; // libera las fechas del inmueble para nuevas reservas
 
             repositorio.ActualizarSalidaAnticipada(reserva);
 

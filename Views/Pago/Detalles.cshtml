@@ -15,7 +15,7 @@
             <dd class="col-sm-8">@Model.Concepto</dd>
 
             <dt class="col-sm-4">Importe</dt>
-            <dd class="col-sm-8">@Model.Importe.ToString("C")</dd>
+            <dd class="col-sm-8">@FormatoAr.Moneda(Model.Importe)</dd>
 
             <dt class="col-sm-4">Fecha de pago</dt>
             <dd class="col-sm-8">@Model.FechaPago.ToShortDateString()</dd>
@@ -35,7 +35,7 @@
                     <dd class="col-sm-8">@reserva.FechaMulta.Value.ToShortDateString()</dd>
 
                     <dt class="col-sm-4">Multa asociada</dt>
-                    <dd class="col-sm-8">@reserva.Multa?.ToString("C")</dd>
+                    <dd class="col-sm-8">@(reserva.Multa.HasValue ? FormatoAr.Moneda(reserva.Multa.Value) : "")</dd>
                 }
             }
         </dl>
