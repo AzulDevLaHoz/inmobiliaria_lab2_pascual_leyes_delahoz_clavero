@@ -68,10 +68,13 @@
                            title="Editar">
                             <i class="bi bi-pencil-square"></i>
                         </a>
+                        @if (User.IsInRole("Administrador"))
+                        {
                         <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
                                 data-bs-target="#modalEliminar-@item.IdInquilino" title="Eliminar">
                             <i class="bi bi-trash3"></i>
                         </button>
+                        }
                     </div>
 
                     <div class="modal fade" id="modalEliminar-@item.IdInquilino" tabindex="-1"
