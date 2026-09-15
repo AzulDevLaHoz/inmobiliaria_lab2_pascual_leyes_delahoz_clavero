@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
-{   
-    [Authorize]
+{
     public class PagoController : Controller
     {
         private readonly IRepositorioPago repositorio;
@@ -23,8 +22,10 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
 
         public IActionResult Index()
         {
-            var lista = repositorio.ObtenerReservasFinalizadas(10);
-            return View(lista);
+            var finalizadas = repositorio.ObtenerReservasFinalizadas(10);
+            var enCurso = repositorio.ObtenerReservasEnCurso();
+            ViewBag.ReservasEnCurso = enCurso;
+            return View(finalizadas);
         }
 
         public IActionResult DetalleReserva(int idReserva)
@@ -138,6 +139,12 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             repositorio.Baja(id);
             if (pago != null)
             {
+                if (pago.Concepto == "Completado")
+                {
+                    // Si este pago venía de una Salida Anticipada, esto la revierte:
+                    // limpia FechaMulta/Multa y vuelve a poner la reserva activa.
+                    repoReserva.ReactivarReserva(pago.IdReserva);
+                }
                 return RedirectToAction(nameof(DetalleReserva), new { idReserva = pago.IdReserva });
             }
             return RedirectToAction(nameof(Index));
@@ -152,6 +159,10 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             repositorio.AnularPago(id, idUsuarioAnulador);
             if (pago != null)
             {
+                if (pago.Concepto == "Completado")
+                {
+                    repoReserva.ReactivarReserva(pago.IdReserva);
+                }
                 return RedirectToAction(nameof(DetalleReserva), new { idReserva = pago.IdReserva });
             }
             return RedirectToAction(nameof(Index));
@@ -174,11 +185,30 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             if (idInmueble.HasValue && idInmueble > 0)
             {
                 ViewBag.IdInmuebleSeleccionado = idInmueble.Value;
-                var pagos = repositorio.ObtenerPorInmueble(idInmueble.Value);
-                return View(pagos);
+
+                var reservas = repositorio.ObtenerReservasPorInmueble(idInmueble.Value);
+
+                var finalizadas = new List<Reserva>();
+                var enCurso = new List<Reserva>();
+                foreach (var r in reservas)
+                {
+                    bool esFinalizada = (r.FechaMulta == null && repositorio.ExistePagoCompletado(r.IdReserva))
+                                        || (r.FechaMulta != null && repositorio.ExistePagoMulta(r.IdReserva));
+                    if (esFinalizada)
+                    {
+                        finalizadas.Add(r);
+                    }
+                    else
+                    {
+                        enCurso.Add(r);
+                    }
+                }
+
+                ViewBag.ReservasEnCurso = enCurso;
+                return View(finalizadas);
             }
 
-            return View(new List<Pago>());
+            return View(new List<Reserva>());
         }
 
         public IActionResult ObtenerPorId(int id)

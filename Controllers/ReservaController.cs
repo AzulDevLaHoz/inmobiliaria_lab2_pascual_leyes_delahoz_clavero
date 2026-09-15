@@ -214,7 +214,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             {
                 int diasRestantes = (reserva.FechaSalida - fechaRetiro).Days;
                 decimal montoRestante = diasRestantes * montoDiario;
-                // "mitad incluida": si se cumplio la mitad de los dias sigue siendo 50%
+                // "mitad incluida": si se cumplió exactamente la mitad de los días, sigue siendo 50%
                 decimal porcentaje = diasQuedado <= diasTotales / 2.0 ? 0.50m : 0.25m;
                 multa = montoRestante * porcentaje;
             }
@@ -227,8 +227,9 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
                 multa = 0m;
             }
 
-            // Se cobra ahora mismo el hospedaje correspondiente a los dias efectivamente consumidos
-            if (montoHospedajePendiente > 0)
+            // Se cobra ahora mismo el hospedaje correspondiente a los días efectivamente consumidos,
+            // y -si corresponde- la multa, en la misma operación.
+            if (montoHospedajePendiente > 0 || multa > 0)
             {
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (!int.TryParse(userIdClaim, out int idUsuario))
@@ -236,19 +237,38 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
                     return BadRequest("No se pudo identificar al usuario autenticado.");
                 }
 
-                var pagoHospedaje = new Pago
+                if (montoHospedajePendiente > 0)
                 {
-                    Concepto = "Completado",
-                    Importe = montoHospedajePendiente,
-                    FechaPago = DateTime.Today,
-                    MetodoDePago = metodoDePago,
-                    IdReserva = idReserva,
-                    IdUsuarioCreador = idUsuario
-                };
-                repoPago.Alta(pagoHospedaje);
+                    var pagoHospedaje = new Pago
+                    {
+                        Concepto = "Completado",
+                        Importe = montoHospedajePendiente,
+                        FechaPago = DateTime.Today,
+                        MetodoDePago = metodoDePago,
+                        IdReserva = idReserva,
+                        IdUsuarioCreador = idUsuario
+                    };
+                    repoPago.Alta(pagoHospedaje);
+                }
+
+                if (multa > 0)
+                {
+                    var pagoMulta = new Pago
+                    {
+                        Concepto = "Multa",
+                        Importe = multa,
+                        FechaPago = DateTime.Today,
+                        MetodoDePago = metodoDePago,
+                        IdReserva = idReserva,
+                        IdUsuarioCreador = idUsuario
+                    };
+                    repoPago.Alta(pagoMulta);
+                }
             }
 
-            // La multa queda registrada en la reserva; se cobra en un segundo paso desde "Pagar Multa"
+            // FechaMulta/Multa quedan igual para tener el registro histórico de la salida anticipada,
+            // aunque ahora la multa (si corresponde) ya se cobró arriba. "Pagar Multa" sigue existiendo
+            // como respaldo para reservas que quedaron a mitad de camino con el flujo anterior.
             reserva.FechaMulta = fechaRetiro;
             reserva.Multa = multa;
             reserva.Estado = false; // libera las fechas del inmueble para nuevas reservas

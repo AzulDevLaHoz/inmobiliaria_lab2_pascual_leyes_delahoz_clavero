@@ -12,6 +12,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         bool ExisteSolapamiento(int idInmueble, DateTime fechaEntrada, DateTime fechaSalida, int? idReservaExcluir = null);
 
         IList<Reserva> ObtenerPorInmueble(int idInmueble);
+        bool ReactivarReserva(int idReserva);
 
     }
 }

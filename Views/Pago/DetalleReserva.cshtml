@@ -29,7 +29,7 @@
                 <td>@FormatoAr.Moneda(pago.Importe)</td>
                 <td>@pago.MetodoDePago</td>
                 <td>@pago.FechaPago.ToShortDateString()</td>
-                <td>@(pago.Estado ? "Vigente" : "Anulado")</td>
+                <td>@(pago.Estado ? "Abonado" : "Anulado")</td>
                 <td>
                     <div class="btn-group" role="group">
                         <a asp-action="Detalles" title="Detalles" asp-route-id="@pago.IdPago" class="btn btn-info btn-sm">

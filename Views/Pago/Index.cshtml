@@ -1,13 +1,50 @@
 @model IEnumerable<inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models.Reserva>
 @{
     ViewData["Title"] = "Pagos";
+    var enCurso = ViewBag.ReservasEnCurso as IEnumerable<Reserva> ?? new List<Reserva>();
 }
-<h1>Pagos — Últimas reservas finalizadas</h1>
+<h1>Pagos</h1>
 <div class="text-end mt-3">
     <a asp-action="Buscar" class="btn btn-secondary">
         <i class="bi bi-search"></i> Buscar Pago
     </a>
 </div>
+
+<h3 class="mt-4">En Curso</h3>
+@if (!enCurso.Any())
+{
+    <p>No hay reservas en curso con pagos registrados.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Inquilino</th>
+                <th>Fecha de Reserva</th>
+                <th>Monto Total Abonado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in enCurso)
+            {
+                <tr>
+                    <td>@item.Inquilino?.ToString()</td>
+                    <td>@item.FechaEntrada.ToShortDateString()</td>
+                    <td>@FormatoAr.Moneda(item.MontoTotalAbonado ?? 0m)</td>
+                    <td>
+                        <a asp-action="DetalleReserva" asp-route-idReserva="@item.IdReserva" class="btn btn-info btn-sm">
+                            <i class="bi bi-list-ul"></i> Detalles de pago
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<h3 class="mt-4">Finalizadas</h3>
 <table class="table table-striped">
     <thead>
         <tr>

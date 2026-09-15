@@ -13,7 +13,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
 
         public int ObtenerCantidad()
         {
-           throw new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public int Alta(Reserva p)
@@ -287,7 +287,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             {
                 string sql = @"
             SELECT r.idReserva, r.fechaEntrada, r.fechaSalida, r.estado, r.fechaMulta, r.multa, r.idInquilino, r.idInmueble,
-                   inq.Nombre, inq.Apellido
+                inq.Nombre, inq.Apellido
             FROM reserva r
             INNER JOIN inquilino inq ON r.idInquilino = inq.IdInquilino
             WHERE r.idInmueble = @idInmueble
@@ -297,7 +297,6 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                 {
                     cmd.Parameters.AddWithValue("@idInmueble", idInmueble);
                     conn.Open();
-
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -326,6 +325,21 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                 }
             }
             return res;
+        }
+
+        public bool ReactivarReserva(int idReserva)
+        {
+            using var connection = new MySqlConnection(connectionString);
+            connection.Open();
+
+            string sql = @"UPDATE reserva 
+                        SET fechaMulta = NULL, multa = NULL, estado = 1 
+                        WHERE idReserva = @id";
+
+            using var command = new MySqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@id", idReserva);
+
+            return command.ExecuteNonQuery() > 0;
         }
 
     }

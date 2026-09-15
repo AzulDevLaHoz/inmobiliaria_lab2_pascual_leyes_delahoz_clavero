@@ -24,70 +24,76 @@
     <tbody>
         @foreach (var item in Model)
         {
+
+            var reservasConSenia = ViewBag.ReservasConSenia as HashSet<int> ?? new HashSet<int>();
+            var reservasConPago = ViewBag.ReservasConPago as HashSet<int> ?? new HashSet<int>();
+            var reservasConMultaPagada = ViewBag.ReservasConMultaPagada as HashSet<int> ?? new HashSet<int>();
+
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.IdReserva)</td>
                 <td>@item.FechaEntrada.ToShortDateString()</td>
                 <td>@item.FechaSalida.ToShortDateString()</td>
-                <td>@(item.Estado ? "Activa" : "Inactiva")</td>
+                <td>@(item.Estado ? "En Curso" : "Finalizada")</td>
                 <td>@item.Inquilino?.ToString()</td>
                 <td>@item.Inmueble?.Direccion</td>
                 <td>
                     <div class="btn-group" role="group">
                         <a asp-action="Detalles" title="Detalles" asp-route-id="@item.IdReserva"
-                        class="btn btn-info btn-sm"><i class="bi bi-eye"></i></a>
+                           class="btn btn-info btn-sm"><i class="bi bi-eye"></i></a>
                         <a asp-action="Modificar" title="Editar" asp-route-id="@item.IdReserva"
-                        class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
+                           class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
 
                         <button title="Eliminar" type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
                                 data-bs-target="#modalEliminar-@item.IdReserva">
                             <i class="bi bi-trash3"></i>
                         </button>
 
-                        @{
-                            var reservasConSenia = ViewBag.ReservasConSenia as HashSet<int> ?? new HashSet<int>();
-                            var reservasConPago = ViewBag.ReservasConPago as HashSet<int> ?? new HashSet<int>();
-                            var reservasConMultaPagada = ViewBag.ReservasConMultaPagada as HashSet<int> ?? new HashSet<int>();
-                        }
-
                         @if (!reservasConSenia.Contains(item.IdReserva))
                         {
                             <a asp-controller="Pago" asp-action="Alta" asp-route-idReserva="@item.IdReserva"
-                            asp-route-tipo="Seña" title="Pagar Seña" class="btn btn-primary btn-sm">
+                               asp-route-tipo="Seña" title="Pagar Seña" class="btn btn-primary btn-sm">
                                 <i class="bi bi-piggy-bank"></i> Pagar Seña
                             </a>
                         }
-                        else if (item.FechaMulta != null)
+                        else if (item.FechaMulta != null && item.Multa.GetValueOrDefault() > 0)
                         {
                             if (reservasConMultaPagada.Contains(item.IdReserva))
                             {
                                 <a class="btn btn-success btn-sm disabled" aria-disabled="true" tabindex="-1"
-                                title="Multa ya cobrada">
+                                   title="Multa ya cobrada">
                                     <i class="bi bi-check-circle"></i> Multa Cobrada
                                 </a>
                             }
                             else
                             {
                                 <a asp-controller="Pago" asp-action="Alta" asp-route-idReserva="@item.IdReserva"
-                                asp-route-tipo="Multa" title="Cobrar multa por salida anticipada" class="btn btn-danger btn-sm">
+                                   asp-route-tipo="Multa" title="Cobrar multa por salida anticipada" class="btn btn-danger btn-sm">
                                     <i class="bi bi-cash-coin"></i> Pagar Multa
                                 </a>
                             }
                         }
+                        else if (item.FechaMulta != null)
+                        {
+                            <a class="btn btn-secondary btn-sm disabled" aria-disabled="true" tabindex="-1"
+                               title="Salida anticipada sin multa a cobrar">
+                                <i class="bi bi-check-circle"></i> Cerrada
+                            </a>
+                        }
                         else if (reservasConPago.Contains(item.IdReserva))
                         {
                             <a class="btn btn-success btn-sm disabled" aria-disabled="true" tabindex="-1"
-                            title="Hospedaje ya pagado">
+                               title="Hospedaje ya pagado">
                                 <i class="bi bi-check-circle"></i> Hospedaje Pagado
                             </a>
                         }
                         else
                         {
                             <a asp-controller="Pago" asp-action="Alta" asp-route-idReserva="@item.IdReserva"
-                            asp-route-tipo="Completo" title="Pagar Hospedaje" class="btn btn-success btn-sm">
+                               asp-route-tipo="Completo" title="Pagar Hospedaje" class="btn btn-success btn-sm">
                                 <i class="bi bi-cash-coin"></i> Pagar Hospedaje
                             </a>
-                            <a asp-action="SalidaAnticipada" asp-route-id="@item.IdReserva"
-                            title="Salida Anticipada" class="btn btn-warning btn-sm">
+                            <a asp-action="SalidaAnticipada" asp-route-id="@item.IdReserva" title="Salida Anticipada"
+                               class="btn btn-warning btn-sm">
                                 <i class="bi bi-door-open"></i> Salida Anticipada
                             </a>
                         }
@@ -96,7 +102,7 @@
             </tr>
 
             <div class="modal fade" id="modalEliminar-@item.IdReserva" tabindex="-1"
-                aria-labelledby="modalLabel-@item.IdReserva" aria-hidden="true">
+                 aria-labelledby="modalLabel-@item.IdReserva" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
