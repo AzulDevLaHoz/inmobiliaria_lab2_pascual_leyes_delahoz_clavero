@@ -6,6 +6,7 @@ using System.Security.Claims;
 
 namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
 {
+    [Authorize]
     public class ReservaController : Controller
     {
         private readonly IRepositorioReserva repositorio;
@@ -171,6 +172,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles ="Administrador")]
         public ActionResult Eliminar(int id)
         {
             repositorio.Baja(id);

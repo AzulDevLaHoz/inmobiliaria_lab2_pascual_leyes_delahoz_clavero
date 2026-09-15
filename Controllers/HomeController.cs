@@ -1,9 +1,10 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers;
-
+ [Authorize]
 public class HomeController : Controller
 {
     public IActionResult Index()

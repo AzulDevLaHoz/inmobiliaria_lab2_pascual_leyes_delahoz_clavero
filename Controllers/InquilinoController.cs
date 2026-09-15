@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
 namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
-{
+{   
+    [Authorize]
     public class InquilinoController : Controller
     {
         private readonly IRepositorioInquilino repositorio;
