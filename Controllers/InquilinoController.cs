@@ -136,6 +136,26 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             return RedirectToAction(nameof(Detalles), new { id });
         }
 
+
+
+  [HttpGet("Inquilino/HistorialReservasJson/{idInquilino}")]
+public IActionResult HistorialReservasJson(int idInquilino)
+{
+    var reservas = repositorio.BuscarReservas(idInquilino);
+
+    var resultado = reservas.Select(r => new
+    {
+        id = r.IdReserva,
+        fechaEntrada = r.FechaEntrada.ToString("dd/MM/yyyy"),
+        fechaSalida = r.FechaSalida.ToString("dd/MM/yyyy"),
+        inmueble = r.Inmueble != null ? r.Inmueble.Direccion : "-",
+        estado = r.Estado,
+        multa = r.Multa,
+        montoTotal = r.Inmueble != null ? (r.FechaSalida - r.FechaEntrada).Days * r.Inmueble.montoDia : 0
+    });
+
+    return Json(resultado);
+}
     }
 
 }
