@@ -90,25 +90,28 @@
                 </div>
             </nav>
         </header>
-        <div class="container">
+        <div class="container min-vh-100">
             <main role="main" class="pb-3">
                 @RenderBody()
             </main>
         </div>
 
-        <footer class="border-top footer text-muted">
-            <div class="container">
-                &copy; 2026 - Laboratorio_II - <a
-                href="https://github.com/AzulDevLaHoz/inmobiliaria_lab2_pascual_leyes_delahoz_clavero.git">
-                Repositorio | GitHub </a>
-            </div>
-        </footer>
-        <script src="~/lib/jquery/dist/jquery.min.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-        <script src="~/js/site.js" asp-append-version="true"></script>
-        <partial name="_Notificaciones" />
-        @await RenderSectionAsync("Scripts", required: false)
-    </body>
+        <footer class="border-top footer text-muted pt-3">
+            <div class="container d-flex justify-content-center align-items-center">
+                &copy; 2026 &nbsp | &nbsp <a
+                href="https://github.com/AzulDevLaHoz/inmobiliaria_lab2_pascual_leyes_delahoz_clavero.git"
+                class="text-decoration-none">
+                <i class="bi bi-github"></i>
+                Inmobiliaria CDLP
+            </a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <partial name="_Notificaciones" />
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
 
 </html>
