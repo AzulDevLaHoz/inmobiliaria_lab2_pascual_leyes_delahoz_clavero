@@ -27,10 +27,14 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         }
 
 
-        public IActionResult Index()
-        {
-            var lista = repositorio.ObtenerLista();
+        public IActionResult Index(int pagina=1)
+        {    
+            //paginado
+              int tamPagina = 10;
+             var lista = repositorio.ObtenerLista(paginaNro: pagina, tamPagina: tamPagina);
+          
 
+            int totalRegistros = repositorio.ObtenerCantidad();
             var reservasConSenia = new HashSet<int>();
             var reservasConPago = new HashSet<int>();
             var reservasConMultaPagada = new HashSet<int>();
@@ -52,6 +56,8 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             ViewBag.ReservasConSenia = reservasConSenia;
             ViewBag.ReservasConPago = reservasConPago;
             ViewBag.ReservasConMultaPagada = reservasConMultaPagada;
+             ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = (int)Math.Ceiling((double)totalRegistros / tamPagina);
 
             return View(lista);
         }

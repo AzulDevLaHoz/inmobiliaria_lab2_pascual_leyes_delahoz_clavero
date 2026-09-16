@@ -11,9 +11,19 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         {
         }
 
-        public int ObtenerCantidad()
+         public int ObtenerCantidad()
         {
-            throw new NotImplementedException();
+            int total = 0;
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                string sql = "SELECT COUNT(*) FROM Reserva ;";
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    conn.Open();
+                    total = Convert.ToInt32(cmd.ExecuteScalar());
+                }
+            }
+            return total;
         }
 
         public int Alta(Reserva p)
