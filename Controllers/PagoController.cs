@@ -104,6 +104,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
                 }
 
                 repositorio.Alta(pago);
+                TempData["Mensaje"] = "Pago registrado correctamente.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -127,6 +128,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             {
                 p.Concepto = pago.Concepto;
                 repositorio.Modificar(p);
+                TempData["Mensaje"] = "Pago modificado correctamente.";
                 return RedirectToAction(nameof(Index));
             }
             return View(pago);
@@ -145,6 +147,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
                     // limpia FechaMulta/Multa y vuelve a poner la reserva activa.
                     repoReserva.ReactivarReserva(pago.IdReserva);
                 }
+                TempData["Mensaje"] = "Pago dado de baja correctamente.";
                 return RedirectToAction(nameof(DetalleReserva), new { idReserva = pago.IdReserva });
             }
             return RedirectToAction(nameof(Index));
@@ -163,6 +166,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
                 {
                     repoReserva.ReactivarReserva(pago.IdReserva);
                 }
+                TempData["Mensaje"] = "Pago anulado correctamente.";
                 return RedirectToAction(nameof(DetalleReserva), new { idReserva = pago.IdReserva });
             }
             return RedirectToAction(nameof(Index));
