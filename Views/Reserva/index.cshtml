@@ -42,12 +42,13 @@
                            class="btn btn-info btn-sm"><i class="bi bi-eye"></i></a>
                         <a asp-action="Modificar" title="Editar" asp-route-id="@item.IdReserva"
                            class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
-
+                          @if(User.IsInRole("Administrador"))
+                          {
                         <button title="Eliminar" type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
                                 data-bs-target="#modalEliminar-@item.IdReserva">
                             <i class="bi bi-trash3"></i>
                         </button>
-
+                         }
                         @if (!reservasConSenia.Contains(item.IdReserva))
                         {
                             <a asp-controller="Pago" asp-action="Alta" asp-route-idReserva="@item.IdReserva"
