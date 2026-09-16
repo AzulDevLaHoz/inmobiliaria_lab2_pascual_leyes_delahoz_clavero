@@ -7,11 +7,12 @@
 }
 
 <h1>Usuario</h1>
-
+  @if(User.IsInRole("Administrador"))
+  {
 <div class="text-end mt-3">
     <a asp-action="Alta" class="btn btn-primary">Crear Nuevo </a>
 </div>
-
+ }
 <table class="table table-striped">
     <thead>
         <tr>

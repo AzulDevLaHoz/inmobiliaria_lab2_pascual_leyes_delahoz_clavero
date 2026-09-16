@@ -30,6 +30,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         //POST DE ALTA
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles ="Administrador")]
         public IActionResult Alta(Usuario u)
         {
             u.Estado = true;
@@ -119,6 +120,7 @@ public IActionResult Modificar(int id, Usuario u)
 }
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles ="Administrador")]
         public IActionResult Eliminar(int id)
         {
             repoUsuario.Baja(id);

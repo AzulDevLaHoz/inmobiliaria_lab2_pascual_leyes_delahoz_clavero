@@ -135,6 +135,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles ="Administrador")]
         public IActionResult Eliminar(int id)
         {
             var pago = repositorio.ObtenerPorId(id);
