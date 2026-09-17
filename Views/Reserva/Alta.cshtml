@@ -14,19 +14,6 @@
         <form asp-action="Alta" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-<<<<<<< Updated upstream
-            <div class="mb-3">
-                <label asp-for="FechaEntrada" class="form-label"></label>
-                <input asp-for="FechaEntrada" class="form-control" type="date" value="@(Model?.FechaEntrada != DateTime.MinValue ? Model?.FechaEntrada.ToString("yyyy-MM-dd") : "")" />
-                <span asp-validation-for="FechaEntrada" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="FechaSalida" class="form-label"></label>
-                <input asp-for="FechaSalida" class="form-control" type="date" value="@(Model?.FechaSalida != DateTime.MinValue ? Model?.FechaSalida.ToString("yyyy-MM-dd") : "")" />
-                <span asp-validation-for="FechaSalida" class="text-danger"></span>
-            </div>
-=======
             <div id="app-disponibilidad">
                 <div class="mb-3">
                     <label asp-for="FechaEntrada" class="form-label"></label>
@@ -39,7 +26,6 @@
                     <input asp-for="FechaSalida" class="form-control" type="date" v-model="fechaSalida" value="@(Model?.FechaSalida != DateTime.MinValue ? Model?.FechaSalida.ToString("yyyy-MM-dd") : "")" />
                     <span asp-validation-for="FechaSalida" class="text-danger"></span>
                 </div>
->>>>>>> Stashed changes
 
                 <div class="mb-3">
                     <label asp-for="IdInquilino" class="control-label"></label>

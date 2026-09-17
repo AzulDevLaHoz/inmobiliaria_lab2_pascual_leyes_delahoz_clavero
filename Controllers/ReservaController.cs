@@ -67,8 +67,6 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             ViewBag.Inmuebles = repoInmueble.ObtenerLista();
             return View();
         }
-<<<<<<< Updated upstream
-=======
 
         [HttpGet]
         public IActionResult Alta(int? idInmueble, DateTime? fechaEntrada, DateTime? fechaSalida)
@@ -107,8 +105,6 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             bool solapa = repositorio.ExisteSolapamiento(idInmueble, fechaEntrada.Value, fechaSalida.Value);
             return Json(new { disponible = !solapa });
         }
-
->>>>>>> Stashed changes
         [HttpPost]
         public IActionResult Alta(Reserva reserva)
         {
