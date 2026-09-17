@@ -7,11 +7,12 @@
 }
 
 <h1>Usuario</h1>
-
+  @if(User.IsInRole("Administrador"))
+  {
 <div class="text-end mt-3">
     <a asp-action="Alta" class="btn btn-primary">Crear Nuevo </a>
 </div>
-
+ }
 <table class="table table-striped">
     <thead>
         <tr>
@@ -53,10 +54,13 @@
                 </td>
                 <td>
                     <div class="btn-group" role="group">
-                        @*<a asp-action="Detalles" title="Perfil" asp-route-id="@item.Id" class="btn btn-info btn-sm"><i
-                            class="bi bi-person"></i></a>*@
+                        <a asp-action="Detalles" title="Perfil" asp-route-id="@item.Id" class="btn btn-info btn-sm"><i
+                            class="bi bi-person"></i></a>
+                            @if(User.IsInRole("Administrador"))
+                            {
                         <a asp-action="Modificar" title="Editar" asp-route-id="@item.Id" class="btn btn-primary btn-sm"><i
                             class="bi bi-pencil-square"></i></a>
+                            }
                             <button title="Eliminar" type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
                                     data-bs-target="#modalEliminar-@item.Id">
                                 <i class="bi bi-trash3"></i>

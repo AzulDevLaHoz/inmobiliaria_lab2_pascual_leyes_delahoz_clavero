@@ -1,0 +1,58 @@
+@using System.Security.Claims
+@model inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models.Usuario
+
+@{
+    ViewData["Title"] = "Cambiar Contraseña";
+    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    int.TryParse(userIdClaim, out int idUsuarioLogueado);
+    bool esAdmin = User.IsInRole("Administrador");
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-key-fill me-1"></i> Cambiar Contraseña
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small">
+                    Usuario: <strong>@Model.Nombre @Model.Apellido</strong> (@Model.Email)
+                </p>
+
+                <form asp-action="CambiarClave" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+
+                    @if (!esAdmin)
+                    {
+                        <div class="mb-3">
+                            <label for="claveVieja" class="form-label">Contraseña Actual</label>
+                            <input type="password" name="claveVieja" id="claveVieja" class="form-control" required />
+                        </div>
+                    }
+
+                    <div class="mb-3">
+                        <label for="claveNueva" class="form-label">Nueva Contraseña</label>
+                        <input type="password" name="claveNueva" id="claveNueva" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="confirmarClave" class="form-label">Confirmar Nueva Contraseña</label>
+                        <input type="password" name="confirmarClave" id="confirmarClave" class="form-control" required />
+                    </div>
+
+                    <div class="d-flex justify-content-between pt-2">
+                        <a asp-action="Detalles" asp-route-id="@Model.Id" class="btn btn-secondary btn-sm">
+                            <i class="bi bi-arrow-left me-1"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-warning btn-sm">
+                            <i class="bi bi-check-circle me-1"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

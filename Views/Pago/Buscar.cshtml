@@ -1,19 +1,32 @@
-@model IEnumerable<inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models.Pago>
+@model IEnumerable<inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models.Reserva>
 @using Microsoft.AspNetCore.Mvc.Rendering
 @{
     ViewData["Title"] = "Buscar pagos por inmueble";
     var inmuebles = ViewBag.Inmuebles as IEnumerable<Inmueble>;
     int? idSeleccionado = ViewBag.IdInmuebleSeleccionado as int?;
+    string estadoSeleccionado = ViewBag.EstadoSeleccionado as string ?? "Todos";
+    int paginaActual = ViewBag.PaginaActual ?? 1;
+    int totalPaginas = ViewBag.TotalPaginas ?? 1;
 }
 
 <h1>Buscar pagos por inmueble</h1>
 <hr />
 
-<form method="get" asp-action="Buscar" class="row g-2 mb-4">
+<form method="get" asp-action="Buscar" class="row g-2 mb-4 align-items-end">
     <div class="col-auto">
+        <label class="form-label mb-1">Inmueble</label>
         <select name="idInmueble" class="form-select"
                 asp-items="@(new SelectList(inmuebles, "Id", "Direccion", idSeleccionado))">
             <option value="">-- Seleccione un inmueble --</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <label class="form-label mb-1">Estado</label>
+        <select name="estado" class="form-select">
+            <option value="Todos" selected="@(estadoSeleccionado == "Todos" ? "selected" : null)">Todos</option>
+            <option value="EnCurso" selected="@(estadoSeleccionado == "EnCurso" ? "selected" : null)">En Curso</option>
+            <option value="Finalizada" selected="@(estadoSeleccionado == "Finalizada" ? "selected" : null)">Finalizada</option>
+            <option value="AdeudaPago" selected="@(estadoSeleccionado == "AdeudaPago" ? "selected" : null)">Adeuda Pago</option>
         </select>
     </div>
     <div class="col-auto">
@@ -27,50 +40,59 @@
 {
     @if (!Model.Any())
     {
-        <p>No hay pagos registrados para este inmueble.</p>
+        <p>No hay reservas con pagos registrados para este inmueble y este estado.</p>
     }
     else
     {
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Fecha de pago</th>
-                    <th>Concepto</th>
-                    <th>Importe</th>
-                    <th>Estado</th>
-                    <th>Período de la reserva</th>
-                    <th>Detalle de multa</th>
-                    <th></th>
+                    <th>Inquilino</th>
+                    <th>Fecha de Reserva</th>
+                    <th>Monto Total Abonado</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var pago in Model)
+                @foreach (var item in Model)
                 {
                     <tr>
-                        <td>@pago.FechaPago.ToShortDateString()</td>
-                        <td>@pago.Concepto</td>
-                        <td>@FormatoAr.Moneda(pago.Importe)</td>
-                        <td>@(pago.Estado ? "Activo" : "Anulado")</td>
+                        <td>@item.Inquilino?.ToString()</td>
+                        <td>@item.FechaEntrada.ToShortDateString()</td>
+                        <td>@FormatoAr.Moneda(item.MontoTotalAbonado ?? 0m)</td>
                         <td>
-                            @if (pago.Reserva != null)
-                            {
-                                @($"{pago.Reserva.FechaEntrada:dd/MM/yyyy} - {pago.Reserva.FechaSalida:dd/MM/yyyy}")
-                            }
-                        </td>
-                        <td>
-                            @if (pago.Reserva?.FechaMulta != null)
-                            {
-                                <span>Salida real: @pago.Reserva.FechaMulta.Value.ToShortDateString() — Multa: @(pago.Reserva.Multa.HasValue ? FormatoAr.Moneda(pago.Reserva.Multa.Value) : "")</span>
-                            }
-                        </td>
-                        <td>
-                            <a asp-action="Detalles" asp-route-id="@pago.IdPago" class="btn btn-sm btn-info">
-                                <i class="bi bi-eye"></i>
+                            <a asp-action="DetalleReserva" asp-route-idReserva="@item.IdReserva" class="btn btn-info btn-sm">
+                                <i class="bi bi-list-ul"></i> Detalles de pago
                             </a>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
+
+        @if (totalPaginas > 1)
+        {
+            <nav aria-label="Paginación de Búsqueda de Pagos" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(paginaActual == 1 ? "disabled" : "")">
+                        <a class="page-link" asp-action="Buscar" asp-route-pagina="@(paginaActual - 1)"
+                           asp-route-estado="@estadoSeleccionado" asp-route-idInmueble="@idSeleccionado">Anterior</a>
+                    </li>
+
+                    @for (int i = 1; i <= totalPaginas; i++)
+                    {
+                        <li class="page-item @(i == paginaActual ? "active" : "")">
+                            <a class="page-link" asp-action="Buscar" asp-route-pagina="@i"
+                               asp-route-estado="@estadoSeleccionado" asp-route-idInmueble="@idSeleccionado">@i</a>
+                        </li>
+                    }
+
+                    <li class="page-item @(paginaActual == totalPaginas ? "disabled" : "")">
+                        <a class="page-link" asp-action="Buscar" asp-route-pagina="@(paginaActual + 1)"
+                           asp-route-estado="@estadoSeleccionado" asp-route-idInmueble="@idSeleccionado">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        }
     }
 }

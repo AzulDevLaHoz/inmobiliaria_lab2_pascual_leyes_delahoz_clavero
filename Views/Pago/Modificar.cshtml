@@ -11,6 +11,13 @@
         <form asp-action="Modificar" asp-route-id="@Model.IdPago" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
+            <input type="hidden" asp-for="IdPago" />
+            <input type="hidden" asp-for="Importe" />
+            <input type="hidden" asp-for="FechaPago" />
+            <input type="hidden" asp-for="MetodoDePago" />
+            <input type="hidden" asp-for="Estado" />
+            <input type="hidden" asp-for="IdReserva" />
+
             <div class="mb-3">
                 <label class="form-label">Importe</label>
                 <input class="form-control" value="@FormatoAr.Moneda(Model.Importe)" disabled />
