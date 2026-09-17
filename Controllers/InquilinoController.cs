@@ -1,8 +1,10 @@
 using inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
-{
+{   
+    [Authorize]
     public class InquilinoController : Controller
     {
         private readonly IRepositorioInquilino repositorio;
@@ -16,11 +18,22 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             this.logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int pagina = 1)
         {
-            var lista = repositorio.ObtenerLista();
-            return View(lista);
+            int tamPagina = 10;
+
+            var inquilinos = repositorio.ObtenerLista(pagNro: pagina, tamPagina: tamPagina);
+
+
+            int totalRegistros = repositorio.ObtenerCantidad();
+
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = (int)Math.Ceiling((double)totalRegistros / tamPagina);
+
+            return View(inquilinos);
         }
+
+        [HttpGet]
         public IActionResult Alta()
         {
             return View();
@@ -29,20 +42,41 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         [HttpPost]
         public IActionResult Alta(Inquilino inquilino)
         {
+            var existente = repositorio.ObtenerPorDni(inquilino.Dni);
+
+            if (existente != null && existente.Estado)
+            {
+                TempData["Error"] = "Ya existe un inquilino activo con ese DNI.";
+                return View(inquilino);
+            }
+
+            if (existente != null && !existente.Estado)
+            {
+                ViewBag.DniDuplicadoJson = System.Text.Json.JsonSerializer.Serialize(new
+                {
+                    id = existente.IdInquilino,
+                    nombre = $"{existente.Nombre} {existente.Apellido}"
+                });
+                return View(inquilino);
+            }
+
             if (ModelState.IsValid)
             {
                 repositorio.Alta(inquilino);
+                TempData["Mensaje"] = "El inquilino fue registrado correctamente.";
                 return RedirectToAction(nameof(Index));
             }
             return View(inquilino);
         }
 
+        [HttpGet]
         public ActionResult Modificar(int id)
         {
             var entidad = repositorio.ObtenerPorId(id);
             return View(entidad);
         }
 
+        [HttpGet]
         public IActionResult Detalles(int id)
         {
             var entidad = repositorio.ObtenerPorId(id);
@@ -63,13 +97,14 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
                 i.Email = entidad.Email;
                 i.Telefono = entidad.Telefono;
                 repositorio.Modificar(i);
-                TempData["Mensaje"] = "Datos guardados correctamente"; 
+                TempData["Mensaje"] = "Datos guardados correctamente";
                 return RedirectToAction(nameof(Index));
             }
             return View(entidad);
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public ActionResult Eliminar(int id)
         {
             repositorio.Baja(id);
@@ -94,6 +129,34 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             return Json(inquilinos);
         }
 
+        [HttpPost]
+        public IActionResult Reactivar(int id)
+        {
+            repositorio.Reactivar(id);
+            TempData["Mensaje"] = "El inquilino fue reactivado correctamente.";
+            return RedirectToAction(nameof(Detalles), new { id });
+        }
+
+
+
+  [HttpGet("Inquilino/HistorialReservasJson/{idInquilino}")]
+public IActionResult HistorialReservasJson(int idInquilino)
+{
+    var reservas = repositorio.BuscarReservas(idInquilino);
+
+    var resultado = reservas.Select(r => new
+    {
+        id = r.IdReserva,
+        fechaEntrada = r.FechaEntrada.ToString("dd/MM/yyyy"),
+        fechaSalida = r.FechaSalida.ToString("dd/MM/yyyy"),
+        inmueble = r.Inmueble != null ? r.Inmueble.Direccion : "-",
+        estado = r.Estado,
+        multa = r.Multa,
+        montoTotal = r.Inmueble != null ? (r.FechaSalida - r.FechaEntrada).Days * r.Inmueble.montoDia : 0
+    });
+
+    return Json(resultado);
+}
     }
 
 }

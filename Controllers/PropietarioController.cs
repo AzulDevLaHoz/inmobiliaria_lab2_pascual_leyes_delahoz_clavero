@@ -1,8 +1,10 @@
 using inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
-{
+{   
+    [Authorize]
     public class PropietarioController : Controller
     {
         private readonly IRepositorioPropietario repositorio;
@@ -10,17 +12,25 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         private readonly IConfiguration configuration;
         private readonly ILogger<PropietarioController> logger;
 
-        public PropietarioController(IRepositorioPropietario repo,RepositorioInmueble repoInmueble, IConfiguration configuration, ILogger<PropietarioController> logger)
+        public PropietarioController(IRepositorioPropietario repo, RepositorioInmueble repoInmueble, IConfiguration configuration, ILogger<PropietarioController> logger)
         {
             this.repositorio = repo;
             this.repoInmueble = repoInmueble;
             this.configuration = configuration;
             this.logger = logger;
         }
-        public IActionResult Index()
+        public IActionResult Index(int pagina = 1)
         {
-            var lista = repositorio.ObtenerLista();
-            return View(lista);
+            int tamPagina = 10;
+
+            var propietarios = repositorio.ObtenerLista(pagNro: pagina, tamPagina: tamPagina);
+
+            int totalRegistros = repositorio.ObtenerCantidad();
+
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = (int)Math.Ceiling((double)totalRegistros / tamPagina);
+
+            return View(propietarios);
         }
         public IActionResult Alta()
         {
@@ -30,6 +40,24 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         [HttpPost]
         public IActionResult Alta(Propietario propietario)
         {
+            var existente = repositorio.ObtenerPorDni(propietario.Dni);
+
+            if (existente != null && existente.Estado)
+            {
+                TempData["Error"] = "Ya existe un propietario activo con ese DNI.";
+                return View(propietario);
+            }
+
+            if (existente != null && !existente.Estado)
+            {
+                ViewBag.DniDuplicadoJson = System.Text.Json.JsonSerializer.Serialize(new
+                {
+                    id = existente.IdPropietario,
+                    nombre = $"{existente.Nombre} {existente.Apellido}"
+                });
+                return View(propietario);
+            }
+
             if (ModelState.IsValid)
             {
                 repositorio.Alta(propietario);
@@ -38,11 +66,6 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             }
             return View(propietario);
         }
-        public ActionResult Modificar(int id)
-        {
-            var entidad = repositorio.ObtenerPorId(id);
-            return View(entidad);
-        }
 
         public IActionResult Detalles(int id)
         {
@@ -50,7 +73,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             if (entidad == null) return NotFound();
 
             var inmuebles = repoInmueble.ObtenerPorPropietario(id);
-        ViewBag.InmueblesJson = System.Text.Json.JsonSerializer.Serialize(inmuebles);
+            ViewBag.InmueblesJson = System.Text.Json.JsonSerializer.Serialize(inmuebles);
             return View(entidad);
         }
 
@@ -72,8 +95,9 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             }
             return View(entidad);
         }
-
+        
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public ActionResult Eliminar(int id)
         {
             repositorio.Baja(id);
@@ -96,6 +120,14 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
                 });
 
             return Json(propietarios);
+        }
+
+        [HttpPost]
+        public IActionResult Reactivar(int id)
+        {
+            repositorio.Reactivar(id);
+            TempData["Mensaje"] = "El propietario fue reactivado correctamente.";
+            return RedirectToAction(nameof(Detalles), new { id });
         }
 
     }

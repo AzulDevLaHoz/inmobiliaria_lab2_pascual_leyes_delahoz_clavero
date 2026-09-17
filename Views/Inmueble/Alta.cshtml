@@ -6,6 +6,9 @@
 	var ltaTipoInmuebles = (IList<TipoInmueble>)ViewBag.TipoInmuebles;
 }
 
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <h1>Alta</h1>
 
 <h4>Inmueble</h4>
@@ -40,16 +43,26 @@
 				<span asp-validation-for="porcentajeReserva" class="text-danger"></span>
 			</div>
 
-			<div class="mb-3">
-				<label asp-for="Latitud" class="control-label"></label>
-				<input asp-for="Latitud" class="form-control" />
-				<span asp-validation-for="Latitud" class="text-danger"></span>
+			<div class="mb-3 row">
+				<div class="col-md-6">
+					<label asp-for="Latitud" class="form-label">Latitud</label>
+					<input asp-for="Latitud" class="form-control" id="inputLat" readonly />
+				</div>
+				<div class="col-md-6">
+					<label asp-for="Longitud" class="form-label">Longitud</label>
+					<input asp-for="Longitud" class="form-control" id="inputLng" readonly />
+				</div>
 			</div>
 
 			<div class="mb-3">
-				<label asp-for="Longitud" class="control-label"></label>
-				<input asp-for="Longitud" class="form-control" />
-				<span asp-validation-for="Longitud" class="text-danger"></span>
+				<label class="form-label">Ubicación en el mapa (Haz clic para seleccionar)</label>
+				<div id="miMapa" style="height: 300px; border-radius: 8px; border: 1px solid #ccc;"></div>
+			</div>
+
+			<div class="mb-3">
+				<a id="btnGoogleMaps" href="#" target="_blank" class="btn btn-outline-primary btn-sm disabled">
+					<i class="bi bi-geo-alt"></i> Ver en Google Maps
+				</a>
 			</div>
 
 			<div class="mb-3">
@@ -74,12 +87,13 @@
 			</div>
 
 			<div class="mb-3">
-    <label asp-for="PropietarioId" class="control-label">Propietario</label>
-    <select asp-for="PropietarioId" id="selectPropietario" class="form-select select2-ajax" data-url="/Propietario/Buscar"
-            data-placeholder="Escriba para buscar propietario... (Nombre, Apellido o DNI)">
-    </select>
-    <span asp-validation-for="PropietarioId" class="text-danger"></span>
-</div>
+				<label asp-for="PropietarioId" class="control-label">Propietario</label>
+				<select asp-for="PropietarioId" id="selectPropietario" class="form-select select2-ajax"
+						data-url="/Propietario/Buscar"
+						data-placeholder="Escriba para buscar propietario... (Nombre, Apellido o DNI)">
+				</select>
+				<span asp-validation-for="PropietarioId" class="text-danger"></span>
+			</div>
 
 			<div class="mt-4">
 				<input type="submit" value="Guardar" class="btn btn-primary" />
@@ -91,4 +105,5 @@
 
 @section Scripts {
 	<script src="~/js/buscarTexto.js" asp-append-version="true"></script>
+	<script src="~/js/mapa.js" asp-append-version="true"></script>
 }

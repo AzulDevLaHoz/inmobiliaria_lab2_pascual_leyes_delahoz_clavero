@@ -1,0 +1,103 @@
+@{
+    ViewData["Title"] = "Detalles del Usuario";
+}
+
+
+
+<h1>Detalles del Usuario</h1>
+<hr />
+
+<div id="app" class="row" v-cloak>
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm text-center">
+            <div class="card-body">
+                <img src="@(string.IsNullOrEmpty(Model.Avatar) ? "/Uploads/sinAvatar.png" : Model.Avatar)"
+                     class="rounded-circle img-thumbnail mb-3"
+                     style="width: 140px; height: 140px; object-fit: cover;"
+                     alt="Avatar de Usuario" />
+                  <form asp-controller="Usuario" asp-action="CambiarAvatar" method="post" enctype="multipart/form-data"
+                      id="formCambiarAvatar">
+                    <input type="hidden" name="id" value="@Model.Id" />
+
+                    <input type="file" name="ImagenAvatar" id="inputAvatar" style="display: none;" accept="image/*"
+                           onchange="document.getElementById('formCambiarAvatar').submit();" />
+
+                    <button type="button" class="btn btn-sm btn-dark position-absolute bottom-0 end-0 m-2 opacity-75"
+                            onclick="document.getElementById('inputAvatar').click();">
+                        <i class="bi bi-camera"></i> Cambiar Avatar
+                    </button>
+                </form>    
+
+                <h4 class="card-title mb-1">@Model.Nombre @Model.Apellido</h4>
+                <p class="text-muted mb-2">@Model.Email</p>
+
+                <span class="badge @(Model.IdRol == 1 ? "bg-primary" : "bg-secondary") mb-3">
+                    @(Model.IdRol == 1 ? "Administrador" : "Empleado")
+                </span>
+
+                <div class="d-grid gap-2 mt-2">
+                    <a asp-action="CambiarClave" asp-route-id="@Model.Id" class="btn btn-outline-warning btn-sm">
+                        <i class="bi bi-key-fill me-1"></i> Cambiar Contraseña
+                    </a>
+                </div>
+            </div>
+            <div class="card-footer text-start">
+                <a asp-action="Index" class="btn btn-secondary btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i> Volver a la lista
+                </a>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-person-vcard me-1"></i> Información de la Cuenta
+                </h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">ID Usuario:</dt>
+                    <dd class="col-sm-8">@Model.Id</dd>
+
+                    <dt class="col-sm-4">Nombre:</dt>
+                    <dd class="col-sm-8">@Model.Nombre</dd>
+
+                    <dt class="col-sm-4">Apellido:</dt>
+                    <dd class="col-sm-8">@Model.Apellido</dd>
+
+                    <dt class="col-sm-4">Correo Electrónico:</dt>
+                    <dd class="col-sm-8">@Model.Email</dd>
+
+                    <dt class="col-sm-4">Rol Asignado:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge @(Model.IdRol == 1 ? "bg-primary" : "bg-secondary")">
+                            @(Model.IdRol == 1 ? "Administrador" : "Empleado")
+                        </span>
+                    </dd>
+                </dl>
+            </div>
+            <div class="card-footer bg-transparent text-end">
+                <a asp-action="Modificar" asp-route-id="@Model.Id" class="btn btn-primary btn-sm">
+                    <i class="bi bi-pencil-square me-1"></i> Editar Perfil
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <script>
+        const { createApp, ref } = Vue;
+
+        createApp({
+            setup() {
+                return {};
+            }
+        }).mount('#app');
+    </script>
+}

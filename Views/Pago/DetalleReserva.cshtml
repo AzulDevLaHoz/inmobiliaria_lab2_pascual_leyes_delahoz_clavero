@@ -1,0 +1,101 @@
+@model IEnumerable<inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models.Pago>
+@{
+    ViewData["Title"] = "Detalle de pagos de la reserva";
+    var reserva = (Reserva)ViewBag.Reserva;
+}
+
+<h1>Detalle de pagos — Reserva #@reserva.IdReserva</h1>
+<p>
+    <strong>Período:</strong> @reserva.FechaEntrada.ToShortDateString() - @reserva.FechaSalida.ToShortDateString()
+</p>
+<hr />
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Concepto</th>
+            <th>Importe</th>
+            <th>Método de Pago</th>
+            <th>Fecha de Pago</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pago in Model)
+        {
+            <tr>
+                <td>@pago.Concepto</td>
+                <td>@FormatoAr.Moneda(pago.Importe)</td>
+                <td>@pago.MetodoDePago</td>
+                <td>@pago.FechaPago.ToShortDateString()</td>
+                <td>@(pago.Estado ? "Abonado" : "Anulado")</td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a asp-action="Detalles" title="Detalles" asp-route-id="@pago.IdPago" class="btn btn-info btn-sm">
+                            <i class="bi bi-eye"></i>
+                        </a>
+
+                        @if (pago.Estado)
+                        {
+                            <a asp-action="Modificar" title="Editar" asp-route-id="@pago.IdPago"
+                            class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
+
+                            <button title="Eliminar" type="button" class="btn btn-warning btn-sm"
+                                    data-bs-toggle="modal" data-bs-target="#modalEliminar-@pago.IdPago">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+
+                            <button title="Anular Pago" type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#modalAnular-@pago.IdPago">
+                                <i class="bi bi-x-circle"></i>
+                            </button>
+                        }
+                    </div>
+                </td>
+            </tr>
+
+            <div class="modal fade" id="modalEliminar-@pago.IdPago" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Confirmar Baja</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            ¿Confirmas dar de baja este pago?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <form asp-action="Eliminar" asp-route-id="@pago.IdPago" method="post">
+                                <button type="submit" class="btn btn-warning">Sí, dar de baja</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modalAnular-@pago.IdPago" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Confirmar Anulación</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            ¿Confirmas anular este pago de @pago.Concepto?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <form asp-action="AnularPago" asp-route-id="@pago.IdPago" method="post">
+                                <button type="submit" class="btn btn-danger">Sí, anular</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>

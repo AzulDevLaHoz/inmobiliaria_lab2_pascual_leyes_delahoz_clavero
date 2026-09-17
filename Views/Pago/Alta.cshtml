@@ -1,0 +1,37 @@
+@model Pago
+@{
+    ViewData["Title"] = "Registrar pago";
+    string tipo = ViewBag.Tipo as string ?? "Completo";
+}
+
+<h2>Registrar pago (@tipo) — Reserva #@Model.IdReserva</h2>
+
+<form asp-action="Alta" method="post">
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+    <input type="hidden" asp-for="IdReserva" />
+    <input type="hidden" asp-for="Concepto" />
+    <input type="hidden" asp-for="Importe" />
+
+    <div class="mb-3">
+        <label class="form-label">Concepto</label>
+        <input class="form-control" value="@Model.Concepto" disabled />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Importe</label>
+        <input class="form-control" value="@Model.Importe.ToString("C")" disabled />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FechaPago" class="form-label"></label>
+        <input asp-for="FechaPago" class="form-control" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+        <span asp-validation-for="FechaPago" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MetodoDePago" class="form-label"></label>
+        <input asp-for="MetodoDePago" class="form-control" />
+        <span asp-validation-for="MetodoDePago" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</form>

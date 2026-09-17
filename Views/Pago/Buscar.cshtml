@@ -1,0 +1,103 @@
+@model IEnumerable<inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models.Reserva>
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Buscar pagos por inmueble";
+    var inmuebles = ViewBag.Inmuebles as IEnumerable<Inmueble>;
+    int? idSeleccionado = ViewBag.IdInmuebleSeleccionado as int?;
+    var enCurso = ViewBag.ReservasEnCurso as IEnumerable<Reserva> ?? new List<Reserva>();
+}
+
+<h1>Buscar pagos por inmueble</h1>
+<hr />
+
+<form method="get" asp-action="Buscar" class="row g-2 mb-4">
+    <div class="col-auto">
+        <select name="idInmueble" class="form-select"
+                asp-items="@(new SelectList(inmuebles, "Id", "Direccion", idSeleccionado))">
+            <option value="">-- Seleccione un inmueble --</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-search"></i> Buscar
+        </button>
+    </div>
+</form>
+
+@if (idSeleccionado.HasValue)
+{
+    @if (!Model.Any() && !enCurso.Any())
+    {
+        <p>No hay reservas con pagos registrados para este inmueble.</p>
+    }
+    else
+    {
+        <h3>En Curso</h3>
+        @if (!enCurso.Any())
+        {
+            <p>No hay reservas en curso para este inmueble.</p>
+        }
+        else
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Inquilino</th>
+                        <th>Fecha de Reserva</th>
+                        <th>Monto Total Abonado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in enCurso)
+                    {
+                        <tr>
+                            <td>@item.Inquilino?.ToString()</td>
+                            <td>@item.FechaEntrada.ToShortDateString()</td>
+                            <td>@FormatoAr.Moneda(item.MontoTotalAbonado ?? 0m)</td>
+                            <td>
+                                <a asp-action="DetalleReserva" asp-route-idReserva="@item.IdReserva" class="btn btn-info btn-sm">
+                                    <i class="bi bi-list-ul"></i> Detalles de pago
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        <h3 class="mt-4">Finalizadas</h3>
+        @if (!Model.Any())
+        {
+            <p>No hay reservas finalizadas para este inmueble.</p>
+        }
+        else
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Inquilino</th>
+                        <th>Fecha de Reserva</th>
+                        <th>Monto Total Abonado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Inquilino?.ToString()</td>
+                            <td>@item.FechaEntrada.ToShortDateString()</td>
+                            <td>@FormatoAr.Moneda(item.MontoTotalAbonado ?? 0m)</td>
+                            <td>
+                                <a asp-action="DetalleReserva" asp-route-idReserva="@item.IdReserva" class="btn btn-info btn-sm">
+                                    <i class="bi bi-list-ul"></i> Detalles de pago
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    }
+}

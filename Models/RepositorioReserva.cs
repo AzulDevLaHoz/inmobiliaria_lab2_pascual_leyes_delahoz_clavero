@@ -11,20 +11,19 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         {
         }
 
-        public int ObtenerCantidad
+         public int ObtenerCantidad()
         {
-            get
+            int total = 0;
+            using (var conn = new MySqlConnection(connectionString))
             {
-                using (var conn = new MySqlConnection(connectionString))
+                string sql = "SELECT COUNT(*) FROM Reserva ;";
+                using (var cmd = new MySqlCommand(sql, conn))
                 {
-                    string sql = "SELECT COUNT(*) FROM reserva";
-                    using (var cmd = new MySqlCommand(sql, conn))
-                    {
-                        conn.Open();
-                        return Convert.ToInt32(cmd.ExecuteScalar());
-                    }
+                    conn.Open();
+                    total = Convert.ToInt32(cmd.ExecuteScalar());
                 }
             }
+            return total;
         }
 
         public int Alta(Reserva p)
@@ -54,7 +53,6 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
         public int Baja(int id)
         {
             int res = -1;
-
 
             using (var conn = new MySqlConnection(connectionString))
             {
@@ -109,14 +107,14 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             using (var conn = new MySqlConnection(connectionString))
             {
                 string sql = @"
-              SELECT r.idReserva, r.fechaEntrada, r.fechaSalida, r.estado, r.fechaMulta, r.multa, r.idInquilino, r.idInmueble,
-              inq.Nombre, inq.Apellido, im.Direccion
-              FROM reserva r
-              INNER JOIN inquilino inq ON r.idInquilino = inq.IdInquilino
-              INNER JOIN inmueble im ON r.idInmueble = im.idInmueble
-              WHERE r.estado = 1
-              ORDER BY r.idReserva
-              LIMIT @tamPagina OFFSET @offset;";
+                SELECT r.idReserva, r.fechaEntrada, r.fechaSalida, r.estado, r.fechaMulta, r.multa, r.idInquilino, r.idInmueble,
+                inq.Nombre, inq.Apellido, im.Direccion
+                FROM reserva r
+                INNER JOIN inquilino inq ON r.idInquilino = inq.IdInquilino
+                INNER JOIN inmueble im ON r.idInmueble = im.idInmueble
+                WHERE (r.estado = 1 OR r.fechaMulta IS NOT NULL)
+                ORDER BY r.idReserva
+                LIMIT @tamPagina OFFSET @offset;";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@tamPagina", tamPagina);
@@ -269,9 +267,9 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             connection.Open();
 
             string sql = @"SELECT COUNT(*) FROM reserva 
-                           WHERE idInmueble = @idInmueble 
-                           AND estado = 1 
-                           AND ((fechaEntrada < @fechaSalida) AND (fechaSalida > @fechaEntrada))";
+                        WHERE idInmueble = @idInmueble 
+                        AND estado = 1 
+                        AND ((fechaEntrada < @fechaSalida) AND (fechaSalida > @fechaEntrada))";
 
             if (idReservaExcluir.HasValue)
             {
@@ -291,9 +289,68 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
             int count = Convert.ToInt32(command.ExecuteScalar());
             return count > 0;
         }
+
+        public IList<Reserva> ObtenerPorInmueble(int idInmueble)
+        {
+            IList<Reserva> res = new List<Reserva>();
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                string sql = @"
+            SELECT r.idReserva, r.fechaEntrada, r.fechaSalida, r.estado, r.fechaMulta, r.multa, r.idInquilino, r.idInmueble,
+                inq.Nombre, inq.Apellido
+            FROM reserva r
+            INNER JOIN inquilino inq ON r.idInquilino = inq.IdInquilino
+            WHERE r.idInmueble = @idInmueble
+            ORDER BY r.fechaEntrada DESC;";
+
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@idInmueble", idInmueble);
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            res.Add(new Reserva
+                            {
+                                IdReserva = reader.GetInt32(nameof(Reserva.IdReserva)),
+                                FechaEntrada = reader.GetDateTime(nameof(Reserva.FechaEntrada)),
+                                FechaSalida = reader.GetDateTime(nameof(Reserva.FechaSalida)),
+                                Estado = reader.GetBoolean(nameof(Reserva.Estado)),
+                                FechaMulta = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.FechaMulta)))
+                                    ? null : reader.GetDateTime(nameof(Reserva.FechaMulta)),
+                                Multa = reader.IsDBNull(reader.GetOrdinal(nameof(Reserva.Multa)))
+                                    ? null : reader.GetDecimal(nameof(Reserva.Multa)),
+                                IdInquilino = reader.GetInt32(nameof(Reserva.IdInquilino)),
+                                IdInmueble = reader.GetInt32(nameof(Reserva.IdInmueble)),
+                                Inquilino = new Inquilino
+                                {
+                                    IdInquilino = reader.GetInt32(nameof(Reserva.IdInquilino)),
+                                    Nombre = reader.GetString("Nombre"),
+                                    Apellido = reader.GetString("Apellido"),
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+            return res;
+        }
+
+        public bool ReactivarReserva(int idReserva)
+        {
+            using var connection = new MySqlConnection(connectionString);
+            connection.Open();
+
+            string sql = @"UPDATE reserva 
+                        SET fechaMulta = NULL, multa = NULL, estado = 1 
+                        WHERE idReserva = @id";
+
+            using var command = new MySqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@id", idReserva);
+
+            return command.ExecuteNonQuery() > 0;
+        }
+
     }
 }
-
-
-
-

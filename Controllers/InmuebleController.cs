@@ -1,8 +1,10 @@
 using inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
-{
+{    
+    [Authorize]
     public class InmuebleController : Controller
     {
         private readonly RepositorioInmueble repositorio;
@@ -10,12 +12,12 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         private readonly RepositorioTipoInmueble repoTipoInmueble;
         private readonly RepositorioImagen repoImagen;
 
-        public InmuebleController(RepositorioInmueble repositorio,RepositorioImagen repoImagen, IRepositorioPropietario repoPropietario, RepositorioTipoInmueble repoTipoInmueble)
-        {  
+        public InmuebleController(RepositorioInmueble repositorio, RepositorioImagen repoImagen, IRepositorioPropietario repoPropietario, RepositorioTipoInmueble repoTipoInmueble)
+        {
             this.repositorio = repositorio;
             this.repoPropietario = repoPropietario;
             this.repoTipoInmueble = repoTipoInmueble;
-            this.repoImagen= repoImagen;
+            this.repoImagen = repoImagen;
         }
 
         public IActionResult Index()
@@ -39,6 +41,11 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             {
                 if (inmueble.ImagenPortada != null && inmueble.ImagenPortada.Length > 0)
                 {
+                    if (!ValidarImagen(inmueble.ImagenPortada))
+                     {
+                     ViewBag.TipoInmuebles = repoTipoInmueble.ObtenerTodos();
+                     return View(inmueble);
+                     }
                     string wwwPath = environment.WebRootPath;
                     string path = Path.Combine(wwwPath, "Uploads", "Portadas");
 
@@ -93,7 +100,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             ViewBag.Propietario = repoPropietario.ObtenerPorId(entidad.PropietarioId);
             ViewBag.TipoInmueble = repoTipoInmueble.ObtenerPorId(entidad.TipoInmuebleId);
             var imagenesAdicionales = repoImagen.ObtenerPorInmueble(id);
-    ViewBag.ImagenesJson = System.Text.Json.JsonSerializer.Serialize(imagenesAdicionales);
+            ViewBag.ImagenesJson = System.Text.Json.JsonSerializer.Serialize(imagenesAdicionales);
             return View(entidad);
         }
 
@@ -117,6 +124,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public ActionResult Eliminar(int id)
         {
             repositorio.Baja(id);
@@ -125,52 +133,108 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         }
 
         [HttpGet]
-        public IActionResult Buscar(string q)
+        public IActionResult Buscar()
         {
-            if (string.IsNullOrWhiteSpace(q))
-            {
-                return Json(new List<object>());
-            }
-
-            var propietarios = repoPropietario.BuscarPorTexto(q)
-                .Select(p => new
-                {
-                    id = p.IdPropietario,
-                    texto = $"{p.Nombre} {p.Apellido} DNI: {p.Dni}"
-                });
-
-            return Json(propietarios);
+            ViewBag.TipoInmuebles = repoTipoInmueble.ObtenerTodos();
+            return View();
         }
 
-         [HttpPost]
-public async Task<IActionResult> CambiarPortada(int id, IFormFile ImagenPortada, [FromServices] IWebHostEnvironment environment)
+        [HttpGet]
+        public IActionResult BuscarDisponibles(DateTime fechaEntrada, DateTime fechaSalida, int capacidad = 1, int idTipoInmueble = 0, int pagNro = 1, int tamPagina = 20)
+        {
+            if (fechaEntrada.Date < DateTime.Today)
+            {
+                return BadRequest(new { error = "La fecha de entrada no puede ser anterior a hoy." });
+            }
+            if (fechaSalida.Date <= fechaEntrada.Date)
+            {
+                return BadRequest(new { error = "La fecha de salida debe ser posterior a la de entrada." });
+            }
+            if (capacidad < 1)
+            {
+                return BadRequest(new { error = "La capacidad debe ser al menos 1." });
+            }
+
+            var lista = repositorio.BuscarDisponibles(fechaEntrada, fechaSalida, capacidad, idTipoInmueble, pagNro, tamPagina);
+
+            var resultado = lista.Select(i => new
+            {
+                id = i.Id,
+                direccion = i.Direccion,
+                capacidad = i.Capacidad,
+                montoDia = i.montoDia,
+                imagenPortada = i.StringPortada,
+                tipo = i.NombreTipo?.Nombre
+            });
+
+            return Json(resultado);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CambiarPortada(int id, IFormFile ImagenPortada, [FromServices] IWebHostEnvironment environment)
+        {
+            var inmueble = repositorio.ObtenerPorId(id);
+            if (inmueble == null || ImagenPortada == null || ImagenPortada.Length == 0)
+                return RedirectToAction("Detalles", new { id });
+             
+             if (!ValidarImagen(ImagenPortada))
+             {
+              var error = ModelState["ImagenPortada"]?.Errors.FirstOrDefault()?.ErrorMessage;
+              TempData["Error"] = error ?? "La imagen no es válida.";
+              return RedirectToAction("Detalles", new { id });
+              }
+            //  Borro la foto anterior 
+            if (!string.IsNullOrEmpty(inmueble.StringPortada))
+            {
+                string fotoAntigua = Path.Combine(environment.WebRootPath, inmueble.StringPortada.TrimStart('/'));
+                if (System.IO.File.Exists(fotoAntigua)) System.IO.File.Delete(fotoAntigua);
+            }
+
+            //  Guardo  la nuevaafoto
+            string nombreArchivo = $"{Guid.NewGuid()}{Path.GetExtension(ImagenPortada.FileName)}";
+            string rutaFisica = Path.Combine(environment.WebRootPath, "Uploads", "Portadas", nombreArchivo);
+
+            using (var stream = new FileStream(rutaFisica, FileMode.Create))
+            {
+                await ImagenPortada.CopyToAsync(stream);
+            }
+
+
+            inmueble.StringPortada = $"/Uploads/Portadas/{nombreArchivo}";
+            repositorio.Modificar(inmueble);
+
+            TempData["Mensaje"] = "Portada actualizada correctamente.";
+            return RedirectToAction("Detalles", new { id });
+        }
+
+
+
+       private bool ValidarImagen(IFormFile archivo)
 {
-    var inmueble = repositorio.ObtenerPorId(id);
-    if (inmueble == null || ImagenPortada == null || ImagenPortada.Length == 0)
-        return RedirectToAction("Detalles", new { id });
-
-    //  Borro la foto anterior 
-    if (!string.IsNullOrEmpty(inmueble.StringPortada))
+    long maxSizeBytes = 10 * 1024 * 1024;
+    if (archivo.Length > maxSizeBytes)
     {
-        string fotoAntigua = Path.Combine(environment.WebRootPath, inmueble.StringPortada.TrimStart('/'));
-        if (System.IO.File.Exists(fotoAntigua)) System.IO.File.Delete(fotoAntigua);
+        ModelState.AddModelError("ImagenPortada", "La imagen no debe superar los 2 MB de peso.");
+        return false;
     }
 
-    //  Guardo  la nuevaafoto
-    string nombreArchivo = $"{Guid.NewGuid()}{Path.GetExtension(ImagenPortada.FileName)}";
-    string rutaFisica = Path.Combine(environment.WebRootPath, "Uploads", "Portadas", nombreArchivo);
+    var extensionesPermitidas = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+    var extension = Path.GetExtension(archivo.FileName).ToLowerInvariant();
 
-    using (var stream = new FileStream(rutaFisica, FileMode.Create))
+    if (string.IsNullOrEmpty(extension) || !extensionesPermitidas.Contains(extension))
     {
-        await ImagenPortada.CopyToAsync(stream);
+        ModelState.AddModelError("ImagenPortada", "Solo se permiten imágenes con extensión .jpg, .jpeg, .png o .webp.");
+        return false;
     }
 
-   
-    inmueble.StringPortada = $"/Uploads/Portadas/{nombreArchivo}";
-    repositorio.Modificar(inmueble);
+    var mimeTypesPermitidos = new[] { "image/jpeg", "image/png", "image/webp" };
+    if (!mimeTypesPermitidos.Contains(archivo.ContentType.ToLower()))
+    {
+        ModelState.AddModelError("ImagenPortada", "El archivo subido no es una imagen válida.");
+        return false;
+    }
 
-    TempData["Mensaje"] = "Portada actualizada correctamente.";
-    return RedirectToAction("Detalles", new { id });
+    return true;
 }
 
     }
