@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 17-09-2026 a las 23:10:54
+-- Tiempo de generación: 18-09-2026 a las 01:15:52
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -44,7 +44,7 @@ INSERT INTO `imagen` (`idImagen`, `imagen`, `idInmueble`) VALUES
 (3, '/Uploads/Galeria/8597cb6f-a532-42ee-829f-b058958ea5de.webp', 9),
 (4, '/Uploads/Galeria/5d37eb99-8839-4e97-8a23-83c373260f98.webp', 3),
 (5, '/Uploads/Galeria/bb434f5e-774b-46b0-8a12-ae1e3c8a125e.webp', 3),
-(6, '/Uploads/Galeria/3b66d9c3-9919-49ac-a52c-57b1c538279f.webp', 10);
+(8, '/Uploads/Galeria/3ba34b60-f42f-4190-9e29-d598e31c7276.webp', 10);
 
 -- --------------------------------------------------------
 
@@ -131,6 +131,14 @@ CREATE TABLE `pago` (
   `idUsuarioAnulador` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `pago`
+--
+
+INSERT INTO `pago` (`idPago`, `concepto`, `importe`, `fechaPago`, `metodoPago`, `estado`, `idReserva`, `idUsuarioCreador`, `idUsuarioAnulador`) VALUES
+(4, 'Seña', 75000.00, '2026-09-17 00:00:00', 'efectivo', '1', 11, 6, NULL),
+(5, 'Completado', 75000.00, '2026-09-17 00:00:00', 'efectivo', '1', 11, 6, NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -189,7 +197,8 @@ CREATE TABLE `reserva` (
 --
 
 INSERT INTO `reserva` (`idReserva`, `fechaEntrada`, `fechaSalida`, `estado`, `fechaMulta`, `multa`, `idInquilino`, `idInmueble`) VALUES
-(7, '2026-09-22', '2026-09-25', 1, NULL, NULL, 5, 9);
+(7, '2026-09-22', '2026-09-25', 1, NULL, NULL, 5, 9),
+(11, '2026-09-15', '2026-09-18', 1, NULL, NULL, 12, 1);
 
 -- --------------------------------------------------------
 
@@ -254,7 +263,7 @@ CREATE TABLE `usuario` (
 
 INSERT INTO `usuario` (`idUsuario`, `nombre`, `apellido`, `email`, `clave`, `estado`, `avatar`, `idRol`) VALUES
 (6, 'Admin', 'Ulp', 'admin@ulp.com', 'AQAAAAIAAYagAAAAEPBeOamClmo2vp/BYjKpYCCXEmK4q0Q4uD3VwLi4JpZHPBNeLloc4rIEDA5/EHEMkw==', 1, NULL, 1),
-(7, 'Empleado', 'Promedio', 'empleado@promedio.com', 'AQAAAAIAAYagAAAAENGEk3b3CR32I3y4jg1eJexQ/aILuYjR4pc8X1tLQYy6pFI5XVOZrXB9u0q3yJ89HA==', 1, NULL, 2);
+(7, 'Empleado', 'Promedio', 'empleado@promedio.com', 'AQAAAAIAAYagAAAAENGEk3b3CR32I3y4jg1eJexQ/aILuYjR4pc8X1tLQYy6pFI5XVOZrXB9u0q3yJ89HA==', 1, '/Uploads/avatar_7_27f91695-ad49-40ad-bbc6-c2c322c59334.jpeg', 2);
 
 --
 -- Índices para tablas volcadas
@@ -333,7 +342,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `imagen`
 --
 ALTER TABLE `imagen`
-  MODIFY `idImagen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `idImagen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `inmueble`
@@ -351,7 +360,7 @@ ALTER TABLE `inquilino`
 -- AUTO_INCREMENT de la tabla `pago`
 --
 ALTER TABLE `pago`
-  MODIFY `idPago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idPago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `propietario`
@@ -363,7 +372,7 @@ ALTER TABLE `propietario`
 -- AUTO_INCREMENT de la tabla `reserva`
 --
 ALTER TABLE `reserva`
-  MODIFY `idReserva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `idReserva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `rol`
