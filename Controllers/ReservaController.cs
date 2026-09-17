@@ -89,6 +89,19 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
 
             return View(reserva);
         }
+
+        [HttpGet]
+        public IActionResult VerificarDisponibilidad(int idInmueble, DateTime? fechaEntrada, DateTime? fechaSalida)
+        {
+            if (idInmueble <= 0 || !fechaEntrada.HasValue || !fechaSalida.HasValue
+                || fechaSalida.Value.Date < fechaEntrada.Value.Date)
+            {
+                return Json(new { disponible = (bool?)null });
+            }
+
+            bool solapa = repositorio.ExisteSolapamiento(idInmueble, fechaEntrada.Value, fechaSalida.Value);
+            return Json(new { disponible = !solapa });
+        }
         [HttpPost]
         public IActionResult Alta(Reserva reserva)
         {

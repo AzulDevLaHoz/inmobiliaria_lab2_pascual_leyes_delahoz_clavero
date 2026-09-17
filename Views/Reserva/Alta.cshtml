@@ -14,40 +14,46 @@
         <form asp-action="Alta" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <div class="mb-3">
-                <label asp-for="FechaEntrada" class="form-label"></label>
-                <input asp-for="FechaEntrada" class="form-control" type="date" value="@(Model?.FechaEntrada != DateTime.MinValue ? Model?.FechaEntrada.ToString("yyyy-MM-dd") : "")" />
-                <span asp-validation-for="FechaEntrada" class="text-danger"></span>
-            </div>
+            <div id="app-disponibilidad">
+                <div class="mb-3">
+                    <label asp-for="FechaEntrada" class="form-label"></label>
+                    <input asp-for="FechaEntrada" class="form-control" type="date" v-model="fechaEntrada" value="@(Model?.FechaEntrada != DateTime.MinValue ? Model?.FechaEntrada.ToString("yyyy-MM-dd") : "")" />
+                    <span asp-validation-for="FechaEntrada" class="text-danger"></span>
+                </div>
 
-            <div class="mb-3">
-                <label asp-for="FechaSalida" class="form-label"></label>
-                <input asp-for="FechaSalida" class="form-control" type="date" value="@(Model?.FechaSalida != DateTime.MinValue ? Model?.FechaSalida.ToString("yyyy-MM-dd") : "")" />
-                <span asp-validation-for="FechaSalida" class="text-danger"></span>
-            </div>
+                <div class="mb-3">
+                    <label asp-for="FechaSalida" class="form-label"></label>
+                    <input asp-for="FechaSalida" class="form-control" type="date" v-model="fechaSalida" value="@(Model?.FechaSalida != DateTime.MinValue ? Model?.FechaSalida.ToString("yyyy-MM-dd") : "")" />
+                    <span asp-validation-for="FechaSalida" class="text-danger"></span>
+                </div>
 
-            <div class="mb-3">
-                <label asp-for="IdInquilino" class="control-label"></label>
-                <select asp-for="IdInquilino" id="selectInquilino" class="form-select select2-ajax"
-                        data-url="/Inquilino/Buscar"
-                        data-placeholder="Escriba para buscar inquilino... (Nombre, Apellido o DNI)">
-                </select>
-                <span asp-validation-for="IdInquilino" class="text-danger"></span>
-            </div>
+                <div class="mb-3">
+                    <label asp-for="IdInquilino" class="control-label"></label>
+                    <select asp-for="IdInquilino" id="selectInquilino" class="form-select select2-ajax"
+                            data-url="/Inquilino/Buscar"
+                            data-placeholder="Escriba para buscar inquilino... (Nombre, Apellido o DNI)">
+                    </select>
+                    <span asp-validation-for="IdInquilino" class="text-danger"></span>
+                </div>
 
-            <div class="mb-3">
-                <label asp-for="IdInmueble" class="form-label">Inmueble</label>
-                <select asp-for="IdInmueble" class="form-select">
-                    <option value="">Seleccionar Inmueble</option>
-                    @if (listaInmuebles != null)
-                    {
-                        foreach (var item in listaInmuebles)
+                <div class="mb-3">
+                    <label asp-for="IdInmueble" class="form-label">Inmueble</label>
+                    <select asp-for="IdInmueble" class="form-select" v-model="idInmueble">
+                        <option value="">Seleccionar Inmueble</option>
+                        @if (listaInmuebles != null)
                         {
-                            <option value="@item.Id">@item.Direccion</option>
+                            foreach (var item in listaInmuebles)
+                            {
+                                <option value="@item.Id">@item.Direccion</option>
+                            }
                         }
-                    }
-                </select>
-                <span asp-validation-for="IdInmueble" class="text-danger"></span>
+                    </select>
+                    <span asp-validation-for="IdInmueble" class="text-danger"></span>
+                </div>
+
+                <div v-if="verificando" class="form-text">Verificando disponibilidad...</div>
+                <div v-if="disponible === false" class="alert alert-warning py-2">Este inmueble ya tiene una reserva activa en esas fechas.</div>
+                <div v-if="disponible === true" class="text-success">✓ Disponible</div>
             </div>
 
             <div class="mt-4">
@@ -60,4 +66,6 @@
 
 @section Scripts {
     <script src="~/js/buscarTexto.js" asp-append-version="true"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="~/js/reservaDisponibilidad.js" asp-append-version="true"></script>
 }
