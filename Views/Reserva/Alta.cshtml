@@ -17,8 +17,17 @@
             <div id="app-disponibilidad">
                 <div class="mb-3">
                     <label asp-for="FechaEntrada" class="form-label"></label>
-                    <input asp-for="FechaEntrada" class="form-control" type="date" v-model="fechaEntrada"
-                           value="@(Model?.FechaEntrada != DateTime.MinValue ? Model?.FechaEntrada.ToString("yyyy-MM-dd") : "")" />
+                    @if (ViewBag.EsExtension == true)
+                    {
+                        <input asp-for="FechaEntrada" class="form-control bg-light" type="date"
+                               value="@(Model?.FechaEntrada != DateTime.MinValue ? Model?.FechaEntrada.ToString("yyyy-MM-dd") : "")"
+                               readonly />
+                    }
+                    else
+                    {
+                        <input asp-for="FechaEntrada" class="form-control" type="date"
+                               value="@(Model?.FechaEntrada != DateTime.MinValue ? Model?.FechaEntrada.ToString("yyyy-MM-dd") : "")" />
+                    }
                     <span asp-validation-for="FechaEntrada" class="text-danger"></span>
                 </div>
 
@@ -31,26 +40,46 @@
 
                 <div class="mb-3">
                     <label asp-for="IdInquilino" class="control-label"></label>
-                    <select asp-for="IdInquilino" id="selectInquilino" class="form-select select2-ajax"
-                            data-url="/Inquilino/Buscar"
-                            data-placeholder="Escriba para buscar inquilino... (Nombre, Apellido o DNI)">
-                    </select>
+                    @if (ViewBag.EsExtension == true)
+                    {
+                        <input type="hidden" asp-for="IdInquilino" />
+                        <input type="text" class="form-control bg-light"
+                               value="@ViewBag.InquilinoPreseleccionado?.Nombre @ViewBag.InquilinoPreseleccionado?.Apellido"
+                               readonly />
+                    }
+                    else
+                    {
+                        <select asp-for="IdInquilino" id="selectInquilino" class="form-select select2-ajax"
+                                data-url="/Inquilino/Buscar"
+                                data-placeholder="Escriba para buscar inquilino... (Nombre, Apellido o DNI)">
+                        </select>
+                    }
                     <span asp-validation-for="IdInquilino" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
                     <label asp-for="IdInmueble" class="form-label">Inmueble</label>
-                    <select asp-for="IdInmueble" id="selectInmueble" class="form-select select2-ajax"
-                            data-url="/Inmueble/BuscarPorTextoAjax"
-                            data-placeholder="Escriba para buscar inmueble por dirección...">
-                    </select>
+                    @if (ViewBag.EsExtension == true)
+                    {
+                        <input type="hidden" asp-for="IdInmueble" />
+                        <input type="text" class="form-control bg-light" value="@ViewBag.InmueblePreseleccionado?.Direccion"
+                               readonly />
+                    }
+                    else
+                    {
+                        <select asp-for="IdInmueble" id="selectInmueble" class="form-select select2-ajax"
+                                data-url="/Inmueble/BuscarPorTextoAjax"
+                                data-placeholder="Escriba para buscar inmueble por dirección...">
+                        </select>
+                    }
                     <span asp-validation-for="IdInmueble" class="text-danger"></span>
                 </div>
 
-                <div v-if="verificando" class="form-text">Verificando disponibilidad...</div>
-                <div v-if="disponible === false" class="alert alert-warning py-2">Este inmueble ya tiene una reserva
+                <div v-cloak v-if="verificando" class="form-text">Verificando disponibilidad...</div>
+                <div v-cloak v-if="disponible === false" class="alert alert-warning py-2">Este inmueble ya tiene una
+                    reserva
                     activa en esas fechas.</div>
-                    <div v-if="disponible === true" class="text-success">✓ Disponible</div>
+                    <div v-cloak v-if="disponible === true" class="text-success">✓ Disponible</div>
                 </div>
 
                 <div class="mt-4">

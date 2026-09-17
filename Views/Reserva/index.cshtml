@@ -12,8 +12,10 @@
         <select name="estado" class="form-select" onchange="this.form.submit()">
             <option value="Todos" selected="@(estadoSeleccionado == "Todos" ? "selected" : null)">Todos</option>
             <option value="EnCurso" selected="@(estadoSeleccionado == "EnCurso" ? "selected" : null)">En Curso</option>
-            <option value="Finalizada" selected="@(estadoSeleccionado == "Finalizada" ? "selected" : null)">Finalizada</option>
-            <option value="AdeudaPago" selected="@(estadoSeleccionado == "AdeudaPago" ? "selected" : null)">Adeuda Pago</option>
+            <option value="Finalizada" selected="@(estadoSeleccionado == "Finalizada" ? "selected" : null)">Finalizada
+            </option>
+            <option value="AdeudaPago" selected="@(estadoSeleccionado == "AdeudaPago" ? "selected" : null)">Adeuda Pago
+            </option>
         </select>
     </form>
     <div>
@@ -57,11 +59,17 @@
                 <td>@item.Inmueble?.Direccion</td>
                 <td>
                     <div class="btn-group" role="group">
-                        @if(!finalizada)
+                        @if (!finalizada)
                         {
-                        <a asp-action="Modificar" title="Editar" asp-route-id="@item.IdReserva"
-                           class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
-                          } 
+                            <a asp-action="Modificar" title="Editar" asp-route-id="@item.IdReserva"
+                               class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
+                            <a asp-action="Alta" asp-route-idInmueble="@item.IdInmueble"
+                               asp-route-idInquilino="@item.IdInquilino"
+                               asp-route-fechaEntrada="@item.FechaSalida.ToString("yyyy-MM-dd")" title="Extender Reserva"
+                               class="btn btn-success btn-sm">
+                                <i class="bi bi-plus-circle"></i> Extender
+                            </a>
+                        }
                         @if (User.IsInRole("Administrador"))
                         {
                             <button title="Eliminar" type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
@@ -151,7 +159,8 @@
     <nav aria-label="Paginación de Reservas" class="mt-4">
         <ul class="pagination justify-content-center">
             <li class="page-item @(paginaActual == 1 ? "disabled" : "")">
-                <a class="page-link" asp-action="Index" asp-route-pagina="@(paginaActual - 1)" asp-route-estado="@estadoSeleccionado">Anterior</a>
+                <a class="page-link" asp-action="Index" asp-route-pagina="@(paginaActual - 1)"
+                   asp-route-estado="@estadoSeleccionado">Anterior</a>
             </li>
 
             @for (int i = 1; i <= totalPaginas; i++)
@@ -162,7 +171,8 @@
             }
 
             <li class="page-item @(paginaActual == totalPaginas ? "disabled" : "")">
-                <a class="page-link" asp-action="Index" asp-route-pagina="@(paginaActual + 1)" asp-route-estado="@estadoSeleccionado">Siguiente</a>
+                <a class="page-link" asp-action="Index" asp-route-pagina="@(paginaActual + 1)"
+                   asp-route-estado="@estadoSeleccionado">Siguiente</a>
             </li>
         </ul>
     </nav>
