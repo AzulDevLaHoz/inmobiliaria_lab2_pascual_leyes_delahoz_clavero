@@ -1,3 +1,4 @@
+Markdown
 <div align="center">
 
 # 🏢 Sistema de Gestión Inmobiliaria
@@ -8,7 +9,7 @@
 [![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-MVC-6C217F?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/apps/aspnet)
 
 <p align="center">
-  Plataforma web desarrollada para la administración integral de inmuebles, propietarios e inquilinos.
+  Plataforma web desarrollada para la administración integral de inmuebles, propietarios, inquilinos, reservas, pagos y usuarios del sistema.
 </p>
 
 </div>
@@ -18,7 +19,7 @@
 ## 👥 Integrantes del Equipo
 
 | Nombre y Apellido |
-| :--- | :--- |
+| :--- |
 | 🧑‍💻 **Patricio Pascual** |
 | 🧑‍💻 **Azul De La Hoz** |
 | 🧑‍💻 **Leandro Leyes** |
@@ -26,14 +27,29 @@
 
 ---
 
-## 🚀 Estado del Proyecto e Implementación
+## 🚀 Estado del Proyecto e Funcionalidades Implementadas
 
-El sistema cuenta con la arquitectura base y el flujo completo de **ABM / CRUD** (Alta, Baja, Modificación y Consulta) totalmente funcional para los siguientes módulos:
+El sistema se encuentra **completamente desarrollado y funcional**. Cuenta con autenticación por cookies, control de roles (Administrador / Empleado), validaciones de seguridad (tokens anti-falsificación CSRF) y flujo completo de **ABM / CRUD** (Alta, Baja, Modificación y Consulta) para todos los módulos:
 
-- [x] **Propietarios:** Registro de datos personales, edición de información y borrado de registros.
-- [x] **Inquilinos:** Gestión completa de los inquilinos asociados al sistema inmobiliario.
-- [X] **Inmuebles:** Gestion Completa
-- [X] **RESERVA **  Gestion Completa
+- [x] **Propietarios:** Registro de datos personales, edición de información, listado paginado y gestión de estado.
+- [x] **Inquilinos:** Gestión integral de inquilinos asociados a los alquileres.
+- [x] **Inmuebles:** Registro detallado de inmuebles, estado de disponibilidad, asignación de propietarios y actualización de fotos/portadas.
+- [x] **Reservas:** Control de contratos de alquiler, validación de fechas solapadas y restricciones de modificación según fechas de finalización y pagos asociados.
+- [x] **Pagos:** Registro y control de pagos asociados a las reservas de alquiler.
+- [x] **Usuarios y Avatares:** Gestión de cuentas de usuario, subida/cambio de avatar y modificación de clave con hashing seguro (`PasswordHasher`). *Solo accesible para rol Administrador*.
+
+---
+
+## 🔐 Usuarios y Credenciales de Prueba
+
+La base de datos incluye los siguientes usuarios predeterminados para realizar pruebas de acceso según el rol:
+
+| Rol | Correo Electrónico | Contraseña | Permisos principales |
+| :--- | :--- | :--- | :--- |
+| **Administrador** | `admin@ulp.com` | `1234` | Acceso total al sistema, incluida la gestión de Usuarios y roles. |
+| **Empleado** | `empleado@promedio.com` | `1234` | Operación general (Inmuebles, Propietarios, Inquilinos, Reservas y Pagos). Exceptuando Bajas de entidades|
+
+> ⚠️ **Nota:** El módulo de **Usuarios** está restringido exclusivamente a usuarios con rol **Administrador**. Los empleados únicamente pueden ver/editar su propio perfil y cambiar su avatar o contraseña.
 
 ---
 
@@ -70,7 +86,6 @@ Antes de ejecutar el proyecto, asegúrate de contar con el siguiente software in
     "MySql": "Server=localhost;User=root;Password=;Database=inmobiliaria_lab2"
   }
 }
-```
 
 ---
 
@@ -94,3 +109,6 @@ Antes de ejecutar el proyecto, asegúrate de contar con el siguiente software in
 ## 📐 Diagrama Entidad - Relación (DER)
 
 ![alt text](Diagrama.jpeg)
+ 
+
+ LINK Repositorio  : https://github.com/AzulDevLaHoz/inmobiliaria_lab2_pascual_leyes_delahoz_clavero

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
 {
-
+    [Authorize]
     public class UsuarioController : Controller
     {
         private readonly RepositorioUsuario repoUsuario;

@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
-{
+{   
+    [Authorize] 
     public class PagoController : Controller
     {
         private readonly IRepositorioPago repositorio;
