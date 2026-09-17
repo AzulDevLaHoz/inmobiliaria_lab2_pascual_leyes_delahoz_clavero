@@ -57,8 +57,11 @@
                 <td>@item.Inmueble?.Direccion</td>
                 <td>
                     <div class="btn-group" role="group">
+                        @if(!finalizada)
+                        {
                         <a asp-action="Modificar" title="Editar" asp-route-id="@item.IdReserva"
                            class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></a>
+                          } 
                         @if (User.IsInRole("Administrador"))
                         {
                             <button title="Eliminar" type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
