@@ -9,9 +9,8 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
     {
         int AnularPago(int idPago, int idUsuarioAnulador);
         IList<Pago> ObtenerPorReserva(int idReserva);
-        IList<Reserva> ObtenerReservasFinalizadas(int cantidad = 10);
-        IList<Reserva> ObtenerReservasEnCurso();
-        IList<Reserva> ObtenerReservasPorInmueble(int idInmueble);
+        IList<Reserva> ObtenerReservasPorEstado(string estado, int? idInmueble, int paginaNro = 1, int tamPagina = 10);
+        int ObtenerCantidadReservasPorEstado(string estado, int? idInmueble);
         bool ExistePagoCompletado(int idReserva);
         bool ExistePagoMulta(int idReserva);
         bool ExistePagoSenia(int idReserva);

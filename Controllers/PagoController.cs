@@ -10,22 +10,29 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
         private readonly IRepositorioPago repositorio;
         private readonly RepositorioInmueble repoInmueble;
         private readonly IRepositorioReserva repoReserva;
+        private readonly RepositorioUsuario repoUsuario;
         private readonly ILogger<PagoController> logger;
 
-        public PagoController(IRepositorioPago repositorio, RepositorioInmueble repoInmueble, IRepositorioReserva repoReserva, ILogger<PagoController> logger)
+        public PagoController(IRepositorioPago repositorio, RepositorioInmueble repoInmueble, IRepositorioReserva repoReserva, RepositorioUsuario repoUsuario, ILogger<PagoController> logger)
         {
             this.repositorio = repositorio;
             this.repoReserva = repoReserva;
             this.repoInmueble = repoInmueble;
+            this.repoUsuario = repoUsuario;
             this.logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string estado = "Todos", int pagina = 1)
         {
-            var finalizadas = repositorio.ObtenerReservasFinalizadas(10);
-            var enCurso = repositorio.ObtenerReservasEnCurso();
-            ViewBag.ReservasEnCurso = enCurso;
-            return View(finalizadas);
+            int tamPagina = 10;
+            var lista = repositorio.ObtenerReservasPorEstado(estado, null, pagina, tamPagina);
+            int totalRegistros = repositorio.ObtenerCantidadReservasPorEstado(estado, null);
+
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = (int)Math.Ceiling((double)totalRegistros / tamPagina);
+            ViewBag.EstadoSeleccionado = estado;
+
+            return View(lista);
         }
 
         public IActionResult DetalleReserva(int idReserva)
@@ -34,6 +41,14 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             if (reserva == null) return NotFound();
 
             var pagos = repositorio.ObtenerPorReserva(idReserva);
+            foreach (var p in pagos)
+            {
+                p.UsuarioCreador = repoUsuario.ObtenerPorId(p.IdUsuarioCreador);
+                if (p.IdUsuarioAnulador.HasValue)
+                {
+                    p.UsuarioAnulador = repoUsuario.ObtenerPorId(p.IdUsuarioAnulador.Value);
+                }
+            }
             ViewBag.Reserva = reserva;
             return View(pagos);
         }
@@ -144,7 +159,7 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             {
                 if (pago.Concepto == "Completado")
                 {
-                    // Si este pago venía de una Salida Anticipada, esto la revierte:
+                    // Si este pago venia de una Salida Anticipada, esto la revierte:
                     // limpia FechaMulta/Multa y vuelve a poner la reserva activa.
                     repoReserva.ReactivarReserva(pago.IdReserva);
                 }
@@ -173,58 +188,28 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Detalles(int id)
-        {
-            var pago = repositorio.ObtenerPorId(id);
-            if (pago == null) return NotFound();
-            ViewBag.MostrarAuditoria = User.IsInRole("administrador");
-
-            return View(pago);
-        }
-
         [HttpGet]
-        public IActionResult Buscar(int? idInmueble)
+        public IActionResult Buscar(int? idInmueble, string estado = "Todos", int pagina = 1)
         {
             ViewBag.Inmuebles = repoInmueble.ObtenerLista();
+            ViewBag.EstadoSeleccionado = estado;
 
             if (idInmueble.HasValue && idInmueble > 0)
             {
                 ViewBag.IdInmuebleSeleccionado = idInmueble.Value;
 
-                var reservas = repositorio.ObtenerReservasPorInmueble(idInmueble.Value);
+                int tamPagina = 10;
+                var lista = repositorio.ObtenerReservasPorEstado(estado, idInmueble.Value, pagina, tamPagina);
+                int totalRegistros = repositorio.ObtenerCantidadReservasPorEstado(estado, idInmueble.Value);
 
-                var finalizadas = new List<Reserva>();
-                var enCurso = new List<Reserva>();
-                foreach (var r in reservas)
-                {
-                    bool esFinalizada = (r.FechaMulta == null && repositorio.ExistePagoCompletado(r.IdReserva))
-                                        || (r.FechaMulta != null && repositorio.ExistePagoMulta(r.IdReserva));
-                    if (esFinalizada)
-                    {
-                        finalizadas.Add(r);
-                    }
-                    else
-                    {
-                        enCurso.Add(r);
-                    }
-                }
+                ViewBag.PaginaActual = pagina;
+                ViewBag.TotalPaginas = (int)Math.Ceiling((double)totalRegistros / tamPagina);
 
-                ViewBag.ReservasEnCurso = enCurso;
-                return View(finalizadas);
+                return View(lista);
             }
 
             return View(new List<Reserva>());
         }
 
-        public IActionResult ObtenerPorId(int id)
-        {
-            var pago = repositorio.ObtenerPorId(id);
-            if (pago == null) return NotFound();
-
-            ViewBag.Reserva = repoReserva.ObtenerPorId(pago.IdReserva);
-            ViewBag.MostrarAuditoria = User.IsInRole("administrador");
-
-            return View(pago);
-        }
     }
 }
