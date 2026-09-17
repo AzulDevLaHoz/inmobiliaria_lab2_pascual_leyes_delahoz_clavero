@@ -32,6 +32,48 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Controllers
             ViewBag.Inmuebles = repoInmueble.ObtenerLista();
             return View();
         }
+<<<<<<< Updated upstream
+=======
+
+        [HttpGet]
+        public IActionResult Alta(int? idInmueble, DateTime? fechaEntrada, DateTime? fechaSalida)
+        {
+            ViewBag.Inquilinos = repoInquilino.ObtenerLista();
+            ViewBag.Inmuebles = repoInmueble.ObtenerLista();
+
+            var reserva = new Reserva();
+            if (idInmueble.HasValue && idInmueble > 0)
+            {
+                reserva.IdInmueble = idInmueble.Value;
+            }
+
+            if (fechaEntrada.HasValue && fechaEntrada.Value != DateTime.MinValue)
+            {
+                reserva.FechaEntrada = fechaEntrada.Value;
+            }
+
+            if (fechaSalida.HasValue && fechaSalida.Value != DateTime.MinValue)
+            {
+                reserva.FechaSalida = fechaSalida.Value;
+            }
+
+            return View(reserva);
+        }
+
+        [HttpGet]
+        public IActionResult VerificarDisponibilidad(int idInmueble, DateTime? fechaEntrada, DateTime? fechaSalida)
+        {
+            if (idInmueble <= 0 || !fechaEntrada.HasValue || !fechaSalida.HasValue
+                || fechaSalida.Value.Date < fechaEntrada.Value.Date)
+            {
+                return Json(new { disponible = (bool?)null });
+            }
+
+            bool solapa = repositorio.ExisteSolapamiento(idInmueble, fechaEntrada.Value, fechaSalida.Value);
+            return Json(new { disponible = !solapa });
+        }
+
+>>>>>>> Stashed changes
         [HttpPost]
         public IActionResult Alta(Reserva reserva)
         {
