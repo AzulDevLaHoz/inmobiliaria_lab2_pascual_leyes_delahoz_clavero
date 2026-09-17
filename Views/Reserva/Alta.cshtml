@@ -17,13 +17,15 @@
             <div id="app-disponibilidad">
                 <div class="mb-3">
                     <label asp-for="FechaEntrada" class="form-label"></label>
-                    <input asp-for="FechaEntrada" class="form-control" type="date" v-model="fechaEntrada" value="@(Model?.FechaEntrada != DateTime.MinValue ? Model?.FechaEntrada.ToString("yyyy-MM-dd") : "")" />
+                    <input asp-for="FechaEntrada" class="form-control" type="date" v-model="fechaEntrada"
+                           value="@(Model?.FechaEntrada != DateTime.MinValue ? Model?.FechaEntrada.ToString("yyyy-MM-dd") : "")" />
                     <span asp-validation-for="FechaEntrada" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
                     <label asp-for="FechaSalida" class="form-label"></label>
-                    <input asp-for="FechaSalida" class="form-control" type="date" v-model="fechaSalida" value="@(Model?.FechaSalida != DateTime.MinValue ? Model?.FechaSalida.ToString("yyyy-MM-dd") : "")" />
+                    <input asp-for="FechaSalida" class="form-control" type="date" v-model="fechaSalida"
+                           value="@(Model?.FechaSalida != DateTime.MinValue ? Model?.FechaSalida.ToString("yyyy-MM-dd") : "")" />
                     <span asp-validation-for="FechaSalida" class="text-danger"></span>
                 </div>
 
@@ -38,34 +40,29 @@
 
                 <div class="mb-3">
                     <label asp-for="IdInmueble" class="form-label">Inmueble</label>
-                    <select asp-for="IdInmueble" class="form-select" v-model="idInmueble">
-                        <option value="">Seleccionar Inmueble</option>
-                        @if (listaInmuebles != null)
-                        {
-                            foreach (var item in listaInmuebles)
-                            {
-                                <option value="@item.Id">@item.Direccion</option>
-                            }
-                        }
+                    <select asp-for="IdInmueble" id="selectInmueble" class="form-select select2-ajax"
+                            data-url="/Inmueble/BuscarPorTextoAjax"
+                            data-placeholder="Escriba para buscar inmueble por dirección...">
                     </select>
                     <span asp-validation-for="IdInmueble" class="text-danger"></span>
                 </div>
 
                 <div v-if="verificando" class="form-text">Verificando disponibilidad...</div>
-                <div v-if="disponible === false" class="alert alert-warning py-2">Este inmueble ya tiene una reserva activa en esas fechas.</div>
-                <div v-if="disponible === true" class="text-success">✓ Disponible</div>
-            </div>
+                <div v-if="disponible === false" class="alert alert-warning py-2">Este inmueble ya tiene una reserva
+                    activa en esas fechas.</div>
+                    <div v-if="disponible === true" class="text-success">✓ Disponible</div>
+                </div>
 
-            <div class="mt-4">
-                <input type="submit" value="Guardar" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary ms-2">Volver a la lista</a>
-            </div>
-        </form>
+                <div class="mt-4">
+                    <input type="submit" value="Guardar" class="btn btn-primary" />
+                    <a asp-action="Index" class="btn btn-secondary ms-2">Volver a la lista</a>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-@section Scripts {
-    <script src="~/js/buscarTexto.js" asp-append-version="true"></script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="~/js/reservaDisponibilidad.js" asp-append-version="true"></script>
-}
+    @section Scripts {
+        <script src="~/js/buscarTexto.js" asp-append-version="true"></script>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="~/js/reservaDisponibilidad.js" asp-append-version="true"></script>
+    }

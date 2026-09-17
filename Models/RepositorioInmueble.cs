@@ -214,8 +214,8 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                             Latitud = reader.GetInt32("latitud"),
                             Longitud = reader.GetInt32("longitud"),
                             porcentajeReserva = reader.GetDecimal("porcentajeReserva"),
-                            StringPortada = reader.IsDBNull(reader.GetOrdinal("imagenPortada")) 
-                                         ? "/Uploads/sinImagen.png" : reader.GetString("imagenPortada"), 
+                            StringPortada = reader.IsDBNull(reader.GetOrdinal("imagenPortada"))
+                                         ? "/Uploads/sinImagen.png" : reader.GetString("imagenPortada"),
                             montoDia = reader.GetDecimal("montoDia"),
                             Estado = reader.GetBoolean("estado"),
                             PropietarioId = reader.GetInt32("idPropietario"),
@@ -330,6 +330,39 @@ namespace inmobiliaria_lab2_pascual_leyes_delahoz_clavero.Models
                                     IdTipoInmueble = reader.GetInt32("idTipoInmueble"),
                                     Nombre = reader.GetString("nombreTipo")
                                 }
+                            });
+                        }
+                    }
+                }
+            }
+            return res;
+        }
+
+        public IList<Inmueble> BuscarPorTexto(string q)
+        {
+            IList<Inmueble> res = new List<Inmueble>();
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                string sql = @"
+            SELECT idInmueble, direccion, capacidad, montoDia 
+            FROM inmueble 
+            WHERE estado = 1 AND direccion LIKE @q
+            LIMIT 10;";
+
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@q", $"%{q}%");
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            res.Add(new Inmueble
+                            {
+                                Id = reader.GetInt32("idInmueble"),
+                                Direccion = reader.GetString("direccion"),
+                                Capacidad = reader.GetInt32("capacidad"),
+                                montoDia = reader.GetDecimal("montoDia")
                             });
                         }
                     }
