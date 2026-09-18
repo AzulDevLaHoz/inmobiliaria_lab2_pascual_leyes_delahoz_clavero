@@ -2,8 +2,6 @@
 
 @{
     ViewData["Title"] = "Alta de Reserva";
-
-    var listaInmuebles = (IList<Inmueble>)ViewBag.Inmuebles;
 }
 
 <h1>Alta de Reserva</h1>
@@ -25,7 +23,7 @@
                     }
                     else
                     {
-                        <input asp-for="FechaEntrada" class="form-control" type="date"
+                        <input asp-for="FechaEntrada" class="form-control" type="date" v-model="fechaEntrada"
                                value="@(Model?.FechaEntrada != DateTime.MinValue ? Model?.FechaEntrada.ToString("yyyy-MM-dd") : "")" />
                     }
                     <span asp-validation-for="FechaEntrada" class="text-danger"></span>
@@ -68,7 +66,7 @@
                     else
                     {
                         <select asp-for="IdInmueble" id="selectInmueble" class="form-select select2-ajax"
-                                data-url="/Inmueble/BuscarPorTextoAjax"
+                                v-model="idInmueble" data-url="/Inmueble/BuscarPorTextoAjax"
                                 data-placeholder="Escriba para buscar inmueble por dirección...">
                         </select>
                     }
@@ -91,7 +89,7 @@
     </div>
 
     @section Scripts {
-        <script src="~/js/buscarTexto.js" asp-append-version="true"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="~/js/buscarTexto.js" asp-append-version="true"></script>
         <script src="~/js/reservaDisponibilidad.js" asp-append-version="true"></script>
     }

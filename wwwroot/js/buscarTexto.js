@@ -31,5 +31,8 @@ $(document).ready(function () {
         cache: true,
       },
     });
+    $select.on("select2:select select2:clear select2:unselecting", function () {
+      this.dispatchEvent(new Event("change"));
+    });
   });
 });

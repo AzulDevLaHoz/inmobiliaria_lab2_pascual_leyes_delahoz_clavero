@@ -15,14 +15,18 @@ async function verificarDisponibilidad(idInmueble, fechaEntrada, fechaSalida) {
   return data.disponible;
 }
 
+const valoresIniciales = {
+  fechaEntrada: document.querySelector('[name="FechaEntrada"]')?.value ?? "",
+  fechaSalida: document.querySelector('[name="FechaSalida"]')?.value ?? "",
+  idInmueble: document.querySelector('[name="IdInmueble"]')?.value ?? "",
+};
+
 const { createApp } = Vue;
 
 createApp({
   data() {
     return {
-      fechaEntrada: document.getElementById("FechaEntrada")?.value ?? "",
-      fechaSalida: document.getElementById("FechaSalida")?.value ?? "",
-      idInmueble: document.getElementById("IdInmueble")?.value ?? "",
+      ...valoresIniciales,
       verificando: false,
       disponible: null,
       debounceTimer: null,
@@ -56,7 +60,7 @@ createApp({
         this.disponible = await verificarDisponibilidad(
           this.idInmueble,
           this.fechaEntrada,
-          this.fechaSalida
+          this.fechaSalida,
         );
       } catch {
         this.disponible = null;
